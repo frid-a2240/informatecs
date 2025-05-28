@@ -55,7 +55,7 @@ const HomePage = () => {
           <div className="text-white text-left ml-8 pl-10">
             <h1 className="text-4xl md:text-6xl lg:text-8xl pb-3">Instituto <br/>Tecnológico</h1>
             <span className="text-2xl md:text-4xl lg:text-6xl block text-yellow-400 pb-3">De Ensenada</span>
-            <p>Te invitamos a participar en clubs, actividades extraescolares y eventos.</p>
+            <p>hola hola</p>
           </div>
         </div>
       </div>
