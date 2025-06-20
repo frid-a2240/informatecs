@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './components/hooks/authHandlers';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+
 
 const LoginPage = () => {
   const router = useRouter();
@@ -15,6 +17,7 @@ const LoginPage = () => {
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     handleLogin,
@@ -52,18 +55,20 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="form-section">
         <div className="wave-overlay">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 1000" preserveAspectRatio="none">
-            <path
-              fill="#0055aa"
-              fillOpacity="0.1"
-              d="
-                M0,0
-                C30,200 70,300 0,400
-                C-30,600 70,700 0,800
-                C-30,1000 100,1000 100,1000
-                L100,0 Z"
-            />
-          </svg>
+       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 1000" preserveAspectRatio="none" >
+        <path
+          fill="#0055aa"
+          fillOpacity="0.01"
+          d="
+            M0,0
+            C25,150 75,250 0,350
+            C-25,450 75,550 0,650
+            C-25,750 75,850 0,950
+            C-25,1050 100,1050 100,1050
+            L100,0
+            Z"
+        />
+      </svg>
         </div>
 
         <h1 className="login-title">Eventos ITE</h1>
@@ -110,15 +115,23 @@ const LoginPage = () => {
             />
 
             <label className="login-label">Contraseña</label>
+            <div className="password-input-container">
             <input
-              type="password"
-              className="login-input"
-              placeholder='Ingresa tu contraseña '
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+            type={showPassword ? 'text' : 'password'}
+            className="login-input password-input"
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
             />
-
+            <span
+            onClick={() => setShowPassword(!showPassword)}
+            className="password-toggle-icon"
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+              </div>
             {step === 'register' && (
               <p style={{ fontSize: '0.9rem', marginBottom: '12px', color: '#333' }}>
                 La contraseña debe ser la genérica: <b>123456</b>. Luego deberás verificar tu correo y cambiarla.

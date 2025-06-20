@@ -4,42 +4,45 @@
 
 .login-container {
   display: flex;
-  height: 100vh;
-  width:100% ;
+  min-height: 100vh;
+  width: 100%;
   position: relative;
- font-family: 'Noto Sans', sans-serif;
-  overflow-x: visible;
+  font-family: 'Noto Sans', sans-serif;
+  overflow-x: hidden;
   z-index: 0;
-  flex-wrap: nowrap; 
-
+  flex-wrap: nowrap;
 }
-
 
 .form-section {
   position: relative;
   flex: 1;
-  padding: 3rem;
+  padding: 9rem 2rem 2rem 2rem; /* padding arriba mayor para separar del logo */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 100vh;
   overflow: visible;
   z-index: 0;
   background-color: transparent;
 }
+
 .wave-overlay {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 120px;
-  height: 100%;
-  z-index: 0;
-  transform: translateX(750px); /* mueve la ola a la derecha */
+  background: transparent;
   pointer-events: none;
-  opacity: 1;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 220px;
+  height: 100vh;
+  transform: translateX(-50%);
+  z-index: 3;
 }
 
+.wave-overlay svg path {
+  fill: lch(50% 23.69 275.55);
+  fill-opacity: 0.08
+  ;
+}
 
 .wave-overlay svg {
   width: 100%;
@@ -47,19 +50,16 @@
   display: block;
 }
 
-
 .login-title {
- font-size: clamp(2rem, 6vw, 8rem);
-
+  font-size: clamp(2rem, 6vw, 8rem);
   font-weight: 800;
   margin-bottom: 2rem;
   color: #FE9E10;
   text-align: center;
-    text-shadow:
+  text-shadow:
     -1px -1px 0 #CB201F,
-     1px -1px 0 #CB201F,
-     
-     1px  1px 0 #CB201F;
+    1px -1px 0 #CB201F,
+    1px 1px 0 #CB201F;
 }
 
 .login-tabs {
@@ -79,12 +79,14 @@
   color: white;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(27, 57, 106, 0.4);
+  font-size: 16px;
 }
 
 .tab-inactive {
   padding: 0.75rem 3rem;
   background-color: #e2e8f0;
   border: none;
+  font-size: 16px;
   border-radius: 0.75rem;
   color: #1B396A;
   font-weight: 600;
@@ -93,7 +95,7 @@
 }
 
 .tab-inactive:hover {
-  background-color: #cbd5e1;
+  background-color: #8EAFEF;
 }
 
 /* Formulario */
@@ -132,8 +134,7 @@
 }
 
 .forgot-password a {
-  color: #ffffff;
-
+  color: #3f4eab;
   text-decoration: none;
   font-weight: bold;
   font-size: 1rem;
@@ -161,50 +162,57 @@
   color: white;
   border-radius: 0.75rem;
   cursor: pointer;
-  font-weight: 600;
-  
+font-size: 16px;
   transition: background-color 0.3s ease;
   width: 100%;
-  max-width: 100%; 
+  max-width: 100%;
 }
 
 .submit-button:hover {
-  background-color: #7ea0d5;
+  background-color: #8EAFEF;
 }
-
 
 .logo-section {
   flex: 1;
-  background: linear-gradient(to right, rgba(255,255,255,0.7), rgba(8,94,222,0.7));
-  display: flex;
-  justify-content: center;
+  background: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.7), /* Azul sólido en el formulario */
+    rgba(8, 94, 222, 0)    /* Transparente justo en la ola */
+  );
+  justify-content: flex-start;
   align-items: center;
-  position: relative;
+  position: relative; /* importante para posicion absolute del logo */
   width: 100%;
-  height: 100vh; /* ✅ Esto es importante */
-  min-height: 100vh; /* También garantiza consistencia */
+  min-height: 100vh;
   text-align: center;
-  padding-top: 80px;
+  padding-top: 0.5rem;
   flex-direction: column;
   min-width: 0;
   box-sizing: border-box;
 }
 
 .logo-box {
-  width:50px;
+  width: 50px;
   max-width: 50px;
   height: 50px;
- background-color: transparent;
+  background-color: transparent;
   align-items: center;
- 
+  margin: 0 auto;
+  
+  position: absolute !important; /* para posicionar libremente */
+  top: 1rem; /* sube el logo */
+  left: 50%; /* centrado horizontal */
+  transform: translateX(-50%);
+  z-index: 10; /* para que quede encima */
 }
-/* .logo-box img {
-  width: 10%;
-  max-width: 10px; 
+
+.logo-box img {
+  width: 100%;
   height: auto;
-} */
-
-
+  display: block;
+  margin: 0;
+  position: static;
+}
 
 .auth-wrapper {
   display: flex;
@@ -215,7 +223,6 @@
   background-color: white;
   font-family: sans-serif;
 }
-
 
 .auth-card {
   width: 26rem;
@@ -272,8 +279,9 @@
 }
 
 .auth-button:hover {
-  background-color: #0c5fe4;
+  background-color:#8EAFEF
 }
+
 @media (max-width: 600px) {
   .form-section {
     width: 100%;
@@ -315,9 +323,10 @@
   .submit-button {
     font-size: 1.2rem;
     padding: 1rem;
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
   }
 }
+
 @media (max-width: 850px) {
   .form-section {
     width: 100%;
@@ -357,20 +366,32 @@
   }
 
   .submit-button {
-    font-size: 1.2rem;
+  
     padding: 1rem;
     border-radius: 0.75rem;
- 
-  }}
-  .password-container {
+  }
+}
+
+.password-input-container {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
+}
+
+.password-input {
+  padding-right: 2.5rem; /* espacio para el ícono */
 }
 
 .password-toggle-icon {
   position: absolute;
-  right: 12px;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
   cursor: pointer;
-  color: #555;
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-icon:hover {
+  color: #8EAFEF;
 }
