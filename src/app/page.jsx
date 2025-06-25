@@ -55,20 +55,18 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="form-section">
         <div className="wave-overlay">
-       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 1000" preserveAspectRatio="none" >
-        <path
-          fill="#0055aa"
-          fillOpacity="0.01"
-          d="
-            M0,0
-            C25,150 75,250 0,350
-            C-25,450 75,550 0,650
-            C-25,750 75,850 0,950
-            C-25,1050 100,1050 100,1050
-            L100,0
-            Z"
-        />
-      </svg>
+<svg width="1440" height="560" preserveAspectRatio="none" viewBox="0 0 1440 560">
+  <g mask="url(#SvgjsMask1033)" fill="none">
+    <path d="M 0,324 C 41.2,292.4 123.6,160.6 206,166 C 288.4,171.4 329.6,380 412,351 C 494.4,322 535.6,22.8 618,21 C 700.4,19.2 741.6,320.6 824,342 C 906.4,363.4 947.6,111 1030,128 C 1112.4,145 1154,413 1236,427 C 1318,441 1399.2,243.8 1440,198L1440 560L0 560z" fill="rgba(27, 57, 106, 1)" />
+    <path d="M 0,412 C 48,375.8 144,210.2 240,231 C 336,251.8 384,530.8 480,516 C 576,501.2 624,159.2 720,157 C 816,154.8 864,524.4 960,505 C 1056,485.6 1104,55.2 1200,60 C 1296,64.8 1392,435.2 1440,529L1440 560L0 560z" fill="rgba(34, 100, 171, 0.74)" />
+  </g>
+  <defs>
+    <mask id="SvgjsMask1033">
+      <rect width="1440" height="560" fill="#ffffff" />
+    </mask>
+  </defs>
+</svg>
+
         </div>
 
         <h1 className="login-title">Eventos ITE</h1>
@@ -104,17 +102,18 @@ const LoginPage = () => {
             onSubmit={step === 'login' ? onLoginSubmit : onRegisterSubmit}
             className="login-form"
           >
-            <label className="login-label">Matrícula</label>
+            <label className="login-label">Matrícula:</label>
+            
             <input
               type="text"
-              className="login-input"
+              className="login-input "
               value={matricula}
               placeholder='Ingresa tu matricula de estudiante'
               onChange={(e) => setMatricula(e.target.value)}
               required
             />
 
-            <label className="login-label">Contraseña</label>
+            <label className="login-label">Contraseña:</label>
             <div className="password-input-container">
             <input
             type={showPassword ? 'text' : 'password'}
