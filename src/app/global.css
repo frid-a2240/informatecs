@@ -192,7 +192,7 @@ font-size: 16px;
   );
   justify-content: flex-start;
   align-items: center;
-  position: relative; /* importante para posicion absolute del logo */
+  position: relative; 
   width: 100%;
   min-height: 100vh;
   text-align: center;
@@ -203,20 +203,18 @@ font-size: 16px;
 }
 
 .logo-box {
+  position: absolute !important; /* redundant but safe */
   width: 50px;
   max-width: 50px;
   height: 50px;
   background-color: transparent;
-  align-items: center;
-  margin: 0 auto;
-  
-  position: absolute !important; /* para posicionar libremente */
-  top: 1rem; /* sube el logo */
-  left: 50%; /* centrado horizontal */
+  align-items: center; /* no effect here */
+  margin: 0 auto; /* no effect here */
+  top: 1rem;
+  left: 50%;
   transform: translateX(-50%);
-  z-index: 10; /* para que quede encima */
+  z-index: 10; /* Esto asegura que esté por encima de otros elementos dentro de logo-section */
 }
-
 .logo-box img {
   width: 100%;
   height: auto;
@@ -404,4 +402,34 @@ font-size: 16px;
 
 .password-toggle-icon:hover {
   color: #8EAFEF;
+}
+
+
+@keyframes albatros-run {
+  0% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  15% {
+    transform: translateY(-18px) translateX(6px) rotate(6deg);
+  }
+  30% {
+    transform: translateY(-8px) translateX(10px) rotate(3deg);
+  }
+  45% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+  65% {
+    transform: translateY(-18px) translateX(-6px) rotate(-6deg);
+  }
+  80% {
+    transform: translateY(-8px) translateX(-10px) rotate(-3deg);
+  }
+  100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+  }
+}
+
+.animate-albatros-run {
+  animation: albatros-run 0.8s infinite ease-in-out;
+  transform-origin: bottom center;
 }

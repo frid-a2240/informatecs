@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './components/hooks/authHandlers';
@@ -8,16 +8,18 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const LoginPage = () => {
   const router = useRouter();
+    const albatroRef = useRef(null);
 
   const [matricula, setMatricula] = useState('');
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState('login'); // login, register, askEmail, verify, update, success
-  const [error, setError] = useState('');
+  const [step, setStep] = useState('login'); 
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
 
   const {
     handleLogin,
@@ -27,7 +29,6 @@ const LoginPage = () => {
     handleUpdatePassword,
   } = useAuth(setStep, setFullName, setError);
 
-  // Registro con validación de contraseña genérica
   const onRegisterSubmit = (e) => {
     e.preventDefault();
     if (!matricula || !password) {
@@ -41,7 +42,6 @@ const LoginPage = () => {
     handleRegister(e, matricula, password);
   };
 
-  // Login submit
   const onLoginSubmit = (e) => {
     e.preventDefault();
     if (!matricula || !password) {
@@ -55,17 +55,15 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="form-section">
         <div className="wave-overlay">
-<svg width="1440" height="560" preserveAspectRatio="none" viewBox="0 0 1440 560">
-  <g mask="url(#SvgjsMask1033)" fill="none">
-    <path d="M 0,324 C 41.2,292.4 123.6,160.6 206,166 C 288.4,171.4 329.6,380 412,351 C 494.4,322 535.6,22.8 618,21 C 700.4,19.2 741.6,320.6 824,342 C 906.4,363.4 947.6,111 1030,128 C 1112.4,145 1154,413 1236,427 C 1318,441 1399.2,243.8 1440,198L1440 560L0 560z" fill="rgba(27, 57, 106, 1)" />
-    <path d="M 0,412 C 48,375.8 144,210.2 240,231 C 336,251.8 384,530.8 480,516 C 576,501.2 624,159.2 720,157 C 816,154.8 864,524.4 960,505 C 1056,485.6 1104,55.2 1200,60 C 1296,64.8 1392,435.2 1440,529L1440 560L0 560z" fill="rgba(34, 100, 171, 0.74)" />
-  </g>
-  <defs>
-    <mask id="SvgjsMask1033">
-      <rect width="1440" height="560" fill="#ffffff" />
-    </mask>
-  </defs>
-</svg>
+          <svg width="1440" height="560" preserveAspectRatio="none" viewBox="0 0 1440 560">
+            <g mask="url(#SvgjsMask1033)" fill="none">
+              <path d="M 0,324 C 41.2,292.4 123.6,160.6 206,166 C 288.4,171.4 329.6,380 412,351 C 494.4,322 535.6,22.8 618,21 C 700.4,19.2 741.6,320.6 824,342 C 906.4,363.4 947.6,111 1030,128 C 1112.4,145 1154,413 1236,427 C 1318,441 1399.2,243.8 1440,198L1440 560L0 560z" fill="rgba(27, 57, 106, 1)" />
+              <path d="M 0,412 C 48,375.8 144,210.2 240,231 C 336,251.8 384,530.8 480,516 C 576,501.2 624,159.2 720,157 C 816,154.8 864,524.4 960,505 C 1056,485.6 1104,55.2 1200,60 C 1296,64.8 1392,435.2 1440,529L1440 560L0 560z" fill="rgba(34, 100, 171, 0.74)" />
+              </g>
+              <defs>
+                <mask id="SvgjsMask1033">
+                  <rect width="1440" height="560" fill="#ffffff" />
+                  </mask></defs></svg>
 
         </div>
 
@@ -243,17 +241,22 @@ const LoginPage = () => {
           <RedirectAfterLogin fullName={fullName} />
         )}
       </div>
-
-      <div className="logo-section">
-        <img src="/imagenes/logoevento.png" alt="Logo del sistema" className="logo-img" />
-      </div>
+       <div className="flex-1 flex items-center justify-center p-8 relative overflow-hidden hidden md:flex"> 
+        <img
+        src="/imagenes/logoevento.png" 
+        alt="Logo del sistema (Albatros corriendo)"
+    className="max-w-full h-auto animate-albatros-run" 
+    ref={albatroRef} 
+  />
+  </div>
     </div>
   );
 };
+  
+
 
 export default LoginPage;
 
-// Componente para redirigir al dashboard
 function RedirectAfterLogin({ fullName }) {
   const router = useRouter();
 
