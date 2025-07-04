@@ -1,25 +1,25 @@
-
-'use client';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+"use client";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import "animate.css";
 
 const datosFicticios = {
-  matricula: '2024001',
-  carrera: 'Ingeniería en Sistemas',
+  matricula: "2024001",
+  carrera: "Ingeniería en Sistemas",
   semestre: 5,
   creditos: 42,
-  email: 'correo@example.com',
-  telefono: '555-123-4567',
+  email: "correo@example.com",
+  telefono: "555-123-4567",
   horario: [
-    { dia: 'Lunes', materia: 'Matemáticas', hora: '8:00 - 10:00' },
-    { dia: 'Miércoles', materia: 'Programación', hora: '10:00 - 12:00' },
-    { dia: 'Viernes', materia: 'Física', hora: '14:00 - 16:00' },
+    { dia: "Lunes", materia: "Matemáticas", hora: "8:00 - 10:00" },
+    { dia: "Miércoles", materia: "Programación", hora: "10:00 - 12:00" },
+    { dia: "Viernes", materia: "Física", hora: "14:00 - 16:00" },
   ],
 };
 
 export default function PerfilEstudiante() {
   const searchParams = useSearchParams();
-  const nameParam = searchParams.get('name');
+  const nameParam = searchParams.get("name");
 
   const [nombreReal, setNombreReal] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -112,81 +112,79 @@ export default function PerfilEstudiante() {
 
 const styles = {
   container: {
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    padding: '3rem 1rem',
-  
+    minHeight: "100vh",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    padding: "3rem 1rem",
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    padding: '2.5rem 3rem',
-    
-    maxWidth: '720px',
-    width: '100%',
+    backgroundColor: "#fff",
+    borderRadius: "16px",
+    padding: "2.5rem 3rem",
+
+    maxWidth: "720px",
+    width: "100%",
   },
   title: {
     margin: 0,
-    fontSize: '2.5rem',
-    fontWeight: '700',
-    color: '#1e3a8a', // azul intenso
-    marginBottom: '1.5rem',
-    justifyContent:'center',
+    fontSize: "2.5rem",
+    fontWeight: "700",
+    color: "#1e3a8a", // azul intenso
+    marginBottom: "1.5rem",
+    justifyContent: "center",
   },
   infoBox: {
-   
-    borderRadius: '12px',
-    padding: '2rem',
-    boxShadow: '0 4px 12px rgba(30, 60, 200, 0.1)', // sombra azul más ligera
-    marginBottom: '3rem',
+    borderRadius: "12px",
+    padding: "2rem",
+    boxShadow: "0 4px 12px rgba(30, 60, 200, 0.1)", // sombra azul más ligera
+    marginBottom: "3rem",
   },
   infoGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '1.6rem 2.5rem',
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: "1.6rem 2.5rem",
   },
   infoItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    color: '#1e40af', // azul medio
-    fontWeight: '600',
-    fontSize: '1.1rem',
+    display: "flex",
+    flexDirection: "column",
+    color: "#1e40af", // azul medio
+    fontWeight: "600",
+    fontSize: "1.1rem",
   },
   scheduleTitle: {
-    fontSize: '2rem',
-   
-    borderBottom: '3px solid #3b82f6', // azul vivo
-    paddingBottom: '0.3rem',
-    marginBottom: '1rem',
+    fontSize: "2rem",
+
+    borderBottom: "3px solid #3b82f6", // azul vivo
+    paddingBottom: "0.3rem",
+    marginBottom: "1rem",
   },
   table: {
-    width: '100%',
-    borderCollapse: 'separate',
-    borderSpacing: '0 0.75rem',
+    width: "100%",
+    borderCollapse: "separate",
+    borderSpacing: "0 0.75rem",
   },
   th: {
-    textAlign: 'left',
-    color: '#2563eb', // azul más vivo
-    fontWeight: '600',
-    paddingBottom: '0.5rem',
+    textAlign: "left",
+    color: "#2563eb", // azul más vivo
+    fontWeight: "600",
+    paddingBottom: "0.5rem",
   },
   tr: {
-    backgroundColor: '#bfdbfe', // azul muy suave para filas
-    borderRadius: '12px',
+    backgroundColor: "#bfdbfe", // azul muy suave para filas
+    borderRadius: "12px",
   },
   td: {
-    padding: '0.75rem 1rem',
-    color: '#1e40af',
-    fontWeight: '500',
+    padding: "0.75rem 1rem",
+    color: "#1e40af",
+    fontWeight: "500",
   },
+
   message: {
-    fontSize: '1.4rem',
-    color: '#3b82f6',
-    backgroundColor: '#dbE9ff',
-    padding: '1rem 2rem',
-    borderRadius: '12px',
+    fontSize: "1.4rem",
+    color: "#3b82f6",
+    backgroundColor: "#dbE9ff",
+    padding: "1rem 2rem",
+    borderRadius: "12px",
   },
 };
-

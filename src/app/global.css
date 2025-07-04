@@ -1,17 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "animate.css";
 
 .login-container {
   display: flex;
   min-height: 100vh;
   width: 100%;
   position: relative;
-  font-family: 'Noto Sans', sans-serif;
+  font-family: "Noto Sans", sans-serif;
   overflow-x: hidden;
-    align-items: center;
-  justify-content: center; 
-  min-height: 100vh; 
+  align-items: center;
+  justify-content: center;
   z-index: 0;
   flex-wrap: nowrap;
 }
@@ -19,34 +19,26 @@
 .form-section {
   position: relative;
   flex: 1;
-  padding: 3rem 2rem 2rem 2rem; 
+  padding: 3rem 2rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 100vh;
   overflow: visible;
   z-index: 0;
-
 }
+
 .wave-overlay {
   position: fixed;
   top: 0;
-  left: 50%;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  transform: translate(-50%, 20%);
   z-index: 0;
   pointer-events: none;
   background: transparent;
-  overflow: hidden;
+  overflow: visible;
 }
-
-.form-section {
-  position: relative;
-  z-index: 1;
-}
-
-
 
 .wave-overlay svg {
   width: 100%;
@@ -56,20 +48,17 @@
 }
 
 .wave-overlay svg path {
-  fill: rgb(30, 69, 125, 0.15); /* Color azul translúcido */
+  fill: rgba(32, 110, 220, 0.15);
 }
 
-
 .login-title {
-font-size: clamp(2.7rem, 6vw, 9rem); 
+  font-size: clamp(7rem, 6vw, 9rem);
   font-weight: 800;
-  margin-bottom: 2rem;
-  color: #FE9E10;
+  margin-bottom: 3rem;
+  color: #fe9e10;
   text-align: center;
-  text-shadow:
-    -1px -1px 0 #CB201F,
-    1px -1px 0 #CB201F,
-    1px 1px 0 #CB201F;
+  text-shadow: 0 0 6px #fe3b3b, -1px -1px 0 #cb201f, 1px -1px 0 #cb201f,
+    1px 1px 0 #cb201f, -1px 1px 0 #cb201f;
 }
 
 .login-tabs {
@@ -77,12 +66,12 @@ font-size: clamp(2.7rem, 6vw, 9rem);
   gap: 0.75rem;
   justify-content: center;
   margin-bottom: 0.75rem;
-  font-size: 25px;
+  font-size: 25px; /* Consider if this large font size is intentional, or if 'clamp' is desired here too */
 }
 
 .tab-active {
   padding: 0.75rem 3rem;
-  background-color: #1B396A;
+  background-color: #1b396a;
   border: none;
   border-radius: 0.75rem;
   font-weight: 600;
@@ -98,14 +87,14 @@ font-size: clamp(2.7rem, 6vw, 9rem);
   border: none;
   font-size: 16px;
   border-radius: 0.75rem;
-  color: #1B396A;
+  color: #1b396a;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .tab-inactive:hover {
-  background-color: #8EAFEF;
+  background-color: #8eafef;
 }
 
 /* Formulario */
@@ -118,22 +107,53 @@ font-size: clamp(2.7rem, 6vw, 9rem);
 .login-label {
   margin-top: 0.75rem;
   font-weight: 600;
-  color: #1B396A;
+  color: #1b396a;
   font-size: clamp(0.9rem, 1.5vw, 1rem);
 }
 
-/* Inputs */
+/* Clase común para ambos inputs */
 .login-input {
   margin-top: 1rem;
   padding: 0.75rem;
   border-radius: 0.75rem;
-  border: 1.5px solid #1B396A;
+  border: 1.5px solid #1b396a;
   background-color: transparent;
   font-size: clamp(0.9rem, 1.5vw, 1rem);
-  color: 'black';
+  color: black;
   width: 100%;
   box-sizing: border-box;
-  font-weight:bolder;
+  font-weight: bolder;
+}
+
+/* Contenedor del input de contraseña y el icono */
+.password-input-container {
+  position: relative;
+  width: 100%;
+  margin-top: 1rem; /* Mantenemos el margen del contenedor */
+}
+
+.password-input-container .login-input {
+  padding-right: 3.25rem;
+}
+
+/* El icono del ojo */
+.password-toggle-icon {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #1b396a;
+  font-size: 1.25rem;
+  user-select: none;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle-icon:hover {
+  color: #8eafef; /* Color al pasar el mouse */
 }
 
 /* Olvidar contraseña */
@@ -148,11 +168,12 @@ font-size: clamp(2.7rem, 6vw, 9rem);
   color: #3f4eab;
   text-decoration: none;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1rem; /* Ensure consistency with parent or remove if not needed */
 }
+
 .forgot-password a:hover {
   text-decoration: underline;
-  font-size: 1rem;
+  font-size: 1rem; /* Ensure consistency with parent or remove if not needed */
 }
 
 /* Mensaje de error */
@@ -168,31 +189,32 @@ font-size: clamp(2.7rem, 6vw, 9rem);
 .submit-button {
   margin-top: 0.75rem;
   padding: 0.75rem;
-  background-color: #1B396A;
+  background-color: #1b396a;
   border: none;
   color: white;
   border-radius: 0.75rem;
   cursor: pointer;
-font-size: 16px;
+  font-size: 16px;
   transition: background-color 0.3s ease;
   width: 100%;
   max-width: 100%;
 }
 
 .submit-button:hover {
-  background-color: #8EAFEF;
+  background-color: #8eafef;
 }
 
 .logo-section {
   flex: 1;
   background: linear-gradient(
     to left,
-    rgba(8, 94, 222, 0.7), /* Azul sólido en el formulario */
-    rgba(8, 94, 222, 0)    /* Transparente justo en la ola */
+    rgba(8, 94, 222, 0.7),
+    rgba(8, 94, 222, 0)
   );
+  display: flex; /* Added display: flex for proper alignment properties */
   justify-content: flex-start;
   align-items: center;
-  position: relative; 
+  position: relative;
   width: 100%;
   min-height: 100vh;
   text-align: center;
@@ -203,24 +225,29 @@ font-size: 16px;
 }
 
 .logo-box {
-  position: absolute !important; /* redundant but safe */
+  position: absolute;
   width: 50px;
   max-width: 50px;
   height: 50px;
   background-color: transparent;
-  align-items: center; /* no effect here */
-  margin: 0 auto; /* no effect here */
-  top: 1rem;
+  display: flex; /* Added display: flex for centering content */
+  align-items: center;
+  justify-content: center; /* Added for horizontal centering */
+  margin: 0 auto;
+  top: -0.2rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10; /* Esto asegura que esté por encima de otros elementos dentro de logo-section */
+  z-index: 10;
+  overflow: visible;
 }
+
 .logo-box img {
   width: 100%;
   height: auto;
   display: block;
   margin: 0;
-  position: static;
+  position: relative; /* Relative positioning is generally safer for images within flow */
+  top: 0;
 }
 
 .auth-wrapper {
@@ -249,7 +276,7 @@ font-size: 16px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #1B396A;
+  color: #1b396a;
 }
 
 /* Etiquetas en auth */
@@ -257,14 +284,14 @@ font-size: 16px;
   font-size: clamp(0.9rem, 1.5vw, 1rem);
   margin-bottom: 0.25rem;
   font-weight: 600;
-  color: #1B396A;
+  color: #1b396a;
 }
 
 /* Inputs en auth */
 .auth-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1.5px solid #1B396A;
+  border: 1.5px solid #1b396a;
   border-radius: 0.75rem;
   background-color: #f1f5f9;
   color: #1e293b;
@@ -281,31 +308,21 @@ font-size: 16px;
   border-radius: 0.75rem;
   font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 600;
-  background-color: #1B396A;
+  background-color: #1b396a;
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .auth-button:hover {
-  background-color:#8EAFEF
+  background-color: #8eafef;
 }
 
-
 /* Media queries para tablets y móviles */
-@media (max-width: 850px) {
-  .form-section {
-    width: 100%;
-    padding: 5rem 2rem 2rem;
-    min-height: 100vh;
-    box-sizing: border-box;
-  }
-
+@media (max-width: 1023px) {
   .login-container {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: auto; /* que no limite en altura para scroll */
+    height: auto;
     padding: 2rem 1rem;
   }
 
@@ -315,7 +332,16 @@ font-size: 16px;
     display: none !important;
   }
 
- 
+  .form-section {
+    max-width: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 5rem 2rem 2rem;
+    justify-content: flex-start;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
   .login-tabs {
     flex-wrap: wrap;
     gap: 1rem;
@@ -343,93 +369,39 @@ font-size: 16px;
     display: block;
   }
 }
-@media (max-width: 1023px) {
-  .login-container {
-    flex-direction: column;
-    height: auto;
-    padding: 2rem 1rem;
-  }
-
-  .logo-box,
-  .wave-overlay,
-  .logo-section {
-    display: none !important;
-  }
-
-  .form-section {
-    max-width: none;
-    width: 100%;
-    min-height: 100vh;
-    padding: 5rem 2rem 2rem 2rem;
-    justify-content: flex-start; /* contenido arriba en móviles/tablets */
-    box-shadow: none;
-    border-radius: 0;
-  }
-}
-
-
-.password-input-container {
-  position: relative;
-  width: 100%;
-}
-
-.password-input {
-  padding: 0.75rem 1rem;
-  padding-right: 2.5rem;  
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 1rem;
-  color: #1e293b;
-  border: 1.5px solid #1B396A;
-  border-radius: 0.75rem;
-}
-
-.password-input::placeholder {
-  color: #94a3b8;
-  opacity: 1;
-}
-
-.password-toggle-icon {
-  position: absolute;
-  top: 50%;
-  right: 14px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #1C3D6F;
-  font-size: 1.2rem;
-  transition: color 0.2s ease;
-}
-
-.password-toggle-icon:hover {
-  color: #8EAFEF;
-}
-
 
 @keyframes albatros-run {
   0% {
-    transform: translateY(0px) translateX(0px) rotate(0deg);
+    transform: translateY(0) translateX(0) rotate(0deg);
   }
-  15% {
-    transform: translateY(-18px) translateX(6px) rotate(6deg);
+  20% {
+    transform: translateY(-12px) translateX(8px) rotate(5deg);
   }
-  30% {
-    transform: translateY(-8px) translateX(10px) rotate(3deg);
+  40% {
+    transform: translateY(-6px) translateX(15px) rotate(2.5deg);
   }
-  45% {
-    transform: translateY(0px) translateX(0px) rotate(0deg);
+  50% {
+    transform: translateY(0) translateX(20px) rotate(0deg);
   }
-  65% {
-    transform: translateY(-18px) translateX(-6px) rotate(-6deg);
+  60% {
+    transform: translateY(-6px) translateX(15px) rotate(-2.5deg);
   }
   80% {
-    transform: translateY(-8px) translateX(-10px) rotate(-3deg);
+    transform: translateY(-12px) translateX(8px) rotate(-5deg);
   }
   100% {
-    transform: translateY(0px) translateX(0px) rotate(0deg);
+    transform: translateY(0) translateX(0) rotate(0deg);
   }
 }
 
 .animate-albatros-run {
-  animation: albatros-run 0.8s infinite ease-in-out;
+  animation: albatros-run 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: bottom center;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: black !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
