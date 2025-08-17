@@ -1,11 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "windows", "darwin", "darwin-arm64"]
-} 
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = ""
 }
 
 model estudiantes {
@@ -99,15 +100,75 @@ model estudiantes {
   aludch    String?
   cve       Int?
   merida    Int?
+  
 }
+
 model authStudents {
-  id             Int      @id @default(autoincrement())
-  matricula      String   @unique
+  id             Int       @id @default(autoincrement())
+  matricula      String    @unique
   password       String
   nombreCompleto String
-  correo         String?   // Correo que el usuario ingresa para verificación
-  isVerified     Boolean   @default(false) // Se pone en true cuando valida el correo y cambia contraseña
-  emailCode      String?   // Código temporal enviado al correo para validación
+  correo         String?
+  isVerified     Boolean   @default(false)
+  emailCode      String?
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime?  @updatedAt
+  updatedAt      DateTime? @updatedAt
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model carrera {
+  carcve     Int          @id
+  extcve     String?      @db.VarChar(10)
+  carnom     String?      @db.VarChar(100)
+  carnco     String?      @db.VarChar(60)
+  carlet     String?      @db.VarChar(10)
+  carniv     Int?
+  carfin     DateTime?    @db.Date
+  carfte     DateTime?    @db.Date
+  carsit     Int?
+  carmod     Int?
+  carpmo     Int?
+  carhcr     String?      @db.VarChar(10)
+  depcve     Int?
+  dgparea    String?      @db.VarChar(10)
+  dgpsuba    String?      @db.VarChar(10)
+  dgpnivel   String?      @db.VarChar(10)
+  dgpconsec  String?      @db.VarChar(10)
+  puecve     Int?
+  cardetv    String?      @db.VarChar(10)
+  cve        String?      @db.VarChar(10)
+  id         String?      @db.VarChar(10)
+  estudicarr estudicarr[]
+}
+
+model estudicarr {
+  aluctr  String    @db.VarChar(50)
+  extcve   String?  @db.VarChar(2)
+  siscve   String?  @db.VarChar(1)
+  carcve   Int?
+  placve   String?  @db.VarChar(50)
+  espcve   String?  @db.VarChar(50)
+  caling   String?  @db.VarChar(50)
+  calter   String?  @db.VarChar(50)
+  calsit   String?  @db.VarChar(50)
+  calnpe   String?  @db.VarChar(20)
+  calgpo   String?  @db.VarChar(2)
+  calcac   String?  @db.VarChar(50)
+  calnpec  String?  @db.VarChar(50)
+  calobs   String?  @db.VarChar(100)
+  caltcala String?  @db.VarChar(50)
+  caltcalr String?  @db.VarChar(50)
+  calmata  String?  @db.VarChar(50)
+  calmat   String?  @db.VarChar(50)
+  calmatac String?  @db.VarChar(50)
+  calpri   String?  @db.VarChar(1)
+  calnpep  String?  @db.VarChar(50)
+  peerson  String?  @db.VarChar(34)
+  calingt  String?  @db.VarChar(1)
+  calingi  String?  @db.VarChar(50)
+  calcari  String?  @db.VarChar(50)
+  calplai  String?  @db.VarChar(1)
+  id       Int     @id @default(autoincrement())
+  carrera  carrera? @relation(fields: [carcve], references: [carcve])
+  
 }
