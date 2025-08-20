@@ -1,1 +1,9 @@
+.en# dependencies
+/node_modules
+
+# production build
+/.next
+/out
+
+# env files
 .env
