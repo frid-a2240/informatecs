@@ -78,7 +78,7 @@ const LoginPage = () => {
           </svg>
         </div>
 
-        <h1 className="login-title animate__heartBeat ">Eventos ITE</h1>
+        <h1 className="login-title animate__heartBeat">Eventos ITE</h1>
         <div className="login-tabs">
           <button
             className={

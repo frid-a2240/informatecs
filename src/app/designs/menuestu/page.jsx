@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import "animate.css";
+import "./perfil.css";
 
 const datosFicticios = {
   matricula: "2024001",
@@ -10,12 +11,38 @@ const datosFicticios = {
   creditos: 42,
   email: "correo@example.com",
   telefono: "555-123-4567",
+
+  profileImage: "/imagenes/logoevento.png",
   horario: [
     { dia: "Lunes", materia: "Matemáticas", hora: "8:00 - 10:00" },
     { dia: "Miércoles", materia: "Programación", hora: "10:00 - 12:00" },
     { dia: "Viernes", materia: "Física", hora: "14:00 - 16:00" },
   ],
 };
+
+function LoadingAnimation() {
+  return (
+    // Usa las clases CSS definidas en perfil.css para centrar la animación
+    <div
+      className="perfil-container" // Esta clase tiene flex, min-height: 100vh, etc.
+      style={{
+        // Sobrescribe o añade estilos específicos para el centrado del cargador
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "1rem",
+        minHeight: "100vh", // Asegura que ocupe toda la altura de la vista
+      }}
+    >
+      <div className="loader-container">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className="line" style={{ "--i": i }}></div>
+        ))}
+      </div>
+
+      <p className="perfil-loading-text">Cargando perfil...</p>
+    </div>
+  );
+}
 
 export default function PerfilEstudiante() {
   const searchParams = useSearchParams();
@@ -28,163 +55,113 @@ export default function PerfilEstudiante() {
     if (!nameParam) return;
 
     setLoading(true);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setNombreReal(nameParam);
       setLoading(false);
-    }, 600);
+    }, 600); // Pequeño retraso para que la animación de carga sea visible
+
+    return () => clearTimeout(timeout);
   }, [nameParam]);
 
   if (!nameParam) {
     return (
-      <div style={styles.container}>
-        <p style={styles.message}>No se proporcionó un nombre en la URL.</p>
+      <div
+        className="perfil-container"
+        style={{ justifyContent: "center", alignItems: "center" }}
+      >
+        <p className="perfil-message">No se proporcionó un nombre en la URL.</p>
       </div>
     );
   }
 
-  if (loading) {
-    return (
-      <div style={styles.container}>
-        <p style={styles.message}>Cargando perfil...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingAnimation />;
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        {/* Nombre separado */}
-        <h1 style={styles.title}>Bienvenido, {nombreReal}</h1>
+    <div className="perfil-container">
+      <div className="perfil-card">
+        <h1 className="perfil-title">Bienvenido, {nombreReal}</h1>
 
-        {/* Cuadro azul con datos */}
-        <div style={styles.infoBox}>
-          <div style={styles.infoGrid}>
-            <div style={styles.infoItem}>
-              <strong>Matrícula</strong>
-              <span>{datosFicticios.matricula}</span>
+        <div className="perfil-main-content">
+          <div className="perfil-info-section">
+            <h2
+              className="perfil-section-title"
+              style={{
+                borderBottom: "none",
+                marginBottom: "0.5rem",
+                textAlign: "left",
+                fontSize: "1.5rem",
+                color: "#1e3a8a",
+              }}
+            >
+              Información Personal
+            </h2>
+            <div className="perfil-info-grid">
+              <div className="perfil-info-item">
+                <strong>Matrícula</strong>
+                <span>{datosFicticios.matricula}</span>
+              </div>
+              <div className="perfil-info-item">
+                <strong>Carrera</strong>
+                <span>{datosFicticios.carrera}</span>
+              </div>
+              <div className="perfil-info-item">
+                <strong>Semestre</strong>
+                <span>{datosFicticios.semestre}</span>
+              </div>
+              <div className="perfil-info-item">
+                <strong>Créditos</strong>
+                <span>{datosFicticios.creditos}</span>
+              </div>
+              <div className="perfil-info-item">
+                <strong>Email</strong>
+                <span>{datosFicticios.email}</span>
+              </div>
+              <div className="perfil-info-item">
+                <strong>Teléfono</strong>
+                <span>{datosFicticios.telefono}</span>
+              </div>
             </div>
-            <div style={styles.infoItem}>
-              <strong>Carrera</strong>
-              <span>{datosFicticios.carrera}</span>
-            </div>
-            <div style={styles.infoItem}>
-              <strong>Semestre</strong>
-              <span>{datosFicticios.semestre}</span>
-            </div>
-            <div style={styles.infoItem}>
-              <strong>Créditos</strong>
-              <span>{datosFicticios.creditos}</span>
-            </div>
-            <div style={styles.infoItem}>
-              <strong>Email</strong>
-              <span>{datosFicticios.email}</span>
-            </div>
-            <div style={styles.infoItem}>
-              <strong>Teléfono</strong>
-              <span>{datosFicticios.telefono}</span>
-            </div>
+          </div>
+
+          <div className="perfil-image-section">
+            <img
+              src={datosFicticios.profileImage}
+              alt="Foto de Perfil del Estudiante"
+              className="perfil-profile-image"
+            />
+
+            <p
+              style={{ fontSize: "0.9rem", color: "#555", textAlign: "center" }}
+            >
+              Estudiante dedicado del Tecnológico Nacional de México,
+              comprometido con la excelencia académica y el desarrollo
+              profesional.
+            </p>
           </div>
         </div>
 
-        <h2 style={styles.scheduleTitle}>Horario de clases</h2>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Día</th>
-              <th style={styles.th}>Materia</th>
-              <th style={styles.th}>Hora</th>
-            </tr>
-          </thead>
-          <tbody>
-            {datosFicticios.horario.map(({ dia, materia, hora }) => (
-              <tr key={dia + materia} style={styles.tr}>
-                <td style={styles.td}>{dia}</td>
-                <td style={styles.td}>{materia}</td>
-                <td style={styles.td}>{hora}</td>
+        <h2 className="perfil-section-title">Horario de Clases</h2>
+        <div className="perfil-table-container">
+          <table className="perfil-table">
+            <thead>
+              <tr>
+                <th className="perfil-table th">Día</th>
+                <th className="perfil-table th">Materia</th>
+                <th className="perfil-table th">Hora</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {datosFicticios.horario.map(({ dia, materia, hora }) => (
+                <tr key={dia + materia} className="perfil-table tr">
+                  <td className="perfil-table td">{dia}</td>
+                  <td className="perfil-table td">{materia}</td>
+                  <td className="perfil-table td">{hora}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    padding: "3rem 1rem",
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: "16px",
-    padding: "2.5rem 3rem",
-
-    maxWidth: "720px",
-    width: "100%",
-  },
-  title: {
-    margin: 0,
-    fontSize: "2.5rem",
-    fontWeight: "700",
-    color: "#1e3a8a", // azul intenso
-    marginBottom: "1.5rem",
-    justifyContent: "center",
-  },
-  infoBox: {
-    borderRadius: "12px",
-    padding: "2rem",
-    boxShadow: "0 4px 12px rgba(30, 60, 200, 0.1)", // sombra azul más ligera
-    marginBottom: "3rem",
-  },
-  infoGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "1.6rem 2.5rem",
-  },
-  infoItem: {
-    display: "flex",
-    flexDirection: "column",
-    color: "#1e40af", // azul medio
-    fontWeight: "600",
-    fontSize: "1.1rem",
-  },
-  scheduleTitle: {
-    fontSize: "2rem",
-
-    borderBottom: "3px solid #3b82f6", // azul vivo
-    paddingBottom: "0.3rem",
-    marginBottom: "1rem",
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "separate",
-    borderSpacing: "0 0.75rem",
-  },
-  th: {
-    textAlign: "left",
-    color: "#2563eb", // azul más vivo
-    fontWeight: "600",
-    paddingBottom: "0.5rem",
-  },
-  tr: {
-    backgroundColor: "#bfdbfe", // azul muy suave para filas
-    borderRadius: "12px",
-  },
-  td: {
-    padding: "0.75rem 1rem",
-    color: "#1e40af",
-    fontWeight: "500",
-  },
-
-  message: {
-    fontSize: "1.4rem",
-    color: "#3b82f6",
-    backgroundColor: "#dbE9ff",
-    padding: "1rem 2rem",
-    borderRadius: "12px",
-  },
-};

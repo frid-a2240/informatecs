@@ -52,7 +52,7 @@
 }
 
 .login-title {
-  font-size: clamp(7rem, 6vw, 9rem);
+  font-size: clamp(3.5rem, 6vw, 9rem);
   font-weight: 800;
   margin-bottom: 3rem;
   color: #fe9e10;
