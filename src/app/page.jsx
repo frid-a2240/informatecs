@@ -1,284 +1,132 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "./components/hooks/authHandlers";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { animate, svg, stagger } from "animejs";
+import React, { useEffect, useState } from "react";
+import Footer from "./components/footer";
+import Navbar from "./components/navbar";
+import TopBar from "./components/topbar";
+import Link from "next/link";
 
-const LoginPage = () => {
-  const router = useRouter();
-  const albatroRef = useRef(null);
+const HomePage = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [matricula, setMatricula] = useState("");
-  const [password, setPassword] = useState("");
-  const [step, setStep] = useState("login");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const images = [
+    "/imagenes/imaUniversidad(2).png",
+    "/imagenes/corre.jpg",
+    "/imagenes/guerra.jpg",
+  ];
 
-  const {
-    handleLogin,
-    handleRegister,
-    handleSendCode,
-    handleVerifyCode,
-    handleUpdatePassword,
-  } = useAuth(setStep, setFullName, setError);
-
-  const onRegisterSubmit = (e) => {
-    e.preventDefault();
-    if (!matricula || !password) {
-      setError("Escribe matrícula y contraseña");
-      return;
-    }
-    if (password !== "123456") {
-      setError('La contraseña para registro debe ser "123456"');
-      return;
-    }
-    handleRegister(e, matricula, password);
-  };
-
-  const onLoginSubmit = (e) => {
-    e.preventDefault();
-    if (!matricula || !password) {
-      setError("Escribe matrícula y contraseña");
-      return;
-    }
-    handleLogin(e, matricula, password);
-  };
+  // Carrusel automático: cambia imagen cada 5 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   return (
-    <div className="login-container ">
-      <div className="form-section ">
-        <div className="wave-overlay">
-          <svg
-            width="1440"
-            height="560"
-            preserveAspectRatio="none"
-            viewBox="0 0 1440 560"
-          >
-            <g mask="url(#SvgjsMask1033)" fill="none">
-              <path
-                d="M 0,324 C 41.2,292.4 123.6,160.6 206,166 C 288.4,171.4 329.6,380 412,351 C 494.4,322 535.6,22.8 618,21 C 700.4,19.2 741.6,320.6 824,342 C 906.4,363.4 947.6,111 1030,128 C 1112.4,145 1154,413 1236,427 C 1318,441 1399.2,243.8 1440,198L1440 560L0 560z"
-                fill="rgba(27, 57, 106, 1)"
+    <>
+      <TopBar />
+
+      <div className="homepage-container">
+        <header className="header">
+          {/* Si no necesitas el <img />, elimínalo */}
+        </header>
+
+        <section className="main-title-section">
+          <h1>INFORMATEC</h1>
+        </section>
+
+        {/* Navbar fuera del carrusel */}
+        <Navbar />
+
+        {/* Carrusel */}
+        <main className="hero-section">
+          <div className="carousel-container">
+            {images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Slide ${index + 1}`}
+                className={`hero-image ${
+                  index === currentSlide ? "active" : ""
+                }`}
               />
-              <path
-                d="M 0,412 C 48,375.8 144,210.2 240,231 C 336,251.8 384,530.8 480,516 C 576,501.2 624,159.2 720,157 C 816,154.8 864,524.4 960,505 C 1056,485.6 1104,55.2 1200,60 C 1296,64.8 1392,435.2 1440,529L1440 560L0 560z"
-                fill="rgba(34, 100, 171, 0.74)"
-              />
-            </g>
-            <defs>
-              <mask id="SvgjsMask1033">
-                <rect width="1440" height="560" fill="#ffffff" />
-              </mask>
-            </defs>
-          </svg>
-        </div>
+            ))}
+          </div>
 
-        <h1 className="login-title animate__heartBeat">Eventos ITE</h1>
-        <div className="login-tabs">
-          <button
-            className={
-              step === "login" || step === "success"
-                ? "tab-active"
-                : "tab-inactive"
-            }
-            onClick={() => {
-              setStep("login");
-              setError("");
-              setPassword("");
-              setMatricula("");
-            }}
-          >
-            Iniciar Sesión
-          </button>
-          <button
-            className={step === "register" ? "tab-active" : "tab-inactive"}
-            onClick={() => {
-              setStep("register");
-              setError("");
-              setPassword("");
-              setMatricula("");
-            }}
-          >
-            Registrarse
-          </button>
-        </div>
+          <div className="hero-text-container">
+            <div className="hero-text-content">
+              <h1 className="main-headline">
+                Instituto <br />
+                Tecnológico
+              </h1>
+              <span className="sub-headline">De Ensenada</span>
+              <p>
+                Te invitamos a participar en clubs, actividades extraescolares y
+                eventos.
+              </p>
 
-        {error && <p className="error-message">{error}</p>}
+              <Link href="/vistaLogin" className="register-button">
+                Registrarse
+              </Link>
+            </div>
+          </div>
+        </main>
 
-        {(step === "login" || step === "register") && (
-          <form
-            onSubmit={step === "login" ? onLoginSubmit : onRegisterSubmit}
-            className="login-form"
-          >
-            <label className="login-label">Matrícula:</label>
+        {/* Actividades extraescolares */}
+        <section className="activities-section">
+          <h2>¡Entérate!</h2>
 
-            <input
-              type="text"
-              className="login-input"
-              value={matricula}
-              placeholder="Ingresa tu matricula de estudiante"
-              onChange={(e) => setMatricula(e.target.value)}
-              required
-            />
-
-            <div className="password-input-container ">
-              <input
-                type={showPassword ? "text" : "password"}
-                className="login-input"
-                placeholder="Ingresa tu contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle-icon"
-                aria-label={
-                  showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-                }
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </span>
+          <div className="activities-content">
+            <div className="activity-item">
+              <div className="text-content">
+                <h3 className="activity-title">Actividades Extraescolares</h3>
+                <p className="activity-description">
+                  En el Instituto Tecnológico de Ensenada, ofrecemos una
+                  variedad de actividades extraescolares diseñadas para
+                  enriquecer la experiencia educativa de nuestros estudiantes.
+                  Además, organizamos eventos deportivos y culturales que te
+                  permitirán desarrollar tus habilidades y conocer a otros
+                  estudiantes con intereses similares. ¡Únete a nosotros y
+                  enriquece tu vida estudiantil!
+                </p>
+              </div>
+              <div className="image-content">
+                <img
+                  src="/imagenes/inie.jpg"
+                  alt="Actividades Extraescolares"
+                  className="activity-image"
+                />
+              </div>
             </div>
 
-            {step === "register" && (
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  marginBottom: "12px",
-                  color: "#333",
-                }}
-              >
-                La contraseña debe ser la genérica: <b>123456</b>. Luego deberás
-                verificar tu correo y cambiarla.
-              </p>
-            )}
-
-            {step === "login" && (
-              <div className="forgot-password">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setStep("askEmail");
-                    setError("");
-                  }}
-                >
-                  ¿Olvidaste tu contraseña?
-                </a>
+            <div className="activity-item reverse">
+              <div className="image-content">
+                <img
+                  src="/imagenes/inia.jpg"
+                  alt="Eventos"
+                  className="activity-image"
+                />
               </div>
-            )}
+              <div className="text-content">
+                <h3 className="activity-title">Eventos</h3>
+                <p className="activity-description">
+                  ¡No te pierdas los emocionantes eventos que organizamos en el
+                  Instituto Tecnológico de Ensenada! Desde competencias
+                  deportivas hasta festivales culturales, siempre hay algo en lo
+                  que puedes participar. Estos eventos son una excelente
+                  oportunidad para divertirte, aprender cosas nuevas y hacer
+                  amigos. ¡Ven y sé parte de nuestras actividades, y vive la
+                  experiencia al máximo!
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <button type="submit" className="submit-button">
-              {step === "login" ? "Iniciar sesión" : "Registrarse"}
-            </button>
-          </form>
-        )}
-
-        {step === "askEmail" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!email) {
-                setError("Escribe tu correo electrónico");
-                return;
-              }
-              handleSendCode(e, matricula, email);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Correo electrónico</label>
-            <input
-              type="email"
-              className="login-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Enviar código
-            </button>
-          </form>
-        )}
-
-        {step === "verify" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!code) {
-                setError("Escribe el código de verificación");
-                return;
-              }
-              handleVerifyCode(e, matricula, code);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Código de verificación</label>
-            <input
-              type="text"
-              className="login-input"
-              value={code}
-              placeholder="Ingresa el codigo de 6 digitos enviado a tu correo"
-              onChange={(e) => setCode(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Verificar código
-            </button>
-          </form>
-        )}
-
-        {step === "update" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (!newPassword) {
-                setError("Escribe la nueva contraseña");
-                return;
-              }
-              handleUpdatePassword(e, matricula, newPassword);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Nueva contraseña</label>
-            <input
-              type="password"
-              className="login-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Actualizar contraseña
-            </button>
-          </form>
-        )}
-
-        {step === "success" && <RedirectAfterLogin fullName={fullName} />}
+        <Footer />
       </div>
-      <div className="logo-section">
-        <img
-          src="/imagenes/logoevento.png"
-          alt="Logo del sistema (Albatros corriendo)"
-          className="animate-albatros-run"
-          ref={albatroRef}
-        />
-      </div>
-    </div>
+    </>
   );
 };
 
-export default LoginPage;
-
-function RedirectAfterLogin({ fullName }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
-  }, [router, fullName]);
-}
+export default HomePage;
