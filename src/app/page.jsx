@@ -12,6 +12,9 @@ const HomePage = () => {
     "/imagenes/imaUniversidad(2).png",
     "/imagenes/corre.jpg",
     "/imagenes/guerra.jpg",
+    "/imagenes/ajedrez.png",
+    "/imagenes/fut.jpg",
+    "/imagenes/volei.jpg",
   ];
 
   // Carrusel automático: cambia imagen cada 5 segundos
@@ -27,30 +30,38 @@ const HomePage = () => {
       <TopBar />
 
       <div className="homepage-container">
-        <header className="header">
-          {/* Si no necesitas el <img />, elimínalo */}
-        </header>
+        <header className="header"></header>
 
         <section className="main-title-section">
           <h1>INFORMATEC</h1>
         </section>
 
-        {/* Navbar fuera del carrusel */}
         <Navbar />
 
-        {/* Carrusel */}
-        <main className="hero-section">
+        <section className="hero-section">
           <div className="carousel-container">
-            {images.map((image, index) => (
+            {images.map((img, index) => (
               <img
                 key={index}
-                src={image}
-                alt={`Slide ${index + 1}`}
+                src={img}
                 className={`hero-image ${
-                  index === currentSlide ? "active" : ""
+                  currentSlide === index ? "active" : ""
                 }`}
+                alt={`Slide ${index}`}
               />
             ))}
+
+            <div className="carousel-dots">
+              {images.map((_, index) => (
+                <span
+                  key={index}
+                  className={`carousel-dot ${
+                    currentSlide === index ? "active" : ""
+                  }`}
+                  onClick={() => setCurrentSlide(index)}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="hero-text-container">
@@ -70,9 +81,8 @@ const HomePage = () => {
               </Link>
             </div>
           </div>
-        </main>
+        </section>
 
-        {/* Actividades extraescolares */}
         <section className="activities-section">
           <h2>¡Entérate!</h2>
 
