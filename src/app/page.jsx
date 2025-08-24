@@ -12,12 +12,12 @@ const HomePage = () => {
     "/imagenes/imaUniversidad(2).png",
     "/imagenes/corre.jpg",
     "/imagenes/guerra.jpg",
-    "/imagenes/ajedrez.png",
     "/imagenes/fut.jpg",
+    "/imagenes/musica.jpg",
     "/imagenes/volei.jpg",
+    "/imagenes/basquet.jpg",
   ];
 
-  // Carrusel automático: cambia imagen cada 5 segundos
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
@@ -37,26 +37,26 @@ const HomePage = () => {
         </section>
 
         <Navbar />
-
-        <section className="hero-section">
+        <main className="hero-section">
           <div className="carousel-container">
-            {images.map((img, index) => (
+            {images.map((image, index) => (
               <img
                 key={index}
-                src={img}
+                src={image}
+                alt={`Slide ${index + 1}`}
                 className={`hero-image ${
-                  currentSlide === index ? "active" : ""
+                  index === currentSlide ? "active" : ""
                 }`}
-                alt={`Slide ${index}`}
               />
             ))}
 
+            {/* Puntitos del carrusel */}
             <div className="carousel-dots">
               {images.map((_, index) => (
                 <span
                   key={index}
                   className={`carousel-dot ${
-                    currentSlide === index ? "active" : ""
+                    index === currentSlide ? "active" : ""
                   }`}
                   onClick={() => setCurrentSlide(index)}
                 />
@@ -81,8 +81,9 @@ const HomePage = () => {
               </Link>
             </div>
           </div>
-        </section>
+        </main>
 
+        {/* Actividades extraescolares */}
         <section className="activities-section">
           <h2>¡Entérate!</h2>
 
