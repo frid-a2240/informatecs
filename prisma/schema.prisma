@@ -172,3 +172,6 @@ model estudicarr {
   carrera  carrera? @relation(fields: [carcve], references: [carcve])
   
 }
+
+
+
