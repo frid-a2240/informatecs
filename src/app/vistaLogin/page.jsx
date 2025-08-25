@@ -126,7 +126,7 @@ const LoginPage = () => {
               onChange={(e) => setMatricula(e.target.value)}
               required
             />
-
+            <label className="login-label">Contraseña</label>
             <div className="password-input-container ">
               <input
                 type={showPassword ? "text" : "password"}
@@ -264,7 +264,7 @@ const LoginPage = () => {
       </div>
       <div className="logo-section">
         <img
-          src="/imagenes/logosin2.gif"
+          src="/imagenes/logosin.gif"
           alt="Logo del sistema Albatros corriendo"
         />
       </div>
