@@ -76,7 +76,7 @@ const HomePage = () => {
                 eventos.
               </p>
 
-              <Link href="/vistaLogin" className="register-button">
+              <Link href="/designs/vistaLogin" className="register-button">
                 Registrarse
               </Link>
             </div>

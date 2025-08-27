@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { animate, svg, stagger } from "animejs";
-import { useAuth } from "../components/hooks/authHandlers";
+import { useAuth } from "@/app/components/hooks/authHandlers";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -148,13 +148,7 @@ const LoginPage = () => {
             </div>
 
             {step === "register" && (
-              <p
-                style={{
-                  fontSize: "0.9rem",
-                  marginBottom: "12px",
-                  color: "#333",
-                }}
-              >
+              <p>
                 La contraseña debe ser la genérica: <b>123456</b>. Luego deberás
                 verificar tu correo y cambiarla.
               </p>
@@ -278,6 +272,6 @@ function RedirectAfterLogin({ fullName }) {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+    router.push(`/designs/vistaInicio?name=${encodeURIComponent(fullName)}`);
   }, [router, fullName]);
 }
