@@ -1,15 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Footer from "../components/footer";
-import Navbar from "../components/navbar";
-import TopBar from "../components/topbar";
-
+import Footer from "@/app/components/footer";
+import TopBar from "@/app/components/topbar";
+import Navbar from "@/app/components/navbar";
+import styles from "./style.css";
 const Page = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // Simulamos datos de ejemplo en lugar de Firebase
     const datosDeEjemplo = [
       {
         id: 1,
@@ -39,15 +38,16 @@ const Page = () => {
       </section>
 
       <Navbar />
-      {/* Contenido principal */}
-      <div className="w-1/2 mx-auto mt-6">
+
+      <div className="content-container">
         {data.map((element) => (
-          <div key={element.id} className="mb-6 border-b border-gray-300 pb-4">
-            <p className="text-xl font-bold text-blue-950">{element.titulo}</p>
-            <p className="text-gray-700">{element.descripcion}</p>
+          <div key={element.id} className="event-block">
+            <p className="title">{element.titulo}</p>
+            <p className="description">{element.descripcion}</p>
           </div>
         ))}
       </div>
+
       <Footer />
     </div>
   );

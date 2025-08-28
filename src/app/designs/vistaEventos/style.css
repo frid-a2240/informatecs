@@ -1,0 +1,26 @@
+/* -----------------------------
+   Contenedor principal
+----------------------------- */
+.content-container {
+  width: 50%;
+  margin: 2rem auto 0 auto;
+}
+
+/* -----------------------------
+   Estilos para los bloques de evento
+----------------------------- */
+.event-block {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #d1d5db; /* gray-300 */
+}
+
+.event-block .title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: bold;
+  color: #1e3a8a; /* text-blue-950 */
+}
+
+.event-block .description {
+  color: #4b5563; /* text-gray-700 */
+}

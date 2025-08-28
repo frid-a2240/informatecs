@@ -2,6 +2,7 @@
 import React, { useRef, useState } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./login.css";
 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { animate, svg, stagger } from "animejs";
