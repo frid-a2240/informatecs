@@ -1,0 +1,342 @@
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --bg-light: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.7),
+    rgba(8, 94, 222, 0)
+  );
+  --white: #ffffff;
+  font-family: "Noto Sans", sans-serif;
+}
+
+/* ===== Layout general ===== */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.with-sidebar {
+  margin-left: 250px;
+}
+
+.full-width {
+  margin-left: 0;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+p {
+  margin-bottom: 2rem;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+/* ===== Secciones ===== */
+.section {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--blue-primary);
+  margin-bottom: 1rem;
+  border-left: 5px solid var(--yellow-accent);
+  padding-left: 0.5rem;
+}
+
+/* ===== Carrusel (Swiper) ===== */
+.swiper {
+  padding: 1rem 0;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: var(--blue-primary);
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: var(--yellow-accent);
+  transform: scale(1.2);
+}
+
+/* ===== Tarjetas ===== */
+.image-container {
+  position: relative;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: var(--white);
+}
+
+.image-container:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+  border-image: linear-gradient(
+      135deg,
+      var(--blue-primary),
+      var(--yellow-accent)
+    )
+    1;
+}
+
+.image-container:hover .image {
+  transform: scale(1.12);
+  filter: brightness(1.15) saturate(1.2);
+}
+
+.image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  transition: transform 0.4s ease, filter 0.4s ease;
+  border-radius: 0.8rem;
+}
+
+.image-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.8rem;
+  background: rgba(27, 57, 106, 0.75);
+  color: white;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin-bottom: 0.8rem;
+}
+
+.modal-description {
+  font-size: 1rem;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Botón dentro del modal */
+.modal-register {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, #1b396a, #1e88ff);
+  border: none;
+  border-radius: 0.6rem;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
+}
+
+.modal-register:hover {
+  background: linear-gradient(135deg, #fe9e10, #ffb84d);
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 6px 16px rgba(254, 158, 16, 0.3);
+}
+
+/* Botón de cierre */
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #444;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: var(--yellow-accent);
+  transform: scale(1.2);
+}
+
+/* Animación */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Responsividad limpia ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 2.5rem; /* más aire en tablet */
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .section-title {
+    font-size: 1.3rem;
+    padding-left: 0.4rem;
+  }
+
+  .image {
+    height: 220px;
+  }
+
+  .image-title {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  .swiper {
+    padding: 0.5rem 0;
+  }
+
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+  }
+
+  .image-container {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+  }
+
+  .modal-description {
+    font-size: 0.9rem;
+  }
+}
+
+/* Celulares */
+@media (max-width: 480px) {
+  .dashboard-main {
+    padding: 3rem;
+
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  h1,
+  p {
+    text-align: center;
+    padding-left: 2rem;
+  }
+
+  .section-title {
+    margin-left: 1rem;
+    text-align: left;
+  }
+
+  .image-container {
+    padding-left: 1.5rem;
+    max-width: 260px;
+    margin: 0 auto;
+  }
+
+  .image {
+    height: 180px;
+    border-radius: 0.05rem;
+  }
+
+  .image-title {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .modal-content {
+    padding: 3rem;
+    border-radius: 0.8rem;
+    width: 95%;
+    max-height: 85vh;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
+  }
+
+  .modal-description {
+    font-size: 0.85rem;
+  }
+
+  .modal-register {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+  }
+
+  .swiper-button-next {
+    right: 10px;
+  }
+
+  .swiper-button-prev {
+    left: 10px;
+  }
+}

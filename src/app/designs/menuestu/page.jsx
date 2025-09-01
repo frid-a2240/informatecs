@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import NavbarEst from "@/app/components/navbares";
 import styles from "./perfil.css";
+
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const fullName = searchParams.get("name");

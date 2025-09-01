@@ -268,11 +268,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-function RedirectAfterLogin({ fullName }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push(`/designs/vistaInicio?name=${encodeURIComponent(fullName)}`);
-  }, [router, fullName]);
-}

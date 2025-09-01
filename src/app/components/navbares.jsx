@@ -19,12 +19,11 @@ export default function Sidebar() {
 
   return (
     <aside className={`sidebar ${open ? "sidebar-open" : "sidebar-closed"}`}>
-      {/* Header con logo, texto y toggle en la misma fila */}
       {open && (
         <div className="sidebar-header logo-toggle-container">
           <div className="logo-container">
             <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
-            <span className="designer-text">Informatec</span>
+            <span className="designer-text">Eventos ITE</span>
           </div>
 
           {/* Toggle */}

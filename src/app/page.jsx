@@ -33,7 +33,7 @@ const HomePage = () => {
         <header className="header"></header>
 
         <section className="main-title-section">
-          <h1>INFORMATEC</h1>
+          <h1>Eventos ITE</h1>
         </section>
 
         <Navbar />
