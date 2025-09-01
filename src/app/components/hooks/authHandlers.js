@@ -16,7 +16,7 @@ export function useAuth(setStep, setFullName, setError) {
 
       if (res.ok) {
         if (data.requiresVerification) {
-          // No se permite el acceso si no está verificado
+          // No se permite el acceso si no ta verificado mi estimado compa
           setError('Tu cuenta no ha sido verificada. Regístrate primero y verifica tu correo.');
         } else {
           setFullName(data.nombre || 'Usuario');
@@ -91,7 +91,7 @@ export function useAuth(setStep, setFullName, setError) {
   async function handleRegister(e, matricula) {
     setError('');
     try {
-      // Registro con contraseña genérica
+      // Registro con contraseña geneeeeeeericA
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  shadowDatabaseUrl = ""
+  
 }
 
 model estudiantes {
@@ -15,9 +15,9 @@ model estudiantes {
   aluapm    String?   @db.VarChar(50)
   alunom    String?   @db.VarChar(100)
   alusex    Int?      @db.SmallInt
-  alunac    DateTime? @db.Date
+  alunac    String?   @db.VarChar(50)
   alulna    String?   @db.VarChar(5)
-  alurfc    String?   @db.VarChar(13)
+  alurfc    String?   @db.VarChar(50)
   alucur    String?   @db.VarChar(18)
   aluesc    Int?
   aluescpd  Int?
@@ -26,35 +26,35 @@ model estudiantes {
   aluare    Int?      @db.SmallInt
   aluescp   Int?      @db.SmallInt
   alucll    String?   @db.VarChar(100)
-  alunum    String?   @db.VarChar(10)
+  alunum    String?   @db.VarChar(20)
   alucol    String?   @db.VarChar(100)
   alucpo    Int?
   alumun    Int?
   aluciu    String?   @db.VarChar(100)
-  alute1    String?   @db.VarChar(15)
-  alute2    String?   @db.VarChar(15)
+  alute1    String?   @db.VarChar(50)
+  alute2    String?   @db.VarChar(50)
   alumai    String?   @db.VarChar(100)
   alumaii   String?   @db.VarChar(100)
   alusme    Int?
   alusmei   String?   @db.VarChar(100)
   alusmea   String?   @db.VarChar(100)
-  alutsa    String?   @db.VarChar(10)
+  alutsa    String?   @db.VarChar(20)
   alueci    Int?
   alupad    String?   @db.VarChar(100)
   alumad    String?   @db.VarChar(100)
   alupadv   String?
   alumadv   String?
-  alupadt   String?   @db.VarChar(15)
-  alumadt   String?   @db.VarChar(15)
+  alupadt   String?   @db.VarChar(50)
+  alumadt   String?   @db.VarChar(50)
   alutno    String?   @db.VarChar(100)
   alutcl    String?   @db.VarChar(100)
-  alutnu    String?   @db.VarChar(10)
+  alutnu    String?   @db.VarChar(20)
   alutco    String?   @db.VarChar(100)
   alutcp    Int?
   alutmu    Int?
   alutci    String?   @db.VarChar(100)
-  alutte1   String?   @db.VarChar(15)
-  alutte2   String?   @db.VarChar(15)
+  alutte1   String?   @db.VarChar(50)
+  alutte2   String?   @db.VarChar(50)
   alutmai   String?   @db.VarChar(100)
   alufac    String?   @db.VarChar(100)
   alutwi    String?   @db.VarChar(100)
@@ -62,7 +62,7 @@ model estudiantes {
   alutra    Int?
   alupas    String?   @db.VarChar(64)
   alupasc   String?
-  aluseg    String?   @db.VarChar(15)
+  aluseg    String?   @db.VarChar(50)
   alulexp   String?
   alulemp   Int?
   alulare   Int?
@@ -80,12 +80,12 @@ model estudiantes {
   alutsec   Int?      @db.SmallInt
   aluteotr  String?
   alutecll  String?   @db.VarChar(100)
-  alutenum  String?   @db.VarChar(10)
+  alutenum  String?   @db.VarChar(20)
   alutecol  String?   @db.VarChar(100)
   aluteciu  String?   @db.VarChar(100)
   alutecpo  Int?
   alutemun  Int?
-  alutetel  String?   @db.VarChar(15)
+  alutetel  String?   @db.VarChar(50)
   alutepto  String?   @db.VarChar(50)
   aluteanp  DateTime? @db.Date
   aluteing  Decimal?  @db.Decimal(10, 2)
@@ -100,7 +100,8 @@ model estudiantes {
   aludch    String?
   cve       Int?
   merida    Int?
-  
+  // RELACIÓN: Un estudiante puede tener múltiples inscripciones
+  inscripciones estudicarr[]
 }
 
 model authStudents {
@@ -138,18 +139,19 @@ model carrera {
   cardetv    String?      @db.VarChar(10)
   cve        String?      @db.VarChar(10)
   id         String?      @db.VarChar(10)
-  estudicarr estudicarr[]
+  // RELACIÓN: Una carrera puede tener múltiples estudiantes inscritos
+  inscripciones estudicarr[]
 }
 
 model estudicarr {
-  aluctr  String    @db.VarChar(50)
+  aluctr   String  @id @db.VarChar(50)  
   extcve   String?  @db.VarChar(2)
   siscve   String?  @db.VarChar(1)
   carcve   Int?
   placve   String?  @db.VarChar(50)
   espcve   String?  @db.VarChar(50)
   caling   String?  @db.VarChar(50)
-  calter   String?  @db.VarChar(50)
+  calter   String?  @db.VarChar(50) 
   calsit   String?  @db.VarChar(50)
   calnpe   String?  @db.VarChar(20)
   calgpo   String?  @db.VarChar(2)
@@ -168,10 +170,12 @@ model estudicarr {
   calingi  String?  @db.VarChar(50)
   calcari  String?  @db.VarChar(50)
   calplai  String?  @db.VarChar(1)
-  id       Int     @id @default(autoincrement())
-  carrera  carrera? @relation(fields: [carcve], references: [carcve])
-  
+   // RELACIONES
+  estudiante estudiantes @relation(fields: [aluctr], references: [aluctr])
+  carrera    carrera?     @relation(fields: [carcve], references: [carcve])
 }
+
+
 
 
 
