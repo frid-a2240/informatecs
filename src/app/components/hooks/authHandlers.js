@@ -1,7 +1,7 @@
 // src/components/hooks/useAuthHandlers.js
 import { useRouter } from 'next/navigation';
 
-export function useAuth(setStep, setFullName, setError) {
+export function useAuth(setStep, setFullName, setError, setStudentData) {
   const router = useRouter();
 
   async function handleLogin(e, matricula, password) {
@@ -20,6 +20,7 @@ export function useAuth(setStep, setFullName, setError) {
           setError('Tu cuenta no ha sido verificada. Regístrate primero y verifica tu correo.');
         } else {
           setFullName(data.nombre || 'Usuario');
+          setStudentData(data.estudiante);
           setStep('success');
         }
       } else {

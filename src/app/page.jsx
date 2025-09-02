@@ -15,6 +15,7 @@ const LoginPage = () => {
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [studentData, setStudentData] = useState(null); // ← NUEVO ESTADO
 
   const {
     handleLogin,
@@ -22,7 +23,7 @@ const LoginPage = () => {
     handleSendCode,
     handleVerifyCode,
     handleUpdatePassword,
-  } = useAuth(setStep, setFullName, setError);
+  } = useAuth(setStep, setFullName, setError, setStudentData);
 
   // Registro con validación de contraseña genérica
   const onRegisterSubmit = (e) => {
@@ -228,7 +229,8 @@ const LoginPage = () => {
         )}
 
          {step === 'success' && (
-          <RedirectAfterLogin fullName={fullName} />
+          <RedirectAfterLogin fullName={fullName}
+          studentData={studentData} />
         )}
       </div>
 
@@ -241,13 +243,19 @@ const LoginPage = () => {
 
 export default LoginPage;
 
-// Componente para redirigir al dashboard
-function RedirectAfterLogin({ fullName }) {
+
+// Componente para redirigir después del login
+function RedirectAfterLogin({ fullName, studentData }) { // ← Recibe studentData
   const router = useRouter();
 
   useEffect(() => {
+    // Guarda los datos en localStorage para usarlos en el dashboard
+    if (studentData) {
+      localStorage.setItem('studentData', JSON.stringify(studentData));
+    }
+    
     router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
-  }, [router, fullName]);
+  }, [router, fullName, studentData]);
 
- 
+  return null;
 }

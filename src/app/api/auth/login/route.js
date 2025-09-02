@@ -9,7 +9,14 @@ export async function POST(req) {
   const { matricula, password } = await req.json();
 
   const estudiante = await prisma.estudiantes.findUnique({
-    where: { aluctr: matricula }
+    where: { aluctr: matricula },
+    include: {
+      inscripciones: {  // relación con estudicarr
+        include: {
+          carrera: true   // trae la info de la carrera
+        }
+      }
+    }
   });
 
   if (!estudiante) {
@@ -43,11 +50,30 @@ export async function POST(req) {
   }
 
   if (student.isVerified) {
+    // INFORMACIÓN COMPLETA DEL ESTUDIANTE
+    const perfilCompleto = {
+      // Información básica
+      numeroControl: estudiante.aluctr,
+      nombreCompleto: `${estudiante.alunom ?? ''} ${estudiante.aluapp ?? ''} ${estudiante.aluapm ?? ''}`.trim(),
+      fechaNacimiento: estudiante.alunac,
+      rfc: estudiante.alurfc,
+      curp: estudiante.alucur,
+      telefono: estudiante.alute1,
+      email: estudiante.alumai,
+      
+      // Información académica
+      carrera: estudiante.inscripciones?.[0]?.carrera?.carnom || "Sin carrera asignada",
+      carreraId: estudiante.inscripciones?.[0]?.carrera?.carcve || null,
+      
+    };
+
     return NextResponse.json({
       message: `Bienvenido, ${student.nombreCompleto}`,
       nombre: student.nombreCompleto,
+      estudiante: perfilCompleto  // ← TODA LA INFORMACIÓN
     });
   }
+  
 
   return NextResponse.json({
     message: 'Verificación requerida. Escribe tu correo electrónico.',
@@ -55,3 +81,4 @@ export async function POST(req) {
     correo: student.correo || '',
   });
 }
+
