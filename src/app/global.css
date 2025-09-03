@@ -102,7 +102,7 @@
   font-size: clamp(3.5rem, 6vw, 9rem);
   font-weight: 800;
   margin-bottom: 1rem;
-  color: #fe9e10;
+  color: var(--yellow-accent);
   text-align: center;
   text-shadow: 0 0 6px #fe3b3b, -1px -1px 0 #cb201f, 1px -1px 0 #cb201f,
     1px 1px 0 #cb201f, -1px 1px 0 #cb201f;
@@ -285,6 +285,17 @@
   z-index: 999;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
+/* ==========================
+   Navbar
+========================== */
+.navbar {
+  background-color: var(--blue-primary);
+  color: var(--white);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
 
 .navbar__container {
   max-width: 1200px;
@@ -354,7 +365,9 @@
   background-color: #eab308;
 }
 
-/* Mobile Responsive */
+/* ==========================
+   Mobile Responsive
+========================== */
 @media (max-width: 768px) {
   .navbar__toggle {
     display: block;
@@ -364,11 +377,12 @@
     flex-direction: column;
     background-color: var(--blue-primary);
     width: 100%;
-    position: center;
-    top: 100%;
+    position: absolute; /* ✅ Corregido */
+    top: 100%; /* justo debajo del navbar */
     left: 0;
     display: none;
     padding: 1rem 2rem;
+    transition: all 0.3s ease-in-out;
   }
 
   .navbar__menu--open {
@@ -379,6 +393,7 @@
     margin: 0.5rem 0;
   }
 }
+
 /* Pie de página */
 .footer {
   background-color: var(--blue-primary);
@@ -422,7 +437,7 @@
 }
 
 /* -----------------------------
-   Sidebar
+   Sidebar menu estudiantes
 ----------------------------- */
 .sidebar {
   position: fixed;
@@ -529,7 +544,6 @@
 .sidebar-closed .title {
   opacity: 0;
 }
-
 .hidden {
   display: none;
 }
@@ -539,29 +553,39 @@
 ----------------------------- */
 .layout {
   display: flex;
-  min-height: 100vh; /* Ajusta todo el layout a la altura de la ventana */
+  min-height: 100vh;
 }
 
 .main-content {
   flex: 1;
   padding: 2rem;
   transition: margin-left 0.3s ease;
-  margin-left: 220px; /* valor por defecto si la sidebar está abierta */
+  margin-left: 220px;
 }
 
 .main-content.full-width {
-  margin-left: 70px; /* cuando la barra está cerrada */
+  margin-left: 50px; /* cuando la barra está cerrada */
 }
+/*
+ * Contenedor del dashboard
+ */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
 }
 
+/*
+ * Contenido principal del dashboard
+ */
 .dashboard-main {
   flex: 1;
   padding: 2rem;
   transition: margin-left 0.3s ease;
-  margin-left: 220px; /* ancho de la sidebar abierta */
+  margin-left: 220px; /* Ancho de la sidebar abierta */
+}
+
+.dashboard-main.full-width {
+  margin-left: 70px; /* Ancho de la sidebar cerrada */
 }
 
 .dashboard-main.full-width {

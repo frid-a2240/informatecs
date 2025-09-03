@@ -267,4 +267,18 @@ const LoginPage = () => {
   );
 };
 
+function RedirectAfterLogin({ fullName, studentData }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Guarda los datos en localStorage para usarlos en el dashboard
+    if (studentData) {
+      localStorage.setItem("studentData", JSON.stringify(studentData));
+    }
+
+    router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+  }, [router, fullName, studentData]);
+
+  return null;
+}
 export default LoginPage;

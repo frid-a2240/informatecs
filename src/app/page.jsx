@@ -50,7 +50,6 @@ const HomePage = () => {
               />
             ))}
 
-            {/* Puntitos del carrusel */}
             <div className="carousel-dots">
               {images.map((_, index) => (
                 <span
@@ -83,7 +82,6 @@ const HomePage = () => {
           </div>
         </main>
 
-        {/* Actividades extraescolares */}
         <section className="activities-section">
           <h2>¡Entérate!</h2>
 

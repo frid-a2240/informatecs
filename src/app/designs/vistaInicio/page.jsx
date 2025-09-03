@@ -3,7 +3,6 @@
 import { useState } from "react";
 import NavbarEst from "@/app/components/navbares";
 import styles from "./inicio.css";
-
 export default function WelcomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

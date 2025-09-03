@@ -34,11 +34,10 @@
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 5rem;
   font-weight: 700;
   color: var(--blue-primary);
   margin-bottom: 0.5rem;
-  text-align: center;
 }
 
 p {
@@ -53,8 +52,9 @@ p {
 }
 
 .section-title {
+  padding-top: 2rem;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--blue-primary);
   margin-bottom: 1rem;
   border-left: 5px solid var(--yellow-accent);

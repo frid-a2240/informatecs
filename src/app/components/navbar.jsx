@@ -39,6 +39,11 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
+            <Link href="/VistaHorarios" className="navbar__link">
+              HORARIOS
+            </Link>
+          </li>
+          <li>
             <Link href="/vistaCalendario" className="navbar__link">
               CALENDARIO
             </Link>
