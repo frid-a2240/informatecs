@@ -9,13 +9,17 @@ const LoginPage = () => {
 
   const [matricula, setMatricula] = useState('');
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState('login'); // login, register, askEmail, verify, update, success
+  const [step, setStep] = useState('login'); // login, register, admin, askEmail, verify, update, success
   const [error, setError] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [studentData, setStudentData] = useState(null); // ← NUEVO ESTADO
+  const [studentData, setStudentData] = useState(null);
+  
+  // Estados para administrador
+  const [adminUser, setAdminUser] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
 
   const {
     handleLogin,
@@ -49,6 +53,24 @@ const LoginPage = () => {
     handleLogin(e, matricula, password);
   };
 
+  // Admin login submit
+  const onAdminSubmit = (e) => {
+    e.preventDefault();
+    if (!adminUser || !adminPassword) {
+      setError('Escribe usuario y contraseña de administrador');
+      return;
+    }
+    
+    // Aquí puedes agregar la lógica de autenticación de administrador
+    // Por ejemplo:
+    if (adminUser === 'NodalTec' && adminPassword === 'eventosadmin2025') {
+      // Redirigir a panel de administrador
+      router.push('/designs/menuadmin');
+    } else {
+      setError('Credenciales de administrador incorrectas');
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="form-section">
@@ -76,6 +98,8 @@ const LoginPage = () => {
               setError('');
               setPassword('');
               setMatricula('');
+              setAdminUser('');
+              setAdminPassword('');
             }}
           >
             Iniciar Sesión
@@ -87,9 +111,24 @@ const LoginPage = () => {
               setError('');
               setPassword('');
               setMatricula('');
+              setAdminUser('');
+              setAdminPassword('');
             }}
           >
             Registrarse
+          </button>
+          <button
+            className={step === 'admin' ? 'tab-active' : 'tab-inactive'}
+            onClick={() => {
+              setStep('admin');
+              setError('');
+              setPassword('');
+              setMatricula('');
+              setAdminUser('');
+              setAdminPassword('');
+            }}
+          >
+            Administrador
           </button>
         </div>
 
@@ -147,7 +186,34 @@ const LoginPage = () => {
           </form>
         )}
 
-        {/* Resto de pasos iguales */}
+        {/* Formulario de administrador */}
+        {step === 'admin' && (
+          <form onSubmit={onAdminSubmit} className="login-form">
+            <label className="login-label">Usuario Administrador</label>
+            <input
+              type="text"
+              className="login-input"
+              value={adminUser}
+              placeholder='Ingresa tu usuario de administrador'
+              onChange={(e) => setAdminUser(e.target.value)}
+              required
+            />
+
+            <label className="login-label">Contraseña</label>
+            <input
+              type="password"
+              className="login-input"
+              placeholder='Ingresa tu contraseña de administrador'
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              required
+            />
+
+            <button type="submit" className="submit-button">
+              Iniciar sesión como Administrador
+            </button>
+          </form>
+        )}
 
         {step === 'askEmail' && (
           <form
@@ -245,7 +311,7 @@ export default LoginPage;
 
 
 // Componente para redirigir después del login
-function RedirectAfterLogin({ fullName, studentData }) { // ← Recibe studentData
+function RedirectAfterLogin({ fullName, studentData }) {
   const router = useRouter();
 
   useEffect(() => {

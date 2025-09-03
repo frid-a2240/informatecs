@@ -219,10 +219,9 @@ npx prisma generate
 
 ## 👥 Equipo de Desarrollo
 
-- **Desarrollador Principal**: [Tu nombre]
-- **Institución**: [Nombre de tu universidad]
-- **Materia**: [Nombre de la materia]
-- **Profesor**: [Nombre del profesor]
+- **Desarrollador Principal**: [Frida Arroyo y Aileen Cruz]
+- **Institución**: [Instituto Tecnologico de Ensenada]
+- **Asesor**: [Antonio Macklish]
 
 ## 📝 Notas del Proyecto
 
@@ -242,17 +241,17 @@ npx prisma generate
 
 ## 📄 Licencia
 
-Este proyecto es desarrollado con fines académicos para [Nombre de la Universidad].
+Este proyecto es desarrollado con fines académicos para el Instituto Tecnologico de Ensenada.
 
 ---
 
 ## 🆘 Soporte
 
 Para dudas o problemas:
-- 📧 Email: [tu-email@universidad.edu]
-- 📱 WhatsApp: [tu-número]
+- 📧 Email: [al21760457@ite.edu.mx]
+- 📱 WhatsApp: []
 - 🐙 GitHub Issues: [url-del-repositorio/issues]
 
 ---
 
-**Última actualización**: [Fecha actual]
+**Última actualización**: [2/09/2025]

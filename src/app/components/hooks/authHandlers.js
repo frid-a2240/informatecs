@@ -124,4 +124,3 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
   };
 }
 
-//cambio prueba
