@@ -1,7 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "windows", "darwin", "darwin-arm64"]
-} 
+}
 
 datasource db {
   provider = "postgresql"
@@ -9,105 +9,165 @@ datasource db {
 }
 
 model estudiantes {
-  aluctr    String    @id @db.VarChar(50)
-  aluapp    String?   @db.VarChar(50)
-  aluapm    String?   @db.VarChar(50)
-  alunom    String?   @db.VarChar(100)
-  alusex    Int?      @db.SmallInt
-  alunac    DateTime? @db.Date
-  alulna    String?   @db.VarChar(5)
-  alurfc    String?   @db.VarChar(13)
-  alucur    String?   @db.VarChar(18)
-  aluesc    Int?
-  aluescpd  Int?
-  aluescpa  Int?
-  aluegr    Int?      @db.SmallInt
-  aluare    Int?      @db.SmallInt
-  aluescp   Int?      @db.SmallInt
-  alucll    String?   @db.VarChar(100)
-  alunum    String?   @db.VarChar(10)
-  alucol    String?   @db.VarChar(100)
-  alucpo    Int?
-  alumun    Int?
-  aluciu    String?   @db.VarChar(100)
-  alute1    String?   @db.VarChar(15)
-  alute2    String?   @db.VarChar(15)
-  alumai    String?   @db.VarChar(100)
-  alumaii   String?   @db.VarChar(100)
-  alusme    Int?
-  alusmei   String?   @db.VarChar(100)
-  alusmea   String?   @db.VarChar(100)
-  alutsa    String?   @db.VarChar(10)
-  alueci    Int?
-  alupad    String?   @db.VarChar(100)
-  alumad    String?   @db.VarChar(100)
-  alupadv   String?
-  alumadv   String?
-  alupadt   String?   @db.VarChar(15)
-  alumadt   String?   @db.VarChar(15)
-  alutno    String?   @db.VarChar(100)
-  alutcl    String?   @db.VarChar(100)
-  alutnu    String?   @db.VarChar(10)
-  alutco    String?   @db.VarChar(100)
-  alutcp    Int?
-  alutmu    Int?
-  alutci    String?   @db.VarChar(100)
-  alutte1   String?   @db.VarChar(15)
-  alutte2   String?   @db.VarChar(15)
-  alutmai   String?   @db.VarChar(100)
-  alufac    String?   @db.VarChar(100)
-  alutwi    String?   @db.VarChar(100)
-  alutce    String?
-  alutra    Int?
-  alupas    String?   @db.VarChar(64)
-  alupasc   String?
-  aluseg    String?   @db.VarChar(15)
-  alulexp   String?
-  alulemp   Int?
-  alulare   Int?
-  alulfde   DateTime? @db.Date
-  alulfha   DateTime? @db.Date
-  tbecve    Int?      @db.SmallInt
-  aluest    Int?
-  alupes    Decimal?  @db.Decimal(8, 2)
-  gincve    Int?
-  lincve    Int?
-  aluoest   Int?      @db.SmallInt
-  aluotra   Int?      @db.SmallInt
-  alutinl   Int?      @db.SmallInt
-  alutpot   Int?      @db.SmallInt
-  alutsec   Int?      @db.SmallInt
-  aluteotr  String?
-  alutecll  String?   @db.VarChar(100)
-  alutenum  String?   @db.VarChar(10)
-  alutecol  String?   @db.VarChar(100)
-  aluteciu  String?   @db.VarChar(100)
-  alutecpo  Int?
-  alutemun  Int?
-  alutetel  String?   @db.VarChar(15)
-  alutepto  String?   @db.VarChar(50)
-  aluteanp  DateTime? @db.Date
-  aluteing  Decimal?  @db.Decimal(10, 2)
-  alupexani Int?      @db.SmallInt
-  alupegel  Int?      @db.SmallInt
-  aluptoefl Int?      @db.SmallInt
-  discve    Int?      @db.SmallInt
-  alucen    Int?      @db.SmallInt
-  aluale    String?
-  alupsi    String?
-  aluteotrt String?
-  aludch    String?
-  cve       Int?
-  merida    Int?
+  aluctr     String      @id @db.VarChar(50)
+  aluapp     String?     @db.VarChar(50)
+  aluapm     String?     @db.VarChar(50)
+  alunom     String?     @db.VarChar(100)
+  alusex     Int?        @db.SmallInt
+  alulna     String?     @db.VarChar(5)
+  alurfc     String?     @db.VarChar(50)
+  alucur     String?     @db.VarChar(18)
+  aluesc     Int?
+  aluescpd   Int?
+  aluescpa   Int?
+  aluegr     Int?        @db.SmallInt
+  aluare     Int?        @db.SmallInt
+  aluescp    Int?        @db.SmallInt
+  alucll     String?     @db.VarChar(100)
+  alunum     String?     @db.VarChar(20)
+  alucol     String?     @db.VarChar(100)
+  alucpo     Int?
+  alumun     Int?
+  aluciu     String?     @db.VarChar(100)
+  alute1     String?     @db.VarChar(50)
+  alute2     String?     @db.VarChar(50)
+  alumai     String?     @db.VarChar(100)
+  alumaii    String?     @db.VarChar(100)
+  alusme     Int?
+  alusmei    String?     @db.VarChar(100)
+  alusmea    String?     @db.VarChar(100)
+  alutsa     String?     @db.VarChar(20)
+  alueci     Int?
+  alupad     String?     @db.VarChar(100)
+  alumad     String?     @db.VarChar(100)
+  alupadv    String?
+  alumadv    String?
+  alupadt    String?     @db.VarChar(50)
+  alumadt    String?     @db.VarChar(50)
+  alutno     String?     @db.VarChar(100)
+  alutcl     String?     @db.VarChar(100)
+  alutnu     String?     @db.VarChar(20)
+  alutco     String?     @db.VarChar(100)
+  alutcp     Int?
+  alutmu     Int?
+  alutci     String?     @db.VarChar(100)
+  alutte1    String?     @db.VarChar(50)
+  alutte2    String?     @db.VarChar(50)
+  alutmai    String?     @db.VarChar(100)
+  alufac     String?     @db.VarChar(100)
+  alutwi     String?     @db.VarChar(100)
+  alutce     String?
+  alutra     Int?
+  alupas     String?     @db.VarChar(64)
+  alupasc    String?
+  aluseg     String?     @db.VarChar(50)
+  alulexp    String?
+  alulemp    Int?
+  alulare    Int?
+  alulfde    DateTime?   @db.Date
+  alulfha    DateTime?   @db.Date
+  tbecve     Int?        @db.SmallInt
+  aluest     Int?
+  alupes     Decimal?    @db.Decimal(8, 2)
+  gincve     Int?
+  lincve     Int?
+  aluoest    Int?        @db.SmallInt
+  aluotra    Int?        @db.SmallInt
+  alutinl    Int?        @db.SmallInt
+  alutpot    Int?        @db.SmallInt
+  alutsec    Int?        @db.SmallInt
+  aluteotr   String?
+  alutecll   String?     @db.VarChar(100)
+  alutenum   String?     @db.VarChar(20)
+  alutecol   String?     @db.VarChar(100)
+  aluteciu   String?     @db.VarChar(100)
+  alutecpo   Int?
+  alutemun   Int?
+  alutetel   String?     @db.VarChar(50)
+  alutepto   String?     @db.VarChar(50)
+  aluteanp   DateTime?   @db.Date
+  aluteing   Decimal?    @db.Decimal(10, 2)
+  alupexani  Int?        @db.SmallInt
+  alupegel   Int?        @db.SmallInt
+  aluptoefl  Int?        @db.SmallInt
+  discve     Int?        @db.SmallInt
+  alucen     Int?        @db.SmallInt
+  aluale     String?
+  alupsi     String?
+  aluteotrt  String?
+  aludch     String?
+  cve        Int?
+  merida     Int?
+  alunac     String?     @db.VarChar(50)
+  estudicarr estudicarr?
 }
+
 model authStudents {
-  id             Int      @id @default(autoincrement())
-  matricula      String   @unique
+  id             Int       @id @default(autoincrement())
+  matricula      String    @unique
   password       String
   nombreCompleto String
-  correo         String?   // Correo que el usuario ingresa para verificación
-  isVerified     Boolean   @default(false) // Se pone en true cuando valida el correo y cambia contraseña
-  emailCode      String?   // Código temporal enviado al correo para validación
+  correo         String?
+  isVerified     Boolean   @default(false)
+  emailCode      String?
   createdAt      DateTime  @default(now())
-  updatedAt      DateTime?  @updatedAt
+  updatedAt      DateTime? @updatedAt
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model carrera {
+  carcve     Int          @id
+  extcve     String?      @db.VarChar(10)
+  carnom     String?      @db.VarChar(100)
+  carnco     String?      @db.VarChar(60)
+  carlet     String?      @db.VarChar(10)
+  carniv     Int?
+  carfin     DateTime?    @db.Date
+  carfte     DateTime?    @db.Date
+  carsit     Int?
+  carmod     Int?
+  carpmo     Int?
+  carhcr     String?      @db.VarChar(10)
+  depcve     Int?
+  dgparea    String?      @db.VarChar(10)
+  dgpsuba    String?      @db.VarChar(10)
+  dgpnivel   String?      @db.VarChar(10)
+  dgpconsec  String?      @db.VarChar(10)
+  puecve     Int?
+  cardetv    String?      @db.VarChar(10)
+  cve        String?      @db.VarChar(10)
+  id         String?      @db.VarChar(10)
+  estudicarr estudicarr[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model estudicarr {
+  extcve      String?     @db.VarChar(2)
+  siscve      String?     @db.VarChar(1)
+  carcve      Int?
+  calnpe      String?     @db.VarChar(20)
+  calgpo      String?     @db.VarChar(2)
+  calobs      String?     @db.VarChar(100)
+  calpri      String?     @db.VarChar(1)
+  peerson     String?     @db.VarChar(34)
+  calingt     String?     @db.VarChar(1)
+  calplai     String?     @db.VarChar(1)
+  placve      String?     @db.VarChar(50)
+  caling      String?     @db.VarChar(50)
+  calter      String?     @db.VarChar(50)
+  calsit      String?     @db.VarChar(50)
+  calcac      String?     @db.VarChar(50)
+  calnpec     String?     @db.VarChar(50)
+  caltcala    String?     @db.VarChar(50)
+  caltcalr    String?     @db.VarChar(50)
+  calmata     String?     @db.VarChar(50)
+  calmat      String?     @db.VarChar(50)
+  calmatac    String?     @db.VarChar(50)
+  calnpep     String?     @db.VarChar(50)
+  calingi     String?     @db.VarChar(50)
+  calcari     String?     @db.VarChar(50)
+  espcve      String?     @db.VarChar(50)
+  aluctr      String      @id @db.VarChar(50)
+  estudiantes estudiantes @relation(fields: [aluctr], references: [aluctr])
+  carrera     carrera?    @relation(fields: [carcve], references: [carcve])
 }
