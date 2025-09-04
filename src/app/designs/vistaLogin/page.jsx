@@ -21,14 +21,14 @@ const LoginPage = () => {
   const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
+  const [studentData, setStudentData] = useState(null);
   const {
     handleLogin,
     handleRegister,
     handleSendCode,
     handleVerifyCode,
     handleUpdatePassword,
-  } = useAuth(setStep, setFullName, setError);
+  } = useAuth(setStep, setFullName, setError, setStudentData);
 
   const onRegisterSubmit = (e) => {
     e.preventDefault();
@@ -255,7 +255,9 @@ const LoginPage = () => {
           </form>
         )}
 
-        {step === "success" && <RedirectAfterLogin fullName={fullName} />}
+        {step === "success" && (
+          <RedirectAfterLogin fullName={fullName} studentData={studentData} />
+        )}
       </div>
       <div className="logo-section">
         <img

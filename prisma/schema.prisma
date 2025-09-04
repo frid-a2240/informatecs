@@ -99,7 +99,7 @@ model estudiantes {
   cve        Int?
   merida     Int?
   alunac     String?     @db.VarChar(50)
-  estudicarr estudicarr?
+  inscripciones estudicarr[]
 }
 
 model authStudents {
@@ -137,7 +137,7 @@ model carrera {
   cardetv    String?      @db.VarChar(10)
   cve        String?      @db.VarChar(10)
   id         String?      @db.VarChar(10)
-  estudicarr estudicarr[]
+  inscripciones estudicarr[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

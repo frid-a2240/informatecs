@@ -6,10 +6,9 @@ import "./perfil.css";
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
-  const fullName = searchParams.get("name");
-  const savedData = localStorage.getItem("studentData");
-  setStudentData(JSON.parse(savedData));
 
+  const fullName = searchParams.get("name");
+  const [studentData, setStudentData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
