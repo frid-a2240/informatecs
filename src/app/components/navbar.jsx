@@ -19,32 +19,32 @@ const Navbar = () => {
 
         <ul className={`navbar__menu ${isOpen ? "navbar__menu--open" : ""}`}>
           <li>
-            <Link href="/" className="navbar__link">
+            <Link href="/" className="navbar__link active">
               INICIO
             </Link>
           </li>
           <li>
-            <Link href="/designs/vistaEventos" className="navbar__link">
+            <Link href="/designs/vistaEventos" className="navbar__link active">
               EVENTOS
             </Link>
           </li>
           <li>
-            <Link href="/vistaExtraescolares" className="navbar__link">
+            <Link href="/vistaExtraescolares" className="navbar__link active">
               EXTRAESCOLARES
             </Link>
           </li>
           <li>
-            <Link href="/vistaClub" className="navbar__link">
+            <Link href="/vistaClub" className="navbar__link active">
               CLUBS
             </Link>
           </li>
           <li>
-            <Link href="/VistaHorarios" className="navbar__link">
+            <Link href="/VistaHorarios" className="navbar__link active">
               HORARIOS
             </Link>
           </li>
           <li>
-            <Link href="/vistaCalendario" className="navbar__link">
+            <Link href="/vistaCalendario" className="navbar__link active">
               CALENDARIO
             </Link>
           </li>

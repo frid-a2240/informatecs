@@ -1,26 +1,58 @@
 /* -----------------------------
-   Contenedor principal
------------------------------ */
-.content-container {
-  width: 50%;
-  margin: 2rem auto 0 auto;
-}
-
-/* -----------------------------
-   Estilos para los bloques de evento
+   Bloques tipo slider
 ----------------------------- */
 .event-block {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #d1d5db; /* gray-300 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Efecto hover tipo slider */
+.event-block:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Títulos y descripción dentro de cada bloque */
 .event-block .title {
-  font-size: 1.25rem; /* text-xl */
-  font-weight: bold;
-  color: #1e3a8a; /* text-blue-950 */
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f3a93;
+  margin-bottom: 0.5rem;
 }
 
 .event-block .description {
-  color: #4b5563; /* text-gray-700 */
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+/* -----------------------------
+   Responsividad
+----------------------------- */
+@media (max-width: 1024px) {
+  .event-block .title {
+    font-size: 1.3rem;
+  }
+
+  .event-block .description {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .event-block {
+    padding: 1rem;
+  }
+
+  .event-block .title {
+    font-size: 1.2rem;
+  }
+
+  .event-block .description {
+    font-size: 0.9rem;
+  }
 }

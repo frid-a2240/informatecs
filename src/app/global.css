@@ -276,15 +276,6 @@
   height: 15rem;
   object-fit: cover;
 }
-
-.navbar {
-  background-color: var(--blue-primary);
-  color: var(--white);
-  position: sticky;
-  top: 0;
-  z-index: 999;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
 /* ==========================
    Navbar
 ========================== */
@@ -313,15 +304,17 @@
   text-decoration: none;
 }
 
+/* Botón hamburguesa (solo en móvil) */
 .navbar__toggle {
   background: none;
   border: none;
   font-size: 1.8rem;
   color: var(--white);
   cursor: pointer;
-  display: none;
+  display: none; /* por defecto oculto */
 }
 
+/* Menú horizontal por defecto */
 .navbar__menu {
   display: flex;
   gap: 1.5rem;
@@ -364,37 +357,39 @@
 .navbar__cta:hover {
   background-color: #eab308;
 }
-
-/* ==========================
-   Mobile Responsive
-========================== */
 @media (max-width: 768px) {
   .navbar__toggle {
     display: block;
   }
 
   .navbar__menu {
-    flex-direction: column;
-    background-color: var(--blue-primary);
-    width: 100%;
-    position: absolute; /* ✅ Corregido */
-    top: 100%; /* justo debajo del navbar */
+    position: absolute;
+    top: 100%;
     left: 0;
-    display: none;
-    padding: 1rem 2rem;
-    transition: all 0.3s ease-in-out;
+    width: 100%;
+    background-color: var(--blue-primary);
+    flex-direction: column;
+    align-items: center; /* centra horizontalmente */
+    padding: 1rem 0;
+    gap: 1rem; /* espacio entre enlaces */
+    display: none; /* oculto por defecto */
   }
 
-  .navbar__menu--open {
+  /* Mostrar menú cuando se agrega la clase --open */
+  .navbar__menu.navbar__menu--open {
     display: flex;
   }
 
-  .navbar__menu li {
-    margin: 0.5rem 0;
+  .navbar__link {
+    width: 100%; /* ocupa todo el ancho */
+    text-align: center; /* centra el texto */
+    padding: 0.5rem 0;
   }
 }
 
-/* Pie de página */
+/* ==========================
+   Footer
+========================== */
 .footer {
   background-color: var(--blue-primary);
   color: var(--white);
@@ -425,6 +420,7 @@
   opacity: 0.9;
 }
 
+/* Footer Responsive */
 @media (max-width: 600px) {
   .footer {
     font-size: 0.8rem;
@@ -434,175 +430,4 @@
   .footer__title {
     font-size: 1.2rem;
   }
-}
-
-/* -----------------------------
-   Sidebar menu estudiantes
------------------------------ */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background-color: var(--blue-primary);
-  color: white;
-  transition: width 0.3s ease-in-out;
-  overflow: hidden;
-  z-index: 1000;
-}
-
-.sidebar-open {
-  width: 220px;
-}
-
-.sidebar-closed {
-  width: 70px;
-}
-
-/* Header */
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-}
-
-.designer-text {
-  font-weight: bold;
-  font-size: 1.5rem;
-  transition: opacity 0.3s ease;
-}
-
-.sidebar-closed .designer-text {
-  opacity: 0;
-}
-
-.sidebar-toggle-btn {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 1.5rem;
-  padding: 0.5rem; /* espacio interno */
-  margin-left: 0.5rem; /* separa del borde o logo */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px; /* opcional, bordes suaves */
-  transition: background 0.2s;
-}
-
-.sidebar-toggle-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* efecto hover */
-}
-
-/* Menu */
-.menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.menu-item-gap {
-  margin-top: 20px;
-}
-
-.menu-item:hover {
-  background-color: var(--blue-hover);
-}
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: inherit;
-  text-decoration: none;
-}
-
-.icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.title {
-  font-size: 1rem;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: opacity 0.3s;
-}
-
-.sidebar-closed .title {
-  opacity: 0;
-}
-.hidden {
-  display: none;
-}
-
-/* -----------------------------
-   Layout General
------------------------------ */
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem;
-  transition: margin-left 0.3s ease;
-  margin-left: 220px;
-}
-
-.main-content.full-width {
-  margin-left: 50px; /* cuando la barra está cerrada */
-}
-/*
- * Contenedor del dashboard
- */
-.dashboard-container {
-  display: flex;
-  min-height: 100vh;
-}
-
-/*
- * Contenido principal del dashboard
- */
-.dashboard-main {
-  flex: 1;
-  padding: 2rem;
-  transition: margin-left 0.3s ease;
-  margin-left: 220px; /* Ancho de la sidebar abierta */
-}
-
-.dashboard-main.full-width {
-  margin-left: 70px; /* Ancho de la sidebar cerrada */
-}
-
-.dashboard-main.full-width {
-  margin-left: 70px; /* ancho de la sidebar cerrada */
-}
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-container img {
-  border-radius: 50%;
-}
-.designer-text {
-  color: white;
-  font-weight: bold;
-  font-size: 1.2rem;
-  text-align: center;
 }

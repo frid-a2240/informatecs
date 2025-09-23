@@ -8,10 +8,6 @@ export default function WelcomePage() {
 
   return (
     <div>
-      {/* Navbar si aún quieres mantenerla */}
-
-      {/* Contenido principal */}
-
       <h1>¡Bienvenido a tu panel!</h1>
       <p>
         En este portal podrás verificar toda tu información personal y académica

@@ -1,33 +1,33 @@
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --bg-light: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.7),
+    rgba(8, 94, 222, 0)
+  );
+  --white: #ffffff;
+  font-family: "Noto Sans", sans-serif;
+}
+
 /* -----------------------------
-           Layout general
-        ----------------------------- */
+   Layout general
+----------------------------- */
 .dashboard-container {
   display: flex;
   min-height: 100vh;
   background-color: #f5f7fa;
-  font-family: "Inter", sans-serif;
 }
 
-/* -----------------------------
-           Contenido principal
-        ----------------------------- */
 .dashboard-main {
   flex: 1;
   padding: 2rem 3rem;
   transition: margin-left 0.3s ease;
 }
 
-.with-sidebar {
-  margin-left: 220px;
-}
-
-.full-width {
-  margin-left: 70px;
-}
-
-/* -----------------------------
-           Página de bienvenida
-        ----------------------------- */
+/* Página de bienvenida */
 .welcome-main {
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
 .welcome-card h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1f3a93;
+  color: var(--blue-primary);
   margin-bottom: 1rem;
 }
 
@@ -56,14 +56,8 @@
   color: #333;
 }
 
-/* -----------------------------
-           Responsividad
-        ----------------------------- */
+/* Responsividad */
 @media (max-width: 1024px) {
-  .with-sidebar {
-    margin-left: 70px;
-  }
-
   .dashboard-main {
     padding: 1.5rem 2rem;
   }
@@ -74,20 +68,5 @@
 
   .welcome-card p {
     font-size: 0.95rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-
-  .with-sidebar,
-  .full-width {
-    margin-left: 0;
-  }
-
-  .dashboard-main {
-    padding: 1rem 1.5rem;
   }
 }

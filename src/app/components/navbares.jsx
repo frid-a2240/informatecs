@@ -11,6 +11,7 @@ import {
   FiMenu,
 } from "react-icons/fi";
 import { useState } from "react";
+import "../styles/navbares.css";
 import Image from "next/image";
 
 export default function Sidebar() {

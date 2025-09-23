@@ -8,7 +8,6 @@ export default function WelcomePage() {
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar con toggle */}
       <NavbarEst open={sidebarOpen} setOpen={setSidebarOpen} />
 
       {/* Contenido principal */}
