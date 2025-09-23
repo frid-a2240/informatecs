@@ -339,12 +339,24 @@ input:-webkit-autofill:focus {
   background: transparent;
   overflow: visible;
 }
+@keyframes wave-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-200px, -10px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
 
 .wave-overlay svg {
   width: 100%;
   height: 100%;
   display: block;
   opacity: 1;
+  animation: wave-move 10s infinite ease-in-out; /* Aplica la animación */
 }
 
 .wave-overlay svg path {
@@ -690,4 +702,48 @@ input:-webkit-autofill:focus {
 .student-info span:last-child {
   font-weight: normal;
   color: #333;
+}
+/* -----------------------------
+   Aurora Background (solo CSS)
+----------------------------- */
+.aurora {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000; /* fondo negro base */
+  overflow: hidden;
+  z-index: -1; /* detrás del contenido */
+}
+
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background: radial-gradient(
+      circle at 30% 30%,
+      rgba(0, 255, 255, 0.35),
+      transparent 60%
+    ),
+    radial-gradient(circle at 70% 70%, rgba(255, 0, 255, 0.35), transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(0, 128, 255, 0.35), transparent 60%);
+  animation: auroraMove 30s infinite linear;
+  filter: blur(60px); /* difumina para dar efecto aurora */
+}
+
+@keyframes auroraMove {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }

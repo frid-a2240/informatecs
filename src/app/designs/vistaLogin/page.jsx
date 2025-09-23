@@ -7,7 +7,6 @@ import styles from "./login.css";
 
 const LoginPage = () => {
   const router = useRouter();
-  const albatroRef = useRef(null);
 
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
@@ -57,7 +56,6 @@ const LoginPage = () => {
   return (
     <div className="login-container">
       <div className="form-section">
-        {/* Wave overlay */}
         <WaveSVG />
 
         <h1 className="login-title animate__heartBeat">Eventos ITE</h1>
