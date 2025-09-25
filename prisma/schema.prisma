@@ -100,6 +100,7 @@ model estudiantes {
   merida        Int?
   alunac        String?     @db.VarChar(50)
   inscripciones estudicarr[]
+  inscripcionesActividades inscripact[]
 }
 
 model authStudents {
@@ -138,6 +139,7 @@ model carrera {
   cve           String?      @db.VarChar(10)
   id            String?      @db.VarChar(10)
   inscripciones estudicarr[]
+  
 }
 
 model estudicarr {
@@ -169,4 +171,55 @@ model estudicarr {
   aluctr     String      @id @db.VarChar(50)
   estudiante estudiantes @relation(fields: [aluctr], references: [aluctr])
   carrera    carrera?    @relation(fields: [carcve], references: [carcve])
+}
+
+model actividades {
+  id       Int      @id @default(autoincrement())
+  acocve   String?  @db.VarChar(10)  // Columna A: clave categoria actividad
+  aticve   String?  @db.VarChar(50)  // Columna B: codigo actividad  
+  aconco   String?  @db.VarChar(100) // Columna C: nombre completo actividad
+  acodes   String?  @db.VarChar(100) // Columna D: descripcion
+  acocre   Float?                    // Columna E: creditos
+  acohrs   Int?                      // Columna F: horas
+  depcve   String?  @db.VarChar(10)  // Columna G: codigo departamento
+  puecve   String?  @db.VarChar(10)  // Columna H: codigo puesto/plaza
+
+  
+
+  // Relaciones
+  ofertas   ofertaSemestre[]
+  inscripact inscripact[]
+}
+
+model ofertaSemestre {
+  id                Int      @id @default(autoincrement())
+  actividadId       Int
+  semestre          String   @db.VarChar(10)
+  activa            Boolean  @default(true)
+  cupoMaximo        Int?
+  inscritosActuales Int      @default(0)
+  fechaPublicacion  DateTime @default(now())
+
+  actividad  actividades @relation(fields: [actividadId], references: [id])
+  inscripact inscripact[]
+
+  @@map("oferta_semestre")
+}
+
+model inscripact {
+  id               Int      @id @default(autoincrement())
+  estudianteId     String   @db.VarChar(50)  // Referencia a estudiantes.aluctr
+  actividadId      Int
+  ofertaId         Int
+  fechaInscripcion DateTime @default(now())
+  calificacion     Float?
+  liberado         Boolean  @default(false)
+  formularioData   Json?
+
+  estudiante estudiantes    @relation(fields: [estudianteId], references: [aluctr])
+  actividad  actividades    @relation(fields: [actividadId], references: [id])
+  oferta     ofertaSemestre @relation(fields: [ofertaId], references: [id])
+
+  @@unique([estudianteId, actividadId])
+  @@map("inscripciones_actividades")
 }
