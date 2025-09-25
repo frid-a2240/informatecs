@@ -7,9 +7,11 @@
   font-family: "Noto Sans", sans-serif;
 }
 
+/* ==================== Estilos principales y de tipografía ==================== */
+
 .dashboard-main {
-  color: var(--text-dark); /* Asegura que el texto sea visible */
-  padding: 2rem; /* Espacio interno para que no se pegue al borde */
+  color: var(--text-dark);
+  padding: 5rem;
 }
 
 .dashboard-main h1 {
@@ -22,12 +24,10 @@
 
 .dashboard-main p {
   font-size: 1.5rem;
-
   text-align: center;
   margin-bottom: 2rem;
 }
 
-/* ===== Secciones ===== */
 .section {
   margin-bottom: 3rem;
 }
@@ -42,9 +42,26 @@
   padding-left: 2rem;
 }
 
-/* ===== Carrusel (Swiper) ===== */
-.swiper {
-  padding: 1rem 0;
+/* ==================== Carrusel y efectos 3D (Swiper) ==================== */
+
+/* Estilos de las diapositivas para el efecto 3D */
+.swiper-slide {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transition: all 0.6s ease;
+}
+
+/* Oculta el título en las tarjetas inactivas para un efecto más limpio */
+.swiper-slide:not(.swiper-slide-active) .image-title {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+/* Desactiva los efectos de hover que podrían interferir con el efecto 3D */
+.image-container:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .swiper-button-next,
@@ -60,39 +77,51 @@
   transform: scale(1.2);
 }
 
-/* ===== Tarjetas ===== */
-.image-container {
-  position: relative;
+/* ==================== Tarjetas de imagen ==================== */
+
+/* Estilos para el contenedor de la tarjeta que permite la animación de volteo */
+.card-container {
   width: 100%;
   max-width: 400px;
-  aspect-ratio: 4/3; /* Mantiene proporción */
-  overflow: hidden;
-  border-radius: 0.8rem;
-  transition: all 0.3s ease;
+  aspect-ratio: 4/3;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
   cursor: pointer;
-  background: var(--white);
-  margin: 0 auto;
 }
 
-.image-container:hover {
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
-  border-image: linear-gradient(
-      135deg,
-      var(--blue-primary),
-      var(--yellow-accent)
-    )
-    1;
+/* Estilos de la tarjeta cuando está volteada */
+.card-container.flipped {
+  transform: rotateY(180deg);
 }
 
-.image {
+/* Estilos para la cara frontal y trasera de la tarjeta */
+.card-front,
+.card-back {
+  position: absolute;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s ease, filter 0.4s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* ===== Título de tarjeta ===== */
+.card-back {
+  transform: rotateY(180deg);
+  padding: 1.5rem;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Título de la tarjeta frontal */
 .image-title {
   position: absolute;
   bottom: 0;
@@ -105,14 +134,51 @@
   text-align: center;
   font-size: 1rem;
   letter-spacing: 0.5px;
-  white-space: normal; /* Permite salto de línea */
-  overflow: hidden; /* Evita que se salga */
-  text-overflow: ellipsis; /* Agrega "..." si es demasiado largo */
-  line-height: 1.2em;
-  word-wrap: break-word;
 }
 
-/* ===== Modal ===== */
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Estilos para la cara trasera */
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.card-description {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.card-register {
+  padding: 0.8rem 2rem;
+  background: linear-gradient(135deg, #1b396a, #1e88ff);
+  border: none;
+  border-radius: 0.6rem;
+  color: var(--white);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
+}
+
+.card-register:hover {
+  background: linear-gradient(135deg, var(--yellow-accent), #ffb84d);
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(254, 158, 16, 0.3);
+}
+
+/* ==================== Modal ==================== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -126,7 +192,7 @@
 .modal-content {
   background: var(--white);
   border-radius: 1rem;
-  padding: 1.5rem 2rem;
+  padding: 2rem;
   max-width: 600px;
   width: 90%;
   max-height: 85vh;
@@ -211,7 +277,9 @@
   }
 }
 
-/* ===== Tablets ===== */
+/* ==================== Media queries para responsividad ==================== */
+
+/* Tablets */
 @media (max-width: 768px) {
   .dashboard-main {
     padding: 1.5rem;
@@ -219,20 +287,11 @@
 
   .dashboard-main h1 {
     font-size: 2.2rem;
-    text-align: center;
-    margin-bottom: 0.8rem;
   }
 
   .dashboard-main p {
     font-size: 1.05rem;
     padding: 0 1rem;
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .section {
-    margin-bottom: 2rem;
-    padding: 0 0.5rem;
   }
 
   .section-title {
@@ -243,16 +302,10 @@
 
   .image-container {
     max-width: 280px;
-    margin: 0 auto;
-  }
-
-  .image {
-    height: 100%;
   }
 
   .modal-content {
     padding: 1rem 1.5rem;
-    max-width: 90%;
   }
 
   .modal-title {
@@ -264,24 +317,20 @@
   }
 }
 
-/* ===== Celulares ===== */
+/* Celulares */
 @media (max-width: 480px) {
   .dashboard-main {
-    padding: 2rem 1rem 1rem 1rem; /* más espacio arriba */
+    padding: 2rem 1rem 1rem 1rem;
   }
 
   .dashboard-main h1 {
     font-size: 1.8rem;
-    text-align: center;
-    margin-top: 2rem; /* empuja el título hacia abajo */
-    margin-bottom: 0.5rem;
+    margin-top: 2rem;
   }
 
   .dashboard-main p {
     font-size: 0.95rem;
     padding: 0 1rem;
-    text-align: center;
-    margin-bottom: 1.2rem;
   }
 
   .section {
@@ -300,12 +349,6 @@
   .image-container {
     max-width: 260px;
     padding-left: 0;
-    margin: 0 auto;
-  }
-
-  .image {
-    height: 100%;
-    border-radius: 0.5rem;
   }
 
   .image-title {
@@ -316,7 +359,6 @@
   .modal-content {
     padding: 1rem 1.5rem;
     width: 95%;
-    max-height: 90vh;
   }
 
   .modal-title {
@@ -341,7 +383,7 @@
   }
 }
 
-/* ===== Hover desactivado en móviles ===== */
+/* Desactiva los efectos de hover en dispositivos móviles para una mejor experiencia táctil */
 @media (hover: none) {
   .image-container:hover,
   .image-container:hover .image,
@@ -354,7 +396,6 @@
 
 @media (min-width: 1024px) {
   .image-container {
-    max-width: 400px;
-    margin: 0 3px; /* menos espacio entre tarjetas */
+    margin: 0 3px;
   }
 }

@@ -255,7 +255,7 @@ const LoginPage = () => {
 
       <div className="logo-section">
         <img
-          src="/imagenes/logosin.gif"
+          src="/imagenes/foondoo.gif"
           alt="Logo del sistema Albatros corriendo"
         />
       </div>
