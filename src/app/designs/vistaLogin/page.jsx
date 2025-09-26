@@ -15,10 +15,13 @@ const LoginPage = () => {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [studentData, setStudentData] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [studentData, setStudentData] = useState(null);
-  const [usuario, setUsuario] = useState("");
+
+  // Estados para administrador
+  const [adminUser, setAdminUser] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
 
   const {
     handleLogin,
@@ -45,12 +48,19 @@ const LoginPage = () => {
     handleLogin(e, matricula, password);
   };
 
+  // Admin login submit
   const onAdminSubmit = (e) => {
     e.preventDefault();
-    if (!usuario || !password) return setError("Escribe usuario y contraseña");
-    // Redirigir al panel de admin
-    localStorage.setItem("adminUser", usuario);
-    router.push("/designs/menuadmin");
+    if (!adminUser || !adminPassword) {
+      setError("Escribe usuario y contraseña de administrador");
+      return;
+    }
+
+    if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025") {
+      router.push("/designs/menuadm");
+    } else {
+      setError("Credenciales de administrador incorrectas");
+    }
   };
 
   return (
@@ -73,20 +83,11 @@ const LoginPage = () => {
               setError("");
               setPassword("");
               setMatricula("");
+              setAdminUser("");
+              setAdminPassword("");
             }}
           >
             Iniciar Sesión
-          </button>
-          <button
-            className={step === "adm" ? "tab-active" : "tab-inactive"}
-            onClick={() => {
-              setStep("adm");
-              setError("");
-              setPassword("");
-              setUsuario("");
-            }}
-          >
-            Administrador
           </button>
           <button
             className={step === "register" ? "tab-active" : "tab-inactive"}
@@ -95,9 +96,24 @@ const LoginPage = () => {
               setError("");
               setPassword("");
               setMatricula("");
+              setAdminUser("");
+              setAdminPassword("");
             }}
           >
             Registrarse
+          </button>
+          <button
+            className={step === "adm" ? "tab-active" : "tab-inactive"}
+            onClick={() => {
+              setStep("adm");
+              setError("");
+              setPassword("");
+              setMatricula("");
+              setAdminUser("");
+              setAdminPassword("");
+            }}
+          >
+            Administrador
           </button>
         </div>
 
@@ -162,20 +178,20 @@ const LoginPage = () => {
             <input
               type="text"
               className="login-input"
-              value={usuario}
+              value={adminUser}
               placeholder="Ingresa tu usuario"
-              onChange={(e) => setUsuario(e.target.value)}
+              onChange={(e) => setAdminUser(e.target.value)}
               required
             />
             <label className="login-label">Contraseña:</label>
             <PasswordInput
-              password={password}
-              setPassword={setPassword}
+              password={adminPassword}
+              setPassword={setAdminPassword}
               showPassword={showPassword}
               setShowPassword={setShowPassword}
             />
             <button type="submit" className="submit-button">
-              Iniciar sesión Admin
+              Administrador
             </button>
           </form>
         )}
