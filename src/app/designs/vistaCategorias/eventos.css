@@ -3,399 +3,290 @@
   --yellow-accent: #fe9e10;
   --blue-hover: #8eafef;
   --text-dark: #333333;
+  --bg-light: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.07),
+    rgba(8, 94, 222, 0)
+  );
   --white: #ffffff;
   font-family: "Noto Sans", sans-serif;
 }
 
-/* ==================== Estilos principales y de tipografía ==================== */
+/* --- Contenedor principal --- */
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--white);
+  display: flex;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 .dashboard-main {
-  color: var(--text-dark);
-  padding: 5rem;
+  flex: 1;
+  transition: all 0.3s;
+  padding: 2rem 1rem;
+  max-width: 1120px;
+  margin: 0 auto;
 }
 
-.dashboard-main h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
+.with-sidebar {
+  margin-left: 16rem;
+}
+.full-width {
+  margin-left: 0;
+}
+
+/* --- Títulos --- */
+h1 {
+  font-size: 2.25rem;
+  font-weight: bold;
   color: var(--blue-primary);
   margin-bottom: 0.5rem;
-  text-align: center;
 }
 
-.dashboard-main p {
-  font-size: 1.5rem;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.section {
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  padding-top: 2rem;
-  font-size: 2rem;
-  font-weight: 200;
+p.subtitle {
+  font-size: 1.125rem;
   color: var(--blue-primary);
-  margin-bottom: 1rem;
-  border-left: 5px solid var(--yellow-accent);
-  padding-left: 2rem;
+  margin-bottom: 2.5rem;
 }
 
-/* ==================== Carrusel y efectos 3D (Swiper) ==================== */
-
-/* Estilos de las diapositivas para el efecto 3D */
-.swiper-slide {
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-  transition: all 0.6s ease;
-}
-
-/* Oculta el título en las tarjetas inactivas para un efecto más limpio */
-.swiper-slide:not(.swiper-slide-active) .image-title {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-}
-
-/* Desactiva los efectos de hover que podrían interferir con el efecto 3D */
-.image-container:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.swiper-button-next,
-.swiper-button-prev {
-  color: var(--blue-primary);
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  color: var(--yellow-accent);
-  transform: scale(1.2);
-}
-
-/* ==================== Tarjetas de imagen ==================== */
-
-/* Estilos para el contenedor de la tarjeta que permite la animación de volteo */
-.card-container {
-  width: 100%;
-  max-width: 400px;
-  aspect-ratio: 4/3;
+/* --- Carrusel --- */
+.carousel-container {
   position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.6s;
+}
+
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Tarjetas --- */
+.card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  flex: 0 0 20rem;
+  scroll-snap-align: start;
   cursor: pointer;
-}
-
-/* Estilos de la tarjeta cuando está volteada */
-.card-container.flipped {
-  transform: rotateY(180deg);
-}
-
-/* Estilos para la cara frontal y trasera de la tarjeta */
-.card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: 0.8rem;
-  overflow: hidden;
+  border: 3px solid var(--blue-primary);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  background: var(--white);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-back {
-  transform: rotateY(180deg);
-  padding: 1.5rem;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* Título de la tarjeta frontal */
-.image-title {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.8rem;
-  background: rgba(27, 57, 106, 0.75);
-  color: white;
-  font-weight: 600;
-  text-align: center;
-  font-size: 1rem;
-  letter-spacing: 0.5px;
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Estilos para la cara trasera */
-.card-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--blue-primary);
-  margin: 0;
-  line-height: 1.2;
-}
-
-.card-description {
-  font-size: 0.9rem;
-  color: var(--text-dark);
-  margin: 0;
-  line-height: 1.4;
-}
-
-.card-register {
-  padding: 0.8rem 2rem;
-  background: linear-gradient(135deg, #1b396a, #1e88ff);
-  border: none;
-  border-radius: 0.6rem;
-  color: var(--white);
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
 }
 
-.card-register:hover {
-  background: linear-gradient(135deg, var(--yellow-accent), #ffb84d);
-  transform: scale(1.08);
-  box-shadow: 0 6px 16px rgba(254, 158, 16, 0.3);
+.card:hover {
+  border-color: var(--blue-hover);
+  box-shadow: 0 15px 25px rgba(27, 57, 106, 0.25);
 }
 
-/* ==================== Modal ==================== */
+.card h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
 
+.card .description {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1rem;
+}
+
+.card-footer span.badge {
+  background: var(--blue-primary);
+  color: var(--white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: bold;
+}
+
+/* --- Flechas del carrusel --- */
+.carousel-btn {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .carousel-btn {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.75rem;
+    border-radius: 9999px;
+    background: var(--white);
+    color: var(--blue-primary);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 20;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel-btn.left {
+    left: -1.5rem;
+  }
+  .carousel-btn.right {
+    right: -1.5rem;
+  }
+
+  .carousel-btn:hover {
+    background: var(--bg-light);
+    transform: scale(1.2);
+    color: var(--yellow-accent);
+  }
+}
+
+/* --- Modal --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.75);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 2000;
-}
-
-.modal-content {
-  background: var(--white);
-  border-radius: 1rem;
-  padding: 2rem;
-  max-width: 600px;
-  width: 90%;
-  max-height: 85vh;
-  overflow-y: auto;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+  align-items: center;
+  z-index: 100;
+  padding: 1rem;
+  backdrop-filter: blur(5px);
   animation: fadeIn 0.3s ease;
 }
 
-.modal-image {
+.modal {
+  background: var(--white);
+  border-radius: 1.5rem;
+  max-width: 32rem;
   width: 100%;
-  height: auto;
-  max-height: 60vh;
-  object-fit: contain;
-  border-radius: 0.8rem;
+  padding: 2rem;
+  position: relative;
+  border-top: 8px solid var(--blue-primary);
+  transform: scale(0.95);
+  animation: popIn 0.3s forwards;
+  box-shadow: 0 10px 30px rgba(27, 57, 106, 0.25);
+}
+
+.modal img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+  border-radius: 1rem;
+  border: 3px solid var(--blue-primary);
   margin-bottom: 1rem;
 }
 
-.modal-title {
-  font-size: 1.8rem;
-  font-weight: 700;
+.modal h2 {
+  font-size: 1.875rem;
+  font-weight: 800;
   color: var(--blue-primary);
-  margin-bottom: 0.8rem;
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  line-height: 1.3em;
+  margin-bottom: 1rem;
 }
 
-.modal-description {
-  font-size: 1rem;
-  color: #444;
-  line-height: 1.6;
+.modal-subtitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--blue-hover);
+  margin-bottom: 0.75rem;
+}
+
+.modal-content {
   margin-bottom: 1.5rem;
+  color: #4b5563;
 }
 
-.modal-register {
-  padding: 0.8rem 2rem;
-  background: linear-gradient(135deg, #1b396a, #1e88ff);
+/* --- Info Grid --- */
+.info-grid {
+  background: rgba(27, 57, 106, 0.05);
+  border: 1px solid rgba(27, 57, 106, 0.15);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--blue-primary);
+}
+
+.info-item .icon {
+  margin-right: 0.5rem;
+  color: var(--blue-primary);
+  transition: all 0.3s ease;
+}
+
+.info-item:hover .icon {
+  color: var(--yellow-accent);
+  transform: scale(1.2) rotate(-8deg);
+}
+
+/* --- Botón de registro --- */
+.register-btn {
+  padding: 0.9rem 2rem;
+  background: linear-gradient(135deg, var(--blue-primary), #1e88ff);
   border: none;
   border-radius: 0.6rem;
   color: var(--white);
-  cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
-}
-
-.modal-register:hover {
-  background: linear-gradient(135deg, var(--yellow-accent), #ffb84d);
-  transform: scale(1.08) translateY(-2px);
-  box-shadow: 0 6px 16px rgba(254, 158, 16, 0.3);
-}
-
-.modal-close {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
   cursor: pointer;
-  color: #444;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(27, 57, 106, 0.25);
 }
 
-.modal-close:hover {
-  color: var(--yellow-accent);
-  transform: scale(1.2);
+.register-btn:hover {
+  background: linear-gradient(135deg, var(--blue-hover), var(--yellow-accent));
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 8px 20px rgba(27, 57, 106, 0.35);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* --- Mensajes de estado --- */
+.status-message {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+}
+.status-message.success {
+  color: #16a34a; /* verde éxito */
+}
+.status-message.error {
+  color: #dc2626; /* rojo error */
 }
 
-/* ==================== Media queries para responsividad ==================== */
-
-/* Tablets */
-@media (max-width: 768px) {
-  .dashboard-main {
-    padding: 1.5rem;
+/* --- Responsivo modal --- */
+@media (max-width: 640px) {
+  .modal img {
+    height: auto;
+    max-height: 10rem;
   }
-
-  .dashboard-main h1 {
-    font-size: 2.2rem;
+  .info-grid {
+    grid-template-columns: 1fr;
   }
-
-  .dashboard-main p {
-    font-size: 1.05rem;
-    padding: 0 1rem;
-  }
-
-  .section-title {
-    font-size: 1.3rem;
-    padding-left: 0.4rem;
-    border-left: 4px solid var(--yellow-accent);
-  }
-
-  .image-container {
-    max-width: 280px;
-  }
-
-  .modal-content {
-    padding: 1rem 1.5rem;
-  }
-
-  .modal-title {
-    font-size: 1.4rem;
-  }
-
-  .modal-description {
-    font-size: 0.95rem;
-  }
-}
-
-/* Celulares */
-@media (max-width: 480px) {
-  .dashboard-main {
-    padding: 2rem 1rem 1rem 1rem;
-  }
-
-  .dashboard-main h1 {
-    font-size: 1.8rem;
-    margin-top: 2rem;
-  }
-
-  .dashboard-main p {
-    font-size: 0.95rem;
-    padding: 0 1rem;
-  }
-
-  .section {
-    margin-bottom: 1.5rem;
-    padding: 0 0.5rem;
-  }
-
-  .section-title {
-    font-size: 1.2rem;
-    padding-left: 0.3rem;
-    margin-left: 0.2rem;
-    border-left: 3px solid var(--yellow-accent);
-    text-align: left;
-  }
-
-  .image-container {
-    max-width: 260px;
-    padding-left: 0;
-  }
-
-  .image-title {
-    font-size: 0.85rem;
-    padding: 0.5rem;
-  }
-
-  .modal-content {
-    padding: 1rem 1.5rem;
-    width: 95%;
-  }
-
-  .modal-title {
-    font-size: 1.2rem;
-  }
-
-  .modal-description {
-    font-size: 0.85rem;
-  }
-
-  .modal-register {
-    font-size: 0.9rem;
-    padding: 0.6rem 1.5rem;
-  }
-
-  .swiper-button-next {
-    right: 5%;
-  }
-
-  .swiper-button-prev {
-    left: 5%;
-  }
-}
-
-/* Desactiva los efectos de hover en dispositivos móviles para una mejor experiencia táctil */
-@media (hover: none) {
-  .image-container:hover,
-  .image-container:hover .image,
-  .modal-register:hover {
-    transform: none;
-    box-shadow: none;
-    filter: none;
-  }
-}
-
-@media (min-width: 1024px) {
-  .image-container {
-    margin: 0 3px;
+  .modal h2 {
+    font-size: 1.5rem;
   }
 }

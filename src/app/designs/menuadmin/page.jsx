@@ -3,6 +3,32 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminPanel from "../../components/admin/AdminPanel";
 
+const borrarTodasOfertas = async () => {
+  if (
+    !window.confirm(
+      "¿Deseas borrar todas las ofertas del semestre? Esto no se puede deshacer."
+    )
+  )
+    return;
+
+  try {
+    const response = await fetch("/api/ofertas-semestre/borrar", {
+      method: "DELETE",
+    });
+    if (response.ok) {
+      const data = await response.json();
+      alert(`${data.count} ofertas eliminadas.`);
+      // Opcional: actualizar la UI
+      setActividadesOfertadas([]);
+    } else {
+      alert("Error al borrar las ofertas.");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error de conexión.");
+  }
+};
+
 const AdminDashboard = () => {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("dashboard");
