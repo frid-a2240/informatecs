@@ -57,7 +57,7 @@ const LoginPage = () => {
     }
 
     if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025") {
-      router.push("/designs/menuadm");
+      router.push("/designs/menuadmin");
     } else {
       setError("Credenciales de administrador incorrectas");
     }
