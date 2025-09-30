@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Users, Calendar, Search } from "lucide-react";
 
@@ -6,12 +7,15 @@ const AdminPanel = () => {
   const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
-  const [busqueda, setBusqueda] = useState(""); //  estado para el buscador
+  const [busqueda, setBusqueda] = useState(""); // estado para el buscador
 
+  // Cargar actividades al montar el componente
   useEffect(() => {
     cargarActividades();
+    cargarOfertas();
   }, []);
 
+  // API: cargar todas las actividades
   const cargarActividades = async () => {
     try {
       setLoading(true);
@@ -30,18 +34,34 @@ const AdminPanel = () => {
     }
   };
 
+  // API: cargar ofertas ya publicadas
+  const cargarOfertas = async () => {
+    try {
+      const response = await fetch("/api/ofertas-semestre");
+      if (response.ok) {
+        const data = await response.json();
+        setActividadesOfertadas(data);
+      }
+    } catch (error) {
+      console.error("Error al cargar ofertas:", error);
+    }
+  };
+
+  // Agregar actividad a la oferta temporal
   const agregarAOferta = (actividad) => {
     if (!actividadesOfertadas.find((act) => act.id === actividad.id)) {
       setActividadesOfertadas([...actividadesOfertadas, actividad]);
     }
   };
 
+  // Quitar actividad de la oferta
   const quitarDeOferta = (actividadId) => {
     setActividadesOfertadas(
       actividadesOfertadas.filter((act) => act.id !== actividadId)
     );
   };
 
+  // Publicar actividades al semestre
   const publicarActividades = async () => {
     if (actividadesOfertadas.length === 0) {
       alert("Selecciona al menos una actividad para ofertar.");
@@ -75,7 +95,8 @@ const AdminPanel = () => {
         alert(
           `¡Actividades publicadas! ${actividadesOfertadas.length} actividades están disponibles para los estudiantes.`
         );
-        setActividadesOfertadas([]);
+        // Recargar las ofertas desde el backend para reflejar el estado real
+        await cargarOfertas();
       } else {
         alert("Error al publicar actividades");
       }
@@ -91,7 +112,7 @@ const AdminPanel = () => {
     return <div className="text-center py-8">Cargando actividades...</div>;
   }
 
-  // 🔎 Filtrar actividades según la búsqueda
+  // Filtrar actividades según la búsqueda
   const actividadesFiltradas = todasActividades.filter((act) =>
     (act.aconco || act.aticve || "")
       .toLowerCase()
@@ -119,7 +140,7 @@ const AdminPanel = () => {
             </h3>
           </div>
 
-          {/* 🔎 Barra de búsqueda */}
+          {/* Barra de búsqueda */}
           <div className="relative mb-4">
             <input
               type="text"
@@ -222,7 +243,7 @@ const AdminPanel = () => {
               <p className="text-sm">Agrega actividades del catálogo</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {actividadesOfertadas.map((actividad) => (
                 <div
                   key={actividad.id}
@@ -256,7 +277,7 @@ const AdminPanel = () => {
       </div>
 
       {/* Estadísticas */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 mt-6">
         <div className="bg-blue-500 text-white p-4 rounded-lg">
           <h4 className="font-semibold">Total Actividades</h4>
           <p className="text-2xl font-bold">{todasActividades.length}</p>

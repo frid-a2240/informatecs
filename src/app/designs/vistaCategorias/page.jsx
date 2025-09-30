@@ -25,7 +25,7 @@ const Card = ({ item, isSelected, onClick }) => (
     <div className="card-header">
       <BookOpen className="icon" /> Asignatura
     </div>
-    <h3>{item.actividad.acodes}</h3>
+    <h3>{item.actividad.aconco}</h3>
     <p className="description">
       Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ullam amet dolor
       ipsam porro obcaecati iste placeat rerum atque iusto, sapiente ex ipsa
@@ -33,9 +33,9 @@ const Card = ({ item, isSelected, onClick }) => (
     </p>
     <div className="card-footer">
       <span>
-        <Inbox className="badge" />
-        informacion
+        <Inbox /> {item.actividad.acodes}
       </span>
+      Informacion
     </div>
   </div>
 );
@@ -54,7 +54,7 @@ const OfferModal = ({ item, onClose }) => {
         {item.actividad.image && (
           <img src={item.actividad.image} alt={item.actividad.aticve} />
         )}
-        <h2>{item.actividad.acodes}</h2>
+        <h2>{item.actividad.aconco}</h2>
         <div className="modal-content">
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad unde

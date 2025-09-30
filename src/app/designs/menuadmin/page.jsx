@@ -1,37 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminPanel from "../../components/admin/AdminPanel";
-
-const borrarTodasOfertas = async () => {
-  if (
-    !window.confirm(
-      "¿Deseas borrar todas las ofertas del semestre? Esto no se puede deshacer."
-    )
-  )
-    return;
-
-  try {
-    const response = await fetch("/api/ofertas-semestre/borrar", {
-      method: "DELETE",
-    });
-    if (response.ok) {
-      const data = await response.json();
-      alert(`${data.count} ofertas eliminadas.`);
-      // Opcional: actualizar la UI
-      setActividadesOfertadas([]);
-    } else {
-      alert("Error al borrar las ofertas.");
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Error de conexión.");
-  }
-};
 
 const AdminDashboard = () => {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("dashboard");
+  const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
 
   const handleLogout = () => {
     if (window.confirm("¿Estás seguro de que deseas cerrar sesión?")) {
@@ -39,6 +14,53 @@ const AdminDashboard = () => {
       router.push("/");
     }
   };
+
+  // Borrar todas las ofertas
+  const borrarTodasOfertas = async () => {
+    if (
+      !window.confirm(
+        "¿Deseas borrar todas las ofertas del semestre? Esto no se puede deshacer."
+      )
+    )
+      return;
+
+    try {
+      const response = await fetch("/api/ofertas-semestre/borrar", {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`${data.count} ofertas eliminadas.`);
+        setActividadesOfertadas([]); // Limpiamos el estado
+      } else {
+        alert("Error al borrar las ofertas.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error de conexión.");
+    }
+  };
+
+  // Actualizar actividades (se usa al publicar nuevas)
+  const actualizarActividades = (nuevasActividades) => {
+    setActividadesOfertadas(nuevasActividades);
+  };
+
+  // Cargar actividades al inicio
+  useEffect(() => {
+    const fetchActividades = async () => {
+      try {
+        const response = await fetch("/api/ofertas-semestre");
+        if (response.ok) {
+          const data = await response.json();
+          setActividadesOfertadas(data);
+        }
+      } catch (error) {
+        console.error("Error al cargar actividades:", error);
+      }
+    };
+    fetchActividades();
+  }, []);
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
@@ -173,6 +195,7 @@ const AdminDashboard = () => {
                 marginTop: "2rem",
               }}
             >
+              {/* Actividades Ofertadas */}
               <div
                 style={{
                   backgroundColor: "white",
@@ -192,13 +215,14 @@ const AdminDashboard = () => {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  24
+                  {actividadesOfertadas.length}
                 </div>
                 <div style={{ color: "#666", fontWeight: "500" }}>
-                  Eventos Activos
+                  Actividades Ofertadas
                 </div>
               </div>
 
+              {/* Créditos Totales */}
               <div
                 style={{
                   backgroundColor: "white",
@@ -209,7 +233,7 @@ const AdminDashboard = () => {
                 }}
               >
                 <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
-                  👥
+                  🎓
                 </div>
                 <div
                   style={{
@@ -218,36 +242,13 @@ const AdminDashboard = () => {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  1,247
+                  {actividadesOfertadas.reduce(
+                    (acc, act) => acc + (act.creditos || 0),
+                    0
+                  )}
                 </div>
                 <div style={{ color: "#666", fontWeight: "500" }}>
-                  Usuarios Registrados
-                </div>
-              </div>
-
-              <div
-                style={{
-                  backgroundColor: "white",
-                  borderRadius: "15px",
-                  padding: "1.5rem",
-                  textAlign: "center",
-                  boxShadow: "0 5px 15px rgba(0, 0, 0, 0.08)",
-                }}
-              >
-                <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
-                  ✅
-                </div>
-                <div
-                  style={{
-                    fontSize: "2rem",
-                    fontWeight: "700",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  356
-                </div>
-                <div style={{ color: "#666", fontWeight: "500" }}>
-                  Inscripciones Hoy
+                  Créditos Totales
                 </div>
               </div>
             </div>
@@ -255,9 +256,10 @@ const AdminDashboard = () => {
         )}
 
         {activeSection === "events" && (
-          <div>
-            <AdminPanel />
-          </div>
+          <AdminPanel
+            borrarTodasOfertas={borrarTodasOfertas}
+            actualizarActividades={actualizarActividades}
+          />
         )}
 
         {(activeSection === "users" ||
