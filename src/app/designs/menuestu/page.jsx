@@ -4,8 +4,6 @@ import { useEffect, useState, useCallback } from "react";
 import NavbarEst from "@/app/components/navbares";
 import "./perfil.css";
 
-// Definición de un tipo de datos para mayor claridad y seguridad
-// Aunque no es TypeScript, ayuda a entender la estructura esperada
 const initialStudentData = {
   nombreCompleto: null,
   numeroControl: null,
@@ -21,11 +19,6 @@ const initialStudentData = {
 };
 
 export default function DashboardPage() {
-  // 💡 Nota: La variable 'fullName' de useSearchParams no se está utilizando
-  // para la lógica de carga, por lo que se puede eliminar si no es necesaria.
-  // const searchParams = useSearchParams();
-  // const fullName = searchParams.get("name");
-
   const [studentData, setStudentData] = useState(initialStudentData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null); // Nuevo estado para manejo de errores

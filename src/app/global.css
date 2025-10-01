@@ -431,3 +431,143 @@
     font-size: 1.2rem;
   }
 }
+/* --- Sidebaradm(Barra Lateral) --- */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: var(--blue-primary);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+/* Sidebar abierto/cerrado */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Header del sidebar */
+.sidebar-header {
+  margin-bottom: 2rem;
+}
+
+.logo-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--yellow-accent);
+}
+
+.logo-subtitle {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Perfil admin */
+.admin-profile-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-avatar {
+  background-color: var(--yellow-accent);
+  color: var(--blue-primary);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-role {
+  font-size: 0.9rem;
+  color: var(--white);
+}
+
+/* Navegación */
+.sidebar-nav .nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.nav-button:hover {
+  background-color: var(--blue-hover);
+}
+
+.nav-button.active {
+  background-color: var(--blue-hover);
+  color: #1a1a2e;
+}
+
+.nav-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Botón de cerrar sesión */
+.logout-button {
+  background-color: bl;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.logout-button:hover {
+  background-color: var(--blue-hover);
+}
+
+/* Botón hamburguesa móvil */
+.mobile-toggle-button {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: transparent;
+  border: none;
+  z-index: 1100;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .mobile-toggle-button {
+    display: block;
+  }
+}
