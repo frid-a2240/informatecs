@@ -6,6 +6,7 @@ const EstuPanel = ({ activeSection, studentData, setStudentData }) => {
   const [misActividades, setMisActividades] = useState([]);
   const [selectedSport, setSelectedSport] = useState('');
   const [showForm, setShowForm] = useState(false);
+   const [actividadExpandida, setActividadExpandida] = useState(null);
   
   const [formData, setFormData] = useState({
     hasPracticed: '',
@@ -54,7 +55,7 @@ const cargarMisActividades = async () => {
 
   const handleSportClick = (ofertaId, actividad) => {
     setSelectedSport({ 
-      id: ofertaId, 
+      ofertaId: ofertaId, 
       actividadId: actividad.id,
       name: actividad.aconco || actividad.aticve 
     });
@@ -63,43 +64,55 @@ const cargarMisActividades = async () => {
   };
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.hasPracticed || !formData.hasIllness || !formData.purpose || !formData.bloodType) {
-      alert('Por favor completa todas las preguntas');
-      return;
-    }
+  e.preventDefault();
+  if (!formData.hasPracticed || !formData.hasIllness || !formData.purpose || !formData.bloodType) {
+    alert('Por favor completa todas las preguntas');
+    return;
+  }
 
-    try {
-      const response = await fetch('/api/inscripciones', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          aluctr: studentData?.aluctr || studentData?.numeroControl,
-          actividadId: selectedSport.actividadId,
-          ...formData
-        })
-      });
+  // Obtener número de control
+  const numeroControl = studentData?.numeroControl;
+  
+  if (!numeroControl) {
+    alert('Error: No se pudo obtener tu número de control. Por favor recarga la página.');
+    console.error('studentData completo:', studentData);
+    return;
+  }
 
-      if (response.ok) {
-        const newActivity = { 
-          ...selectedSport, 
-          ...formData,
-          fechaInscripcion: new Date().toLocaleDateString()
-        };
-        setMisActividades([...misActividades, newActivity]);
-        setStudentData({ ...studentData, bloodType: formData.bloodType });
-        setShowForm(false);
-        setSelectedSport('');
-        alert(`Inscripción a ${selectedSport.name} registrada exitosamente`);
-      } else {
-        const data = await response.json();
-        alert('Error al registrar inscripción: ' + data.error);
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Error de conexión');
+  try {
+    const dataToSend = {
+      aluctr: numeroControl,
+      actividadId: selectedSport.actividadId,
+      ofertaId: selectedSport.ofertaId,  // ← CAMBIO IMPORTANTE AQUÍ
+      hasPracticed: formData.hasPracticed,
+      hasIllness: formData.hasIllness,
+      purpose: formData.purpose,
+      bloodType: formData.bloodType
+    };
+
+    
+    const response = await fetch('/api/inscripciones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    });
+
+    const data = await response.json();
+ 
+    if (response.ok) {
+      setStudentData({ ...studentData, bloodType: formData.bloodType });
+      setShowForm(false);
+      setSelectedSport('');
+      alert(`Inscripción a ${selectedSport.name} registrada exitosamente`);
+      cargarMisActividades(); // Recargar lista de actividades
+    } else {
+      alert('Error al registrar inscripción: ' + (data.error || 'Error desconocido'));
     }
-  };
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error de conexión al servidor');
+  }
+};
 
   // Renderizar según la sección activa
   if (activeSection === 'activities' && !showForm) {
@@ -446,6 +459,8 @@ const cargarMisActividades = async () => {
   }
 
   if (activeSection === 'events') {
+
+
     return (
       <div style={{
         background: 'rgba(255, 255, 255, 0.95)',
@@ -470,26 +485,211 @@ const cargarMisActividades = async () => {
               <p>Ve a "Actividades Complementarias" para inscribirte en alguna actividad.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
-              {misActividades.map((actividad, index) => (
-                <div key={index} style={{
-                  border: '1px solid #ddd',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  backgroundColor: '#f8f9fa'
-                }}>
-                  <h4 style={{ margin: '0 0 0.5rem 0', color: '#333' }}>
-                    {actividad.name}
-                  </h4>
-                  <div style={{ fontSize: '0.9rem', color: '#666' }}>
-                    <p><strong>Fecha de inscripción:</strong> {actividad.fechaInscripcion}</p>
-                    <p><strong>Propósito:</strong> {actividad.purpose}</p>
-                    <p><strong>Tipo de sangre:</strong> {actividad.bloodType}</p>
-                    <p><strong>Ha practicado antes:</strong> {actividad.hasPracticed === 'si' ? 'Sí' : 'No'}</p>
-                    <p><strong>Tiene enfermedad:</strong> {actividad.hasIllness === 'si' ? 'Sí' : 'No'}</p>
+            <div style={{ display: 'grid', gap: '1.5rem' }}>
+              {misActividades.map((inscripcion, index) => {
+                const actividad = inscripcion.actividad;
+                const isExpanded = actividadExpandida === index;
+                
+                return (
+                  <div key={index} style={{
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    backgroundColor: '#fff',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}>
+                    {/* Header - Nombre de la actividad */}
+                    <div 
+                      onClick={() => setActividadExpandida(isExpanded ? null : index)}
+                      style={{
+                        padding: '1.5rem',
+                        backgroundColor: '#f8f9fa',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        borderBottom: isExpanded ? '2px solid #e0e0e0' : 'none'
+                      }}
+                    >
+                      <div>
+                        <h3 style={{ 
+                          margin: 0, 
+                          fontSize: '1.4rem', 
+                          color: '#333',
+                          fontWeight: '700'
+                        }}>
+                          {actividad?.aconco || actividad?.aticve || 'Actividad'}
+                        </h3>
+                        <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', color: '#666' }}>
+                          Código: {actividad?.aticve} | Créditos: {actividad?.acocre} | Horas: {actividad?.acohrs}
+                        </p>
+                      </div>
+                      <div style={{ fontSize: '1.5rem', color: '#666' }}>
+                        {isExpanded ? '▼' : '▶'}
+                      </div>
+                    </div>
+
+                    {/* Contenido expandido */}
+                    {isExpanded && (
+                      <div style={{ padding: '2rem' }}>
+                        {/* Tabla de información */}
+                        <div style={{ 
+                          overflowX: 'auto',
+                          marginBottom: '2rem',
+                          border: '1px solid #e0e0e0',
+                          borderRadius: '8px'
+                        }}>
+                          <table style={{ 
+                            width: '100%', 
+                            borderCollapse: 'collapse',
+                            fontSize: '0.9rem'
+                          }}>
+                            <thead>
+                              <tr style={{ backgroundColor: '#f8f9fa' }}>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Periodo</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Código</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Actividad</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>QR</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Créditos</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Horas</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Departamento</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr style={{ backgroundColor: '#fff' }}>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {new Date(inscripcion.fechaInscripcion).getFullYear()}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.aticve || 'N/A'}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.aconco || actividad?.aticve || 'N/A'}
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  <span style={{ 
+                                    color: '#dc3545', 
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold'
+                                  }}>✗</span>
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.acocre || 0}
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.acohrs || 0}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  Actividades Extraescolares
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Información del estudiante */}
+                        <div style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                          gap: '1.5rem',
+                          marginTop: '1.5rem'
+                        }}>
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #007bff'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Fecha de Inscripción
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {new Date(inscripcion.fechaInscripcion).toLocaleDateString('es-MX', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #28a745'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Tipo de Sangre
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.bloodType || 'N/A'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #ffc107'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Experiencia Previa
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.hasPracticed === 'si' ? 'Sí ha practicado' : 'No ha practicado'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #dc3545'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Condición Médica
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.hasIllness === 'si' ? 'Sí reportó' : 'No reportó'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #6f42c1',
+                            gridColumn: 'span 2'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Propósito de Inscripción
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.purpose || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Horario - Placeholder para futuras actualizaciones */}
+                        <div style={{
+                          marginTop: '1.5rem',
+                          padding: '1.5rem',
+                          backgroundColor: '#e7f3ff',
+                          borderRadius: '8px',
+                          border: '1px dashed #007bff'
+                        }}>
+                          <h4 style={{ margin: '0 0 0.5rem 0', color: '#0056b3' }}>
+                            📅 Horario
+                          </h4>
+                          <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                            El horario será asignado por el administrador próximamente.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

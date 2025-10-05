@@ -229,7 +229,7 @@ npx prisma generate
 
 1. **Uso de `db push`**: Elegido por compatibilidad con datos existentes
 2. **Estructura de relaciones**: Diseñada para flexibilidad (múltiples carreras por estudiante)
-3. **Preservación de datos**: Prioridad en mantener los 15,000 registros existentes
+3. **Preservación de datos**: Prioridad en mantener los 16,000+ registros existentes
 
 ### Futuras Mejoras:
 
@@ -254,4 +254,4 @@ Para dudas o problemas:
 
 ---
 
-**Última actualización**: [2/09/2025]
+**Última actualización**: [4/10/2025]
