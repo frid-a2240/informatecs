@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { id: "dashboard", label: "Dashboard", icon: <Home size={18} /> },
+  { id: "dashboard", label: "Inicio", icon: <Home size={18} /> },
   { id: "events", label: "Gestionar Eventos", icon: <Calendar size={18} /> },
   { id: "users", label: "Usuarios", icon: <Users size={18} /> },
   { id: "inscriptions", label: "Inscripciones", icon: <FileText size={18} /> },

@@ -2,25 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Colores originales con mejor aplicación */
+/* Colores y Tipografía Base */
 :root {
   --blue-primary: #1b396a;
   --yellow-accent: #fe9e10;
   --blue-hover: #8eafef;
   --text-dark: #333333;
-  --bg-light: linear-gradient(
-    to left,
-    rgba(8, 94, 222, 0.7),
-    rgba(8, 94, 222, 0)
-  );
   --white: #ffffff;
+  /* El color del fondo de actividades ahora es un azul muy claro */
+  --bg-activity-light: rgba(8, 94, 222, 0.05);
   font-family: "Noto Sans", sans-serif;
 }
 
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==========================
+   Topbar (Barra Superior)
+========================== */
 .topbar {
   background-color: var(--blue-primary);
   color: white;
-
   height: 6rem;
   width: 100%;
   display: flex;
@@ -56,6 +61,7 @@
   transform: scale(1.2);
   color: var(--blue-hover);
 }
+
 .register-button {
   background-color: var(--yellow-accent);
   color: var(--white);
@@ -65,7 +71,7 @@
   border-radius: 9999px;
   cursor: pointer;
   display: inline-block;
-  margin-top: 2.5rem; /* 👈 lo bajamos más */
+  margin-top: 2.5rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
@@ -90,7 +96,9 @@
   }
 }
 
-/* Título de la página */
+/* ==========================
+   Título de la página
+========================== */
 .main-title-section {
   background-color: var(--white);
   text-align: center;
@@ -102,41 +110,153 @@
   font-size: clamp(3.5rem, 6vw, 9rem);
   font-weight: 800;
   margin-bottom: 1rem;
-  color: var(--yellow-accent);
   text-align: center;
   text-shadow: 0 0 6px #fe3b3b, -1px -1px 0 #cb201f, 1px -1px 0 #cb201f,
     1px 1px 0 #cb201f, -1px 1px 0 #cb201f;
 }
 
-/* Sección principal  */
-.hero-section {
+.magic-slider-hero-section {
   position: relative;
   height: 60vh;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
   color: var(--white);
-  text-align: left;
-  padding-left: 5%;
   margin-bottom: 3rem;
+  /* Fondo por si la lista de slides es vacía */
   background-color: var(--blue-primary);
 }
 
-.carousel-dots {
+.magic-slider-list {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.magic-slider-item {
   position: absolute;
-  bottom: 20px; /* distancia desde el borde inferior */
-  left: 50%;
-  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 3s ease-in-out;
+  z-index: 0;
+}
+
+.magic-slider-item.active {
+  opacity: 1; /* El slide activo es visible */
+}
+
+.magic-slider-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Overlay Oscuro con Degradado (Para legibilidad del texto) */
+.magic-slider-list::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Degradado oscuro, con mayor opacidad a la izquierda para el texto */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.36),
+    /* Oscuro para contraste */ rgba(0, 0, 0, 0.339)
+  );
+  z-index: 1; /* Sobre la imagen */
+}
+
+.magic-slider-content {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  z-index: 2; /* Sobre el overlay */
+  max-width: 600px;
+}
+
+.magic-slider-content .main-headline {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  font-weight: 800;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.magic-slider-content .sub-headline {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  color: var(--yellow-accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.magic-slider-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Controles (Miniaturas y Puntos) */
+.magic-slider-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10px;
+  z-index: 3;
+}
+
+.magic-slider-thumbnails {
   display: flex;
   gap: 10px;
-  z-index: 2; /* que se vean encima de la imagen */
+  margin-bottom: 10px;
+  padding: 0 10px;
+}
+
+.thumbnail-item {
+  width: 100px; /* Tamaño de la miniatura */
+  height: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+  border-radius: 5px;
+}
+
+.thumbnail-item:hover {
+  opacity: 0.9;
+}
+
+.thumbnail-item.active {
+  opacity: 1;
+  border-color: var(--yellow-accent); /* Borde amarillo para el activo */
+}
+
+.thumbnail-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Puntos de navegación */
+.carousel-dots {
+  display: flex;
+  gap: 10px;
 }
 
 .carousel-dot {
   width: 12px;
   height: 12px;
-  background-color: rgba(255, 255, 255, 0.6); /* puntitos gris claro */
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -147,54 +267,35 @@
 }
 
 .carousel-dot.active {
-  background-color: var(--yellow-accent); /* puntito activo amarillo */
-  transform: scale(1.2); /* se hace más grande */
+  background-color: var(--yellow-accent);
+  transform: scale(1.2);
 }
 
-.hero-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
+/* Media Query para el slider en móvil */
+@media (max-width: 768px) {
+  .magic-slider-hero-section {
+    height: 50vh;
+  }
+  .magic-slider-content {
+    left: 2%;
+    right: 2%;
+    max-width: none;
+    text-align: center;
+  }
+  .magic-slider-content .main-headline {
+    font-size: 2.5rem;
+  }
+  .magic-slider-thumbnails {
+    display: none;
+  }
+  .magic-slider-facebook-cta {
+    padding: 0.3rem 0.5rem;
+  }
 }
 
-.hero-image.active {
-  opacity: 0.4; /* Opacidad para que el texto sea legible */
-}
-
-.hero-text-container {
-  position: relative;
-  z-index: 1;
-  max-width: 600px;
-}
-
-.main-headline {
-  font-size: clamp(3rem, 6vw, 4.5rem);
-  line-height: 1.1;
-  margin-bottom: 0.5rem;
-  font-weight: 800;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.sub-headline {
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  color: var(--yellow-accent);
-  font-weight: 600;
-  display: block;
-  margin-bottom: 1rem;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.hero-text-container p {
-  font-size: 1.1rem;
-  line-height: 1.6;
-}
-
-/* Sección de actividades */
+/* ==========================
+   Sección de actividades
+========================== */
 .activities-section {
   background-color: var(--white);
   padding: 4rem 1rem;
@@ -227,7 +328,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background-color: var(--bg-light);
+  background-color: var(--bg-activity-light);
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -276,6 +377,7 @@
   height: 15rem;
   object-fit: cover;
 }
+
 /* ==========================
    Navbar
 ========================== */
@@ -311,7 +413,7 @@
   font-size: 1.8rem;
   color: var(--white);
   cursor: pointer;
-  display: none; /* por defecto oculto */
+  display: none;
 }
 
 /* Menú horizontal por defecto */
@@ -336,7 +438,7 @@
   display: block;
   width: 0%;
   height: 2px;
-  background: var(--yellow);
+  background: var(--yellow-accent);
   transition: width 0.3s;
   margin-top: 4px;
 }
@@ -346,7 +448,7 @@
 }
 
 .navbar__cta {
-  background-color: var(--yellow);
+  background-color: var(--yellow-accent);
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   font-weight: bold;
@@ -355,8 +457,9 @@
 }
 
 .navbar__cta:hover {
-  background-color: #eab308;
+  background-color: #e68a00;
 }
+
 @media (max-width: 768px) {
   .navbar__toggle {
     display: block;
@@ -369,20 +472,19 @@
     width: 100%;
     background-color: var(--blue-primary);
     flex-direction: column;
-    align-items: center; /* centra horizontalmente */
+    align-items: center;
     padding: 1rem 0;
-    gap: 1rem; /* espacio entre enlaces */
-    display: none; /* oculto por defecto */
+    gap: 1rem;
+    display: none;
   }
 
-  /* Mostrar menú cuando se agrega la clase --open */
   .navbar__menu.navbar__menu--open {
     display: flex;
   }
 
   .navbar__link {
-    width: 100%; /* ocupa todo el ancho */
-    text-align: center; /* centra el texto */
+    width: 100%;
+    text-align: center;
     padding: 0.5rem 0;
   }
 }
@@ -455,18 +557,20 @@
 
 /* Header del sidebar */
 .sidebar-header {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .logo-title {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--yellow-accent);
+  text-align: center;
 }
 
 .logo-subtitle {
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--white);
+  text-align: center;
 }
 
 /* Perfil admin */
@@ -479,7 +583,7 @@
 
 .admin-avatar {
   background-color: var(--yellow-accent);
-  color: var(--blue-primary);
+  color: white;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -522,12 +626,12 @@
 }
 
 .nav-button:hover {
-  background-color: var(--blue-hover);
+  background-color: var(--blue-primary);
 }
 
 .nav-button.active {
   background-color: var(--blue-hover);
-  color: #1a1a2e;
+  color: white;
 }
 
 .nav-icon {

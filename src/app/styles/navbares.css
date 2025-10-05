@@ -1,165 +1,142 @@
-:root {
-  --blue-primary: #1d4ed8; /* color principal del sidebar */
-  --blue-hover: #2563eb; /* hover de items */
-  --text-white: #ffffff;
-}
+/* --- Sidebaradm(Barra Lateral) --- */
 
-/* Sidebar general */
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
+  height: 100vh;
+  width: 250px;
   background-color: var(--blue-primary);
-  color: var(--text-white);
-  overflow: hidden;
-  transition: width 0.3s ease-in-out;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: transform 0.3s ease;
   z-index: 1000;
 }
 
-.sidebar-open {
-  width: 220px;
+/* Sidebar abierto/cerrado */
+.sidebar.closed {
+  transform: translateX(-100%);
 }
 
-.sidebar-closed {
-  width: 70px;
-}
-
-/* Header */
+/* Header del sidebar */
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+  margin-bottom: 3rem;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.logo-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--yellow-accent);
+  text-align: center;
 }
 
-.designer-text {
+.logo-subtitle {
+  font-size: 0.9rem;
+  color: var(--white);
+  text-align: center;
+}
+
+/* Perfil admin */
+.admin-profile-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-avatar {
+  background-color: var(--yellow-accent);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
   font-size: 1.2rem;
-  transition: opacity 0.3s ease;
+  margin-bottom: 0.5rem;
 }
 
-.sidebar-closed .designer-text {
-  opacity: 0;
+.admin-role {
+  font-size: 0.9rem;
+  color: var(--white);
 }
 
-/* Toggle botón */
-.sidebar-toggle-btn {
-  background: none;
-  border: none;
-  color: var(--text-white);
-  cursor: pointer;
-  font-size: 1.5rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background 0.2s;
-}
-
-.sidebar-toggle-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Menú */
-.menu {
+/* Navegación */
+.sidebar-nav .nav-list {
   list-style: none;
   padding: 0;
-  margin: 1rem 0;
+  margin: 0;
+  flex-grow: 1;
 }
 
-.menu-item {
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-button {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: background 0.2s;
 }
 
-.menu-item:hover {
+.nav-button:hover {
+  background-color: var(--blue-primary);
+}
+
+.nav-button.active {
+  background-color: var(--blue-hover);
+  color: white;
+}
+
+.nav-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Botón de cerrar sesión */
+.logout-button {
+  background-color: bl;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.logout-button:hover {
   background-color: var(--blue-hover);
 }
 
-.menu-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: inherit;
-  text-decoration: none;
+/* Botón hamburguesa móvil */
+.mobile-toggle-button {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: transparent;
+  border: none;
+  z-index: 1100;
+  cursor: pointer;
 }
 
-.icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.title {
-  font-size: 1rem;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: opacity 0.3s ease;
-}
-
-.sidebar-closed .title {
-  opacity: 0;
-}
-
-/* Separador para primer item */
-.menu-item-gap {
-  margin-top: 20px;
-}
-
-/* Responsive móvil */
+/* Responsive */
 @media (max-width: 768px) {
-  .sidebar {
-    bottom: 0;
-    top: auto;
-    width: 100%;
-    height: 60px;
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  .sidebar-open,
-  .sidebar-closed {
-    width: 100%;
-    height: 60px;
-  }
-
-  .sidebar-header {
-    display: none; /* ocultamos logo y toggle en móvil */
-  }
-
-  .menu {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    margin: 0;
-    padding: 0 10px;
-  }
-
-  .menu-item {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0 8px;
-    border-radius: 0;
-  }
-
-  .title {
-    display: none; /* ocultamos textos en móvil */
-  }
-
-  main {
-    margin-left: 0;
-    margin-bottom: 60px; /* espacio para barra inferior */
+  .mobile-toggle-button {
+    display: block;
   }
 }

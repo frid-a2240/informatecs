@@ -4,6 +4,7 @@ import Footer from "./components/footer";
 import Navbar from "./components/navbar";
 import TopBar from "./components/topbar";
 import Link from "next/link";
+import { FaFacebook } from "react-icons/fa"; // Importación requerida para el icono de Facebook
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -25,66 +26,89 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [images.length]);
 
+  // Función para manejar el clic en las miniaturas y puntos
+  const handleSlideChange = (index) => {
+    setCurrentSlide(index);
+  };
+
   return (
     <>
       <TopBar />
 
       <div className="homepage-container">
-        <header className="header"></header>
-
         <section className="main-title-section">
           <h1>Eventos ITE</h1>
         </section>
 
         <Navbar />
-        <main className="hero-section">
-          <div className="carousel-container">
+
+        {/* ==============================================
+            SECCIÓN DEL CARRUSEL MODIFICADA (MAGIC SLIDER)
+        ============================================== */}
+        <main className="magic-slider-hero-section">
+          <div className="magic-slider-list">
             {images.map((image, index) => (
-              <img
+              <div
                 key={index}
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className={`hero-image ${
+                className={`magic-slider-item ${
                   index === currentSlide ? "active" : ""
                 }`}
-              />
+              >
+                <img src={image} alt={`Slide ${index + 1}`} />
+
+                {/* Contenido de texto que va sobre la imagen principal */}
+                <div className="magic-slider-content">
+                  {/* Aquí colocamos el texto "Instituto Tecnológico De Ensenada" de tu código anterior */}
+                  <h1 className="main-headline">
+                    Instituto <br />
+                    Tecnológico
+                  </h1>
+                  <span className="sub-headline">De Ensenada</span>
+                  <p>
+                    Te invitamos a participar en clubs, actividades
+                    extraescolares y eventos.
+                  </p>
+                  <Link href="/designs/vistaLogin" className="register-button">
+                    Registrarse
+                  </Link>
+                </div>
+              </div>
             ))}
 
-            <div className="carousel-dots">
-              {images.map((_, index) => (
-                <span
-                  key={index}
-                  className={`carousel-dot ${
-                    index === currentSlide ? "active" : ""
-                  }`}
-                  onClick={() => setCurrentSlide(index)}
-                />
-              ))}
-            </div>
-          </div>
+            {/* Controles de navegación: Puntos y Miniaturas */}
+            <div className="magic-slider-controls">
+              {/* Miniaturas */}
+              <div className="magic-slider-thumbnails">
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`thumbnail-item ${
+                      index === currentSlide ? "active" : ""
+                    }`}
+                    onClick={() => handleSlideChange(index)}
+                  >
+                    <img src={image} alt={`Thumbnail ${index + 1}`} />
+                  </div>
+                ))}
+              </div>
 
-          <div className="hero-text-container">
-            <div className="hero-text-content">
-              <h1 className="main-headline">
-                Instituto <br />
-                Tecnológico
-              </h1>
-              <span className="sub-headline">De Ensenada</span>
-              <p>
-                Te invitamos a participar en clubs, actividades extraescolares y
-                eventos.
-              </p>
-
-              <Link href="/designs/vistaLogin" className="register-button">
-                Registrarse
-              </Link>
+              <div className="carousel-dots">
+                {images.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`carousel-dot ${
+                      index === currentSlide ? "active" : ""
+                    }`}
+                    onClick={() => handleSlideChange(index)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </main>
 
         <section className="activities-section">
           <h2>¡Entérate!</h2>
-
           <div className="activities-content">
             <div className="activity-item">
               <div className="text-content">
