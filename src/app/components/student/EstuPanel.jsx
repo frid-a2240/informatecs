@@ -83,7 +83,7 @@ const cargarMisActividades = async () => {
     const dataToSend = {
       aluctr: numeroControl,
       actividadId: selectedSport.actividadId,
-      ofertaId: selectedSport.ofertaId,  // ← CAMBIO IMPORTANTE AQUÍ
+      ofertaId: selectedSport.ofertaId,  // ← aqui se arreglo
       hasPracticed: formData.hasPracticed,
       hasIllness: formData.hasIllness,
       purpose: formData.purpose,
@@ -457,7 +457,7 @@ const cargarMisActividades = async () => {
       </div>
     );
   }
-
+  // todo esto es nueVo y modificado para la seccion de Mis Actividades
   if (activeSection === 'events') {
 
 
