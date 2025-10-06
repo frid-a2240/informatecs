@@ -96,8 +96,11 @@ export default function App() {
       try {
         const res = await fetch(API_URL);
         const data = await res.json();
-        setOfertas(data);
+        console.log("API Response:", data); // Para depuración
+        // Asegurar que siempre sea un array
+        setOfertas(Array.isArray(data) ? data : data.ofertas || []);
       } catch (e) {
+        console.error("Error al cargar ofertas:", e);
         setOfertas([]);
       } finally {
         setLoading(false);
@@ -142,9 +145,7 @@ export default function App() {
 
         {loading ? (
           <p>Cargando...</p>
-        ) : ofertas.length === 0 ? (
-          <p>No hay ofertas</p>
-        ) : (
+        ) : Array.isArray(ofertas) && ofertas.length > 0 ? (
           <div className="carousel-container">
             <button
               className="carousel-btn left"
@@ -169,6 +170,8 @@ export default function App() {
               <ChevronRight />
             </button>
           </div>
+        ) : (
+          <p>No hay ofertas</p>
         )}
 
         {selectedItem && (

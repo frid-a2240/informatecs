@@ -1,16 +1,33 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
-async function borrar() {
+async function main() {
   try {
-    const res = await prisma.ofertaSemestre.deleteMany({});
-    console.log("Se borraron:", res.count);
+    // Borrar primero inscripciones asociadas a ofertas activas
+    await prisma.inscripact.deleteMany({
+      where: {
+        ofertaId: {
+          in: (
+            await prisma.ofertaSemestre.findMany({
+              where: { activa: true, semestre: "2024-2" },
+              select: { id: true },
+            })
+          ).map((o) => o.id),
+        },
+      },
+    });
+
+    // Luego borrar las ofertas
+    const resultado = await prisma.ofertaSemestre.deleteMany({
+      where: { activa: true, semestre: "2024-2" },
+    });
+
+    console.log(`Se borraron ${resultado.count} ofertas.`);
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-borrar();
+main();

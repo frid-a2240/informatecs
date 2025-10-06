@@ -9,15 +9,9 @@
   --blue-hover: #8eafef;
   --text-dark: #333333;
   --white: #ffffff;
-  /* El color del fondo de actividades ahora es un azul muy claro */
+
   --bg-activity-light: rgba(8, 94, 222, 0.05);
   font-family: "Noto Sans", sans-serif;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 /* ==========================
@@ -534,13 +528,13 @@ body {
   }
 }
 /* --- Sidebaradm(Barra Lateral) --- */
-
+/* Sidebar */
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
   width: 250px;
+  height: 100vh;
   background-color: var(--blue-primary);
   color: white;
   display: flex;
@@ -550,27 +544,26 @@ body {
   z-index: 1000;
 }
 
-/* Sidebar abierto/cerrado */
 .sidebar.closed {
   transform: translateX(-100%);
 }
-
-/* Header del sidebar */
-.sidebar-header {
-  margin-bottom: 3rem;
+.sidebar.open {
+  transform: translateX(0);
 }
 
+/* Sidebar header */
+.sidebar-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
 .logo-title {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--yellow-accent);
-  text-align: center;
 }
-
 .logo-subtitle {
   font-size: 0.9rem;
   color: var(--white);
-  text-align: center;
 }
 
 /* Perfil admin */
@@ -580,10 +573,9 @@ body {
   align-items: center;
   margin-bottom: 2rem;
 }
-
 .admin-avatar {
   background-color: var(--yellow-accent);
-  color: white;
+  color: var(--blue-primary);
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -594,24 +586,21 @@ body {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
 }
-
 .admin-role {
   font-size: 0.9rem;
   color: var(--white);
 }
 
 /* Navegación */
-.sidebar-nav .nav-list {
+.nav-list {
   list-style: none;
   padding: 0;
   margin: 0;
   flex-grow: 1;
 }
-
 .nav-item {
   margin-bottom: 0.5rem;
 }
-
 .nav-button {
   display: flex;
   align-items: center;
@@ -624,25 +613,23 @@ body {
   cursor: pointer;
   transition: background 0.2s;
 }
-
 .nav-button:hover {
-  background-color: var(--blue-primary);
-}
-
-.nav-button.active {
   background-color: var(--blue-hover);
-  color: white;
 }
-
+.nav-button.active {
+  background-color: var(--yellow-accent);
+  color: var(--blue-primary);
+  font-weight: 600;
+}
 .nav-icon {
   margin-right: 0.75rem;
   display: flex;
   align-items: center;
 }
 
-/* Botón de cerrar sesión */
+/* Logout */
 .logout-button {
-  background-color: bl;
+  background-color: #e53935;
   border: none;
   color: white;
   padding: 0.5rem 1rem;
@@ -652,12 +639,11 @@ body {
   align-items: center;
   margin-top: auto;
 }
-
 .logout-button:hover {
-  background-color: var(--blue-hover);
+  background-color: #c62828;
 }
 
-/* Botón hamburguesa móvil */
+/* Botón hamburguesa */
 .mobile-toggle-button {
   display: none;
   position: fixed;
@@ -669,9 +655,25 @@ body {
   cursor: pointer;
 }
 
+/* Contenido principal */
+.main-content {
+  transition: margin-left 0.3s ease;
+  flex-grow: 1;
+  padding: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .mobile-toggle-button {
     display: block;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
   }
 }

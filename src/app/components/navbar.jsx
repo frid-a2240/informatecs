@@ -44,8 +44,8 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/vistaCalendario" className="navbar__link active">
-              CALENDARIO
+            <Link href="/designs/vistaLogin" className="navbar__link active">
+              INICIAR SESION
             </Link>
           </li>
         </ul>

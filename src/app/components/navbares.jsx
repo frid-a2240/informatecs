@@ -38,8 +38,10 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className={`sidebar ${open ? "sidebar-open" : "sidebar-closed"}`}>
-      <div className="sidebar-header logo-toggle-container">
+    <aside
+      className={`sliderstu ${open ? "sliderstu-open" : "sliderstu-closed"}`}
+    >
+      <div className="sliderstu-header logo-toggle-container">
         {open && (
           <div className="logo-container">
             <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
@@ -47,8 +49,7 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* Toggle siempre visible */}
-        <button className="sidebar-toggle-btn" onClick={() => setOpen(!open)}>
+        <button className="sliderstu-toggle-btn" onClick={() => setOpen(!open)}>
           <FiMenu />
         </button>
       </div>

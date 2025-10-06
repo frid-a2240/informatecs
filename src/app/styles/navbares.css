@@ -1,142 +1,168 @@
-/* --- Sidebaradm(Barra Lateral) --- */
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --white: #ffffff;
+  --bg-activity-light: rgba(8, 94, 222, 0.05);
+  font-family: "Noto Sans", sans-serif;
+}
 
-.sidebar {
+/* ─────────── ESTILO POR DEFECTO (escritorio) ─────────── */
+@media (max-width: 768px) {
+  .main-content h1,
+  .main-content p {
+    margin-top: 70px; /* ajusta este valor si quieres más o menos espacio */
+  }
+}
+.sliderstu {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 250px;
   background-color: var(--blue-primary);
-  color: white;
+  color: var(--white);
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  overflow: hidden;
   z-index: 1000;
+  font-family: "Noto Sans", sans-serif;
 }
 
-/* Sidebar abierto/cerrado */
-.sidebar.closed {
-  transform: translateX(-100%);
+.sliderstu-closed {
+  width: 70px;
 }
 
-/* Header del sidebar */
-.sidebar-header {
-  margin-bottom: 3rem;
-}
-
-.logo-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--yellow-accent);
-  text-align: center;
-}
-
-.logo-subtitle {
-  font-size: 0.9rem;
-  color: var(--white);
-  text-align: center;
-}
-
-/* Perfil admin */
-.admin-profile-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.admin-avatar {
-  background-color: var(--yellow-accent);
-  color: white;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+.sliderstu-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-container img {
+  width: 40px;
+  height: 40px;
+}
+
+.designer-text {
   font-size: 1.2rem;
-  margin-bottom: 0.5rem;
-}
-
-.admin-role {
-  font-size: 0.9rem;
+  font-weight: 600;
   color: var(--white);
 }
 
-/* Navegación */
-.sidebar-nav .nav-list {
+.sliderstu-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Menú (escritorio) */
+
+.menu {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 1rem 0;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.nav-item {
-  margin-bottom: 0.5rem;
-}
-
-.nav-button {
+.menu-item {
   display: flex;
   align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: var(--blue-hover);
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--white);
   width: 100%;
-  background: transparent;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  gap: 1rem;
 }
 
-.nav-button:hover {
-  background-color: var(--blue-primary);
+.icon {
+  font-size: 1.5rem;
+  min-width: 24px;
 }
 
-.nav-button.active {
-  background-color: var(--blue-hover);
-  color: white;
+.title {
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
-.nav-icon {
-  margin-right: 0.75rem;
-  display: flex;
-  align-items: center;
-}
+/* ─────────── RESPONSIVE (móviles) ─────────── */
 
-/* Botón de cerrar sesión */
-.logout-button {
-  background-color: bl;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  margin-top: auto;
-}
-
-.logout-button:hover {
-  background-color: var(--blue-hover);
-}
-
-/* Botón hamburguesa móvil */
-.mobile-toggle-button {
-  display: none;
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  background: transparent;
-  border: none;
-  z-index: 1100;
-  cursor: pointer;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-  .mobile-toggle-button {
-    display: block;
+  .title {
+    padding-top: 60px; /* o margin-top */
+  }
+
+  .sliderstu {
+    top: 0;
+    bottom: auto;
+    height: 60px !important;
+    width: 100% !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Cambié border-top a border-bottom */
+    z-index: 1000;
+  }
+
+  .sliderstu-header {
+    display: none;
+  }
+
+  .menu {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .menu-item {
+    flex-direction: column;
+    padding: 0.3rem;
+  }
+
+  .menu-link {
+    flex-direction: column;
+    gap: 0.25rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.75rem;
+  }
+
+  .icon {
+    font-size: 1.3rem;
+  }
+
+  .title {
+    font-size: 0.7rem;
   }
 }

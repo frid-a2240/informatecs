@@ -1,13 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
+// Importamos 'useRouter' para la navegación
+import { useRouter } from "next/navigation";
 import Footer from "./components/footer";
 import Navbar from "./components/navbar";
 import TopBar from "./components/topbar";
-import Link from "next/link";
-import { FaFacebook } from "react-icons/fa"; // Importación requerida para el icono de Facebook
+// Se elimina la importación de Link y FaFacebook
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  // Inicializamos el router
+  const router = useRouter();
 
   const images = [
     "/imagenes/imaUniversidad(2).png",
@@ -29,6 +32,12 @@ const HomePage = () => {
   // Función para manejar el clic en las miniaturas y puntos
   const handleSlideChange = (index) => {
     setCurrentSlide(index);
+  };
+
+  // 🚀 FUNCIÓN CLAVE: Manda al usuario a la página de login
+  const handleRegistrationClick = () => {
+    // Usamos router.push para forzar la navegación programática
+    router.push("/designs/vistaLogin");
   };
 
   return (
@@ -56,9 +65,8 @@ const HomePage = () => {
               >
                 <img src={image} alt={`Slide ${index + 1}`} />
 
-                {/* Contenido de texto que va sobre la imagen principal */}
+                {/* Contenido de texto: Ya no contiene el botón */}
                 <div className="magic-slider-content">
-                  {/* Aquí colocamos el texto "Instituto Tecnológico De Ensenada" de tu código anterior */}
                   <h1 className="main-headline">
                     Instituto <br />
                     Tecnológico
@@ -68,9 +76,6 @@ const HomePage = () => {
                     Te invitamos a participar en clubs, actividades
                     extraescolares y eventos.
                   </p>
-                  <Link href="/designs/vistaLogin" className="register-button">
-                    Registrarse
-                  </Link>
                 </div>
               </div>
             ))}

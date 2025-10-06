@@ -277,16 +277,34 @@ p.subtitle {
   color: #dc2626; /* rojo error */
 }
 
-/* --- Responsivo modal --- */
 @media (max-width: 640px) {
-  .modal img {
-    height: auto;
-    max-height: 10rem;
+  h1 {
+    margin-top: 80px; /* Baja el título en móviles */
+    font-size: 1.8rem; /* Tamaño más visible */
+    color: var(--blue-primary);
   }
+
+  p.subtitle {
+    margin-top: 10px;
+    font-size: 1rem;
+    color: var(--blue-primary);
+  }
+  /* Carrusel: scroll horizontal sin barras */
+  .carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  /* Info Grid: solo una columna para móviles */
   .info-grid {
-    grid-template-columns: 1fr;
+    display: block;
+    padding: 1rem;
   }
-  .modal h2 {
-    font-size: 1.5rem;
+
+  .info-item {
+    margin-bottom: 1rem;
   }
 }
