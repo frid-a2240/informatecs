@@ -1,30 +1,26 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
-  Home,
-  Calendar,
-  Users,
-  FileText,
-  BarChart,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-} from "lucide-react";
+  FiHome,
+  FiCalendar,
+  FiUsers,
+  FiFileText,
+  FiBarChart2,
+  FiSettings,
+  FiLogOut,
+  FiMenu,
+} from "react-icons/fi";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
-const navItems = [
-  { id: "dashboard", label: "Inicio", icon: <Home size={18} /> },
-  { id: "events", label: "Gestionar Eventos", icon: <Calendar size={18} /> },
-  { id: "users", label: "Usuarios", icon: <Users size={18} /> },
-  { id: "inscriptions", label: "Inscripciones", icon: <FileText size={18} /> },
-  { id: "reports", label: "Reportes", icon: <BarChart size={18} /> },
-  { id: "settings", label: "Configuración", icon: <Settings size={18} /> },
-];
-
-const AdminSidebar = ({ activeSection, setActiveSection, handleLogout }) => {
-  const [isOpen, setIsOpen] = useState(true);
-
-  // Auto cerrar sidebar en mobile si la pantalla es pequeña
+export default function AdminSidebar() {
+  const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
+
+  // Detectar si es móvil
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -32,69 +28,88 @@ const AdminSidebar = ({ activeSection, setActiveSection, handleLogout }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Si estamos en mobile, el sidebar inicia cerrado
+  // Sidebar cerrado por defecto en móvil
   useEffect(() => {
-    if (isMobile) setIsOpen(false);
-    else setIsOpen(true);
+    setOpen(!isMobile);
   }, [isMobile]);
 
+  const handleLogout = () => {
+    if (window.confirm("¿Seguro que deseas cerrar sesión?")) {
+      localStorage.removeItem("adminData");
+      router.push("/login");
+    }
+  };
+
   return (
-    <>
-      {/* Botón hamburguesa */}
-      {isMobile && (
-        <button
-          className="mobile-toggle-button"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? (
-            <X size={24} color="var(--yellow-accent)" />
-          ) : (
-            <Menu size={24} color="var(--yellow-accent)" />
-          )}
+    <aside className={`sliderbaradm ${open ? "open" : "closed"}`}>
+      {/* Encabezado */}
+      <div className="sliderbaradm-header">
+        {open && (
+          <div className="logo-container">
+            <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
+            <span className="logo-text">Eventos ITE</span>
+          </div>
+        )}
+        <button className="toggle-btn" onClick={() => setOpen(!open)}>
+          <FiMenu />
         </button>
-      )}
+      </div>
 
-      <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
-        <div className="sidebar-header">
-          <h1 className="logo-title">Eventos ITE</h1>
-          <p className="logo-subtitle">Panel de Administración</p>
-        </div>
+      {/* Menú */}
+      <ul className="menu">
+        <SidebarItem
+          href="/admin/dashboard"
+          icon={<FiHome />}
+          label="Inicio"
+          open={open}
+        />
+        <SidebarItem
+          href="/designs/vistaeventosAdm"
+          icon={<FiCalendar />}
+          label="Gestionar Eventos"
+          open={open}
+        />
+        <SidebarItem
+          href="/designs/vistaalumnosadm"
+          icon={<FiUsers />}
+          label="Usuarios"
+          open={open}
+        />
+        <SidebarItem
+          href="/admin/inscripciones"
+          icon={<FiFileText />}
+          label="Inscripciones"
+          open={open}
+        />
+        <SidebarItem
+          href="/admin/reportes"
+          icon={<FiBarChart2 />}
+          label="Reportes"
+          open={open}
+        />
+        <SidebarItem
+          href="/admin/configuracion"
+          icon={<FiSettings />}
+          label="Configuración"
+          open={open}
+        />
 
-        <div className="admin-profile-box">
-          <div className="admin-avatar">A</div>
-          <div className="admin-role">Administrador</div>
-        </div>
-
-        <nav className="sidebar-nav">
-          <ul className="nav-list">
-            {navItems.map((item) => (
-              <li key={item.id} className="nav-item">
-                <button
-                  onClick={() => setActiveSection(item.id)}
-                  className={`nav-button ${
-                    activeSection === item.id ? "active" : ""
-                  }`}
-                >
-                  <span
-                    className="nav-icon"
-                    style={{ color: "var(--yellow-accent)" }}
-                  >
-                    {item.icon}
-                  </span>
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <button onClick={handleLogout} className="logout-button">
-          <LogOut size={18} color="white" style={{ marginRight: "1rem" }} />
-          Cerrar Sesión
-        </button>
-      </aside>
-    </>
+        <li className="menu-item logout" onClick={handleLogout}>
+          <FiLogOut className="icon" />
+          {open && <span className="title">Cerrar Sesión</span>}
+        </li>
+      </ul>
+    </aside>
   );
-};
+}
 
-export default AdminSidebar;
+function SidebarItem({ href, icon, label, open }) {
+  return (
+    <li className="menu-item">
+      <Link href={href} className="menu-link">
+        <span className="icon">{icon}</span>
+        {open && <span className="title">{label}</span>}
+      </Link>
+    </li>
+  );
+}

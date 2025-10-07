@@ -9,6 +9,9 @@ import {
   FiHome,
   FiLogOut,
   FiMenu,
+  FiCalendar,
+  FiAward,
+  FiActivity,
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import "../styles/navbares.css";
@@ -72,14 +75,21 @@ export default function Sidebar() {
         <li className="menu-item">
           <Link href="/designs/vistaCategorias" className="menu-link">
             <FiClipboard className="icon" />
-            {open && <span className="title">Actividades</span>}
+            {open && <span className="title">Actividades Ofertadas</span>}
+          </Link>
+        </li>
+
+        <li className="menu-item">
+          <Link href="/designs/misActividades" className="menu-link">
+            <FiActivity className="icon" />
+            {open && <span className="title"> Mis Actividades</span>}
           </Link>
         </li>
 
         <li className="menu-item">
           <Link href="/configuracion" className="menu-link">
-            <FiUserPlus className="icon" />
-            {open && <span className="title">Formulario</span>}
+            <FiAward className="icon" />
+            {open && <span className="title">Constancias/certificados</span>}
           </Link>
         </li>
 

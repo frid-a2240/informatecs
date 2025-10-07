@@ -1,0 +1,155 @@
+/* Contenedor general */
+.apanel-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Header */
+.apanel-header {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.apanel-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #1b396a;
+}
+
+.apanel-header p {
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Buscador */
+.apanel-buscador {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.apanel-search-wrapper {
+  position: relative;
+}
+
+.apanel-search-wrapper input {
+  width: 100%;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.apanel-search-wrapper input:focus {
+  border-color: #0055aa;
+  box-shadow: 0 0 0 2px rgba(0, 85, 170, 0.2);
+}
+
+.apanel-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+/* Estadísticas */
+.apanel-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.apanel-stat {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.total-estudiantes {
+  background-color: #1b396a;
+}
+
+.resultados-busqueda {
+  background-color: #28a745;
+}
+
+.apanel-stat h4 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.apanel-stat p {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+/* Lista de estudiantes */
+.apanel-lista {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.apanel-table-wrapper {
+  overflow-x: auto;
+}
+
+.apanel-lista table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.apanel-lista th,
+.apanel-lista td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.apanel-lista th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.apanel-lista td {
+  font-size: 0.9rem;
+  color: #333;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.apanel-lista tr:hover {
+  background-color: #f9fafb;
+}
+
+/* No results */
+.apanel-no-results {
+  padding: 3rem;
+  text-align: center;
+  color: #999;
+}
+
+.apanel-no-results svg {
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+/* Loading */
+.apanel-loading {
+  text-align: center;
+  padding: 4rem;
+  font-size: 1rem;
+  color: #555;
+}
