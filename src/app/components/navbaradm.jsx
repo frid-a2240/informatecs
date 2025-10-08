@@ -67,7 +67,11 @@ export default function AdminSidebar() {
         {open && (
           <div className="logo-container">
             <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
-            <span className="logo-text">Eventos ITE</span>
+            <div className="logo-text-container">
+              <span className="logo-text">Eventos ITE</span>
+              <span className="admin-badge">ADMIN</span>{" "}
+              {/* Badge de administrador */}
+            </div>
           </div>
         )}
         <button className="toggle-btn" onClick={() => setOpen(!open)}>
@@ -88,9 +92,11 @@ export default function AdminSidebar() {
           />
         ))}
 
-        <li className="menu-item logout" onClick={handleLogout}>
-          <FiLogOut className="icon" />
-          {open && <span className="title">Cerrar Sesión</span>}
+        <li className="menu-item" onClick={handleLogout}>
+          <div className="menu-link">
+            <FiLogOut className="icon" />
+            {open && <span className="title">Cerrar Sesión</span>}
+          </div>
         </li>
       </ul>
     </aside>

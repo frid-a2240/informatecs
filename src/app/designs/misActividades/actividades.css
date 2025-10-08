@@ -1,106 +1,159 @@
-/* ====== Mis Actividades (actividades.css) ====== */
-:root {
-  --bg-main: #f5f7fb;
-  --bg-card: #ffffff;
-  --text: #2d2d2d;
-  --muted: #666;
-  --primary: #007bff;
-  --radius: 12px;
-  --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  --border: #e0e0e0;
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+.actividades-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
 }
 
-/* --- CONTENEDOR GENERAL --- */
-.dashboard-container {
-  min-height: 100vh;
-  background: var(--bg-main);
+.actividades-main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+.titulo-principal {
+  color: #1e3a8a;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.mensaje-vacio {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.lista-actividades {
   display: flex;
   flex-direction: column;
+  gap: 1.2rem;
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
-.dashboard-main {
-  flex: 1;
-  padding: 2rem 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.dashboard-main h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  color: var(--text);
-  font-weight: 700;
-}
-
-/* --- LISTA DE ACTIVIDADES --- */
-.actividades-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-}
-
-/* --- TARJETA DE ACTIVIDAD --- */
 .actividad-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 2rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border-top: 4px solid var(--primary);
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .actividad-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.actividad-card h3 {
-  color: var(--primary);
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
+.card-header {
+  padding: 1rem 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: #f1f5f9;
 }
 
-.actividad-card p {
-  margin: 0.4rem 0;
-  color: var(--text);
-  font-size: 0.95rem;
-  line-height: 1.5;
-}
-
-.actividad-card strong {
-  color: var(--muted);
+.card-header h3 {
+  font-size: 1.1rem;
+  color: #111827;
   font-weight: 600;
+  margin: 0;
 }
 
-/* --- DIVISOR --- */
-.actividad-card hr {
+.card-header .subinfo {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.btn-toggle {
+  background: transparent;
   border: none;
-  border-top: 1px solid var(--border);
-  margin: 1rem 0;
+  cursor: pointer;
+  color: #374151;
+  transition: transform 0.2s ease;
 }
 
-/* --- ESTADOS --- */
-.dashboard-main > p {
-  text-align: center;
-  font-size: 1.05rem;
-  color: var(--muted);
-  margin-top: 2rem;
+.btn-toggle:hover {
+  transform: scale(1.2);
+  color: #2563eb;
 }
 
-/* --- RESPONSIVE --- */
-@media (max-width: 768px) {
-  .dashboard-main {
-    padding: 1.5rem;
-  }
+.card-body {
+  padding: 1.2rem;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  animation: fadeIn 0.3s ease;
+}
 
-  .actividad-card {
-    padding: 1.5rem;
-  }
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.8rem;
+}
 
-  .dashboard-main h1 {
-    font-size: 1.6rem;
+.detalle-item {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid transparent;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+}
+
+.detalle-item .label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.detalle-item .valor {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.detalle-item.azul {
+  border-left-color: #2563eb;
+}
+
+.detalle-item.verde {
+  border-left-color: #16a34a;
+}
+
+.detalle-item.amarillo {
+  border-left-color: #facc15;
+}
+
+.detalle-item.rojo {
+  border-left-color: #dc2626;
+}
+
+.detalle-item.proposito {
+  margin-top: 1rem;
+  border-left-color: #8b5cf6;
+}
+
+.horario-info {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-top: 1px dashed #e5e7eb;
+  padding-top: 0.6rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

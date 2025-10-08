@@ -12,8 +12,7 @@ export default function EventosPage() {
       </div>
 
       {/* Contenido principal */}
-      <div className="flex-1 p-6 overflow-auto">
-        <h2 className="text-2xl font-bold mb-6">📅 Gestión de Eventos</h2>
+      <div>
         <AdminPanel />
       </div>
     </div>

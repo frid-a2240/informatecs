@@ -87,13 +87,15 @@ export default function Sidebar() {
         <li className="menu-item">
           <Link href="/configuracion" className="menu-link">
             <FiAward className="icon" />
-            {open && <span className="title">Constancias/certificados</span>}
+            {open && <span className="title">Constancias</span>}
           </Link>
         </li>
 
         <li className="menu-item" onClick={handleLogout}>
-          <FiLogOut className="icon" />
-          {open && <span className="title">Cerrar Sesión</span>}
+          <div className="menu-link">
+            <FiLogOut className="icon" />
+            {open && <span className="title">Cerrar Sesión</span>}
+          </div>
         </li>
       </ul>
     </aside>
