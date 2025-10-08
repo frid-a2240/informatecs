@@ -75,22 +75,29 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
-  const [selectedSport, setSelectedSport] = useState(null);
 
+  const [formSport, setFormSport] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [aluctr, setAluctr] = useState("20750204"); // 🔹 Simulación del número de control
   const [formData, setFormData] = useState({
     hasPracticed: "",
     hasIllness: "",
     purpose: "",
     bloodType: "",
   });
-  const [formSport, setFormSport] = useState(null);
+
+  const [studentData, setStudentData] = useState(null); // Traer datos del estudiante
   const carouselRef = useRef(null);
 
   const API_OFERTAS = "/api/act-disponibles";
-  const API_REGISTRO = "/api/inscripciones";
+
+  // Traer datos del estudiante desde localStorage (como tu ejemplo de perfil)
+  useEffect(() => {
+    const savedData = localStorage.getItem("studentData");
+    if (savedData) {
+      setStudentData(JSON.parse(savedData));
+    }
+  }, []);
 
   useEffect(() => {
     const cargarOfertas = async () => {
@@ -119,9 +126,15 @@ export default function App() {
 
   const handleRegister = (item) => {
     setFormSport({
-      id: item.id, // ofertaId
+      ofertaId: item.id,
       actividadId: item.actividad.id,
       name: item.actividad.aconco,
+    });
+    setFormData({
+      hasPracticed: "",
+      hasIllness: "",
+      purpose: "",
+      bloodType: "",
     });
     setShowForm(true);
     handleClose();
@@ -130,48 +143,38 @@ export default function App() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    if (!selectedSport) {
-      alert("Error: no se ha seleccionado actividad");
+    if (!formSport || !studentData?.numeroControl) {
+      alert("Faltan datos esenciales para la inscripción");
       return;
     }
 
     const { hasPracticed, hasIllness, purpose, bloodType } = formData;
-
-    if (
-      !studentData?.numeroControl ||
-      !selectedSport.actividadId ||
-      !selectedSport.ofertaId ||
-      !hasPracticed ||
-      !hasIllness ||
-      !purpose ||
-      !bloodType
-    ) {
-      alert("Faltan datos esenciales para la inscripción");
+    if (!hasPracticed || !hasIllness || !purpose || !bloodType) {
+      alert("Por favor completa todas las preguntas");
       return;
     }
 
     const dataToSend = {
       aluctr: studentData.numeroControl,
-      actividadId: selectedSport.actividadId,
-      ofertaId: selectedSport.ofertaId,
-      formData: { ...formData }, // <- así debe enviarse
+      actividadId: formSport.actividadId,
+      ofertaId: formSport.ofertaId,
+      formData: { ...formData },
     };
 
     try {
+      setIsSubmitting(true);
       const response = await fetch("/api/inscripciones", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dataToSend),
       });
-
       const data = await response.json();
 
       if (response.ok) {
         setStudentData({ ...studentData, bloodType: formData.bloodType });
         setShowForm(false);
-        setSelectedSport(null);
-        alert(`Inscripción a ${selectedSport.name} registrada exitosamente`);
-        cargarMisActividades();
+        setFormSport(null);
+        alert(`Inscripción a ${formSport.name} registrada exitosamente`);
       } else {
         alert(
           "Error al registrar inscripción: " +
@@ -181,6 +184,8 @@ export default function App() {
     } catch (error) {
       console.error(error);
       alert("Error de conexión al servidor");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

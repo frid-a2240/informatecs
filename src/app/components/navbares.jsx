@@ -29,15 +29,13 @@ export default function Sidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Sidebar inicia cerrado en móvil
   useEffect(() => {
     setOpen(!isMobile);
   }, [isMobile]);
 
   const handleLogout = () => {
-    // Aquí puedes limpiar tokens o redirigir
     alert("Sesión cerrada");
-    router.push("/login"); // o a la página que necesites
+    router.push("/designs/vistaLogin");
   };
 
   return (

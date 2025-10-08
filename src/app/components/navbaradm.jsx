@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   FiHome,
   FiCalendar,
@@ -12,15 +14,13 @@ import {
   FiLogOut,
   FiMenu,
 } from "react-icons/fi";
-import { useState, useEffect } from "react";
-import Image from "next/image";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const pathname = usePathname();
   const router = useRouter();
 
-  // Detectar si es móvil
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -28,7 +28,6 @@ export default function AdminSidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Sidebar cerrado por defecto en móvil
   useEffect(() => {
     setOpen(!isMobile);
   }, [isMobile]);
@@ -36,13 +35,34 @@ export default function AdminSidebar() {
   const handleLogout = () => {
     if (window.confirm("¿Seguro que deseas cerrar sesión?")) {
       localStorage.removeItem("adminData");
-      router.push("/login");
+      router.push("/designs/vistaLogin");
     }
   };
 
+  const menuItems = [
+    { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
+    {
+      href: "/designs/vistaeventosAdm",
+      icon: <FiCalendar />,
+      label: "Gestionar Eventos",
+    },
+    { href: "/designs/vistaalumnosadm", icon: <FiUsers />, label: "Usuarios" },
+    {
+      href: "/designs/vistaInscripcionesAdmin",
+      icon: <FiFileText />,
+      label: "Inscripciones",
+    },
+    { href: "/admin/reportes", icon: <FiBarChart2 />, label: "Reportes" },
+    {
+      href: "/admin/configuracion",
+      icon: <FiSettings />,
+      label: "Configuración",
+    },
+  ];
+
   return (
     <aside className={`sliderbaradm ${open ? "open" : "closed"}`}>
-      {/* Encabezado */}
+      {/* Header */}
       <div className="sliderbaradm-header">
         {open && (
           <div className="logo-container">
@@ -55,44 +75,18 @@ export default function AdminSidebar() {
         </button>
       </div>
 
-      {/* Menú */}
+      {/* Menu */}
       <ul className="menu">
-        <SidebarItem
-          href="/admin/dashboard"
-          icon={<FiHome />}
-          label="Inicio"
-          open={open}
-        />
-        <SidebarItem
-          href="/designs/vistaeventosAdm"
-          icon={<FiCalendar />}
-          label="Gestionar Eventos"
-          open={open}
-        />
-        <SidebarItem
-          href="/designs/vistaalumnosadm"
-          icon={<FiUsers />}
-          label="Usuarios"
-          open={open}
-        />
-        <SidebarItem
-          href="/admin/inscripciones"
-          icon={<FiFileText />}
-          label="Inscripciones"
-          open={open}
-        />
-        <SidebarItem
-          href="/admin/reportes"
-          icon={<FiBarChart2 />}
-          label="Reportes"
-          open={open}
-        />
-        <SidebarItem
-          href="/admin/configuracion"
-          icon={<FiSettings />}
-          label="Configuración"
-          open={open}
-        />
+        {menuItems.map((item) => (
+          <SidebarItem
+            key={item.href}
+            href={item.href}
+            icon={item.icon}
+            label={item.label}
+            open={open}
+            active={pathname === item.href}
+          />
+        ))}
 
         <li className="menu-item logout" onClick={handleLogout}>
           <FiLogOut className="icon" />
@@ -103,9 +97,9 @@ export default function AdminSidebar() {
   );
 }
 
-function SidebarItem({ href, icon, label, open }) {
+function SidebarItem({ href, icon, label, open, active }) {
   return (
-    <li className="menu-item">
+    <li className={`menu-item ${active ? "active" : ""}`}>
       <Link href={href} className="menu-link">
         <span className="icon">{icon}</span>
         {open && <span className="title">{label}</span>}

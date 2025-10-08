@@ -1,0 +1,106 @@
+/* ====== Mis Actividades (actividades.css) ====== */
+:root {
+  --bg-main: #f5f7fb;
+  --bg-card: #ffffff;
+  --text: #2d2d2d;
+  --muted: #666;
+  --primary: #007bff;
+  --radius: 12px;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --border: #e0e0e0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- CONTENEDOR GENERAL --- */
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.dashboard-main {
+  flex: 1;
+  padding: 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-main h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* --- LISTA DE ACTIVIDADES --- */
+.actividades-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* --- TARJETA DE ACTIVIDAD --- */
+.actividad-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-top: 4px solid var(--primary);
+}
+
+.actividad-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.actividad-card h3 {
+  color: var(--primary);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.actividad-card p {
+  margin: 0.4rem 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.actividad-card strong {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* --- DIVISOR --- */
+.actividad-card hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1rem 0;
+}
+
+/* --- ESTADOS --- */
+.dashboard-main > p {
+  text-align: center;
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin-top: 2rem;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 1.5rem;
+  }
+
+  .actividad-card {
+    padding: 1.5rem;
+  }
+
+  .dashboard-main h1 {
+    font-size: 1.6rem;
+  }
+}

@@ -657,3 +657,119 @@
     justify-content: flex-start;
   }
 }
+
+/* Contenedor del formulario */
+.form-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.form-wrapper {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* Header del formulario */
+.form-header {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-header h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.form-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* Estilo del formulario interno */
+form {
+  padding: 2rem;
+}
+
+/* Pregunta individual */
+.form-question {
+  margin-bottom: 2rem;
+}
+
+.form-question label {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Inputs radio y checkbox */
+.form-question input[type="radio"],
+.form-question input[type="checkbox"] {
+  margin-right: 0.75rem;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+/* Inputs de texto y select */
+.form-question input[type="text"],
+.form-question select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+/* Contenedor de botones */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Botón cancelar */
+.btn-cancel {
+  border: 2px solid #ddd;
+  background-color: #fff;
+  color: #666;
+}
+
+/* Botón enviar */
+.btn-submit {
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+}
+
+.btn-submit:hover {
+  background-color: #218838;
+}
+
+.btn-cancel:hover {
+  background-color: #f8f9fa;
+}
