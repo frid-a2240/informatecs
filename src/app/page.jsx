@@ -1,132 +1,251 @@
 "use client";
-import React, { useEffect, useState } from "react";
-// Importamos 'useRouter' para la navegación
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Footer from "./components/footer";
 import Navbar from "./components/navbar";
-import TopBar from "./components/topbar";
-// Se elimina la importación de Link y FaFacebook
+import Footer from "./components/footer";
+import Aos from "aos";
+import "aos/dist/aos.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  EffectCoverflow,
+  Pagination,
+  Autoplay,
+  Thumbs,
+  Navigation,
+} from "swiper/modules";
+
+// Importaciones de CSS de Swiper
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+
+// Importaciones de React Icons - Consolidando la versión Fa6
+import {
+  FaCalendarCheck,
+  FaChalkboardUser,
+  FaFootball,
+  FaHandHoldingHeart,
+  FaUsers,
+  FaMasksTheater,
+} from "react-icons/fa6";
 
 const HomePage = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  // Inicializamos el router
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const router = useRouter();
 
-  const images = [
-    "/imagenes/imaUniversidad(2).png",
-    "/imagenes/corre.jpg",
-    "/imagenes/guerra.jpg",
-    "/imagenes/fut.jpg",
-    "/imagenes/musica.jpg",
-    "/imagenes/volei.jpg",
-    "/imagenes/basquet.jpg",
-  ];
-
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [images.length]);
+    Aos.init({ duration: 1000, once: true });
+  }, []);
 
-  // Función para manejar el clic en las miniaturas y puntos
-  const handleSlideChange = (index) => {
-    setCurrentSlide(index);
-  };
-
-  // 🚀 FUNCIÓN CLAVE: Manda al usuario a la página de login
-  const handleRegistrationClick = () => {
-    // Usamos router.push para forzar la navegación programática
-    router.push("/designs/vistaLogin");
-  };
+  const slides = [
+    {
+      categoria: "Cultura",
+      titulo: "Música y Arte",
+      descripcion: "Expresa tu creatividad en nuestros grupos musicales",
+      imagen: "/imagenes/musica.jpg",
+    },
+    {
+      categoria: "Deportes",
+      titulo: "Voleibol",
+      descripcion: "Forma parte del equipo representativo de voleibol",
+      imagen: "/imagenes/volei.jpg",
+    },
+    {
+      categoria: "Deportes",
+      titulo: "Futbol",
+      descripcion: "Forma parte del equipo representativo de futbol",
+      imagen: "/imagenes/fut.jpg",
+    },
+    {
+      categoria: "Deportes",
+      titulo: "Sofball",
+      descripcion: "Desarrolla tus habilidades en la cancha",
+      imagen: "/imagenes/softball.jpeg",
+    },
+    {
+      categoria: "Deportes",
+      titulo: "Atletismo",
+      descripcion: "Participa en competencias y supera tus límites",
+      imagen: "/imagenes/corre.jpg",
+    },
+    {
+      categoria: "Deportes",
+      titulo: "Voleibol",
+      descripcion: "Participa en competencias y supera tus límites",
+      imagen: "/imagenes/volei.jpg",
+    },
+  ];
 
   return (
     <>
-      <TopBar />
+      <Navbar />
 
       <div className="homepage-container">
-        <section className="main-title-section">
-          <h1>Eventos ITE</h1>
-        </section>
-
-        <Navbar />
-
-        {/* ==============================================
-            SECCIÓN DEL CARRUSEL MODIFICADA (MAGIC SLIDER)
-        ============================================== */}
-        <main className="magic-slider-hero-section">
-          <div className="magic-slider-list">
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className={`magic-slider-item ${
-                  index === currentSlide ? "active" : ""
-                }`}
-              >
-                <img src={image} alt={`Slide ${index + 1}`} />
-
-                {/* Contenido de texto: Ya no contiene el botón */}
-                <div className="magic-slider-content">
-                  <h1 className="main-headline">
-                    Instituto <br />
-                    Tecnológico
-                  </h1>
-                  <span className="sub-headline">De Ensenada</span>
-                  <p>
-                    Te invitamos a participar en clubs, actividades
-                    extraescolares y eventos.
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            {/* Controles de navegación: Puntos y Miniaturas */}
-            <div className="magic-slider-controls">
-              {/* Miniaturas */}
-              <div className="magic-slider-thumbnails">
-                {images.map((image, index) => (
+        <main className="swiper-container" data-aos="fade-up">
+          <div style={{ position: "relative" }}>
+            <Swiper
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              slidesPerView="auto"
+              loop={true}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              thumbs={{
+                swiper:
+                  thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+              }}
+              navigation={true}
+              modules={[
+                EffectCoverflow,
+                Pagination,
+                Autoplay,
+                Thumbs,
+                Navigation,
+              ]}
+              className="coverflow-swiper"
+            >
+              {slides.map((slide, index) => (
+                <SwiperSlide key={index} className="coverflow-slide">
                   <div
-                    key={index}
-                    className={`thumbnail-item ${
-                      index === currentSlide ? "active" : ""
-                    }`}
-                    onClick={() => handleSlideChange(index)}
+                    className="coverflow-image"
+                    style={{ backgroundImage: `url(${slide.imagen})` }}
                   >
-                    <img src={image} alt={`Thumbnail ${index + 1}`} />
-                  </div>
-                ))}
-              </div>
+                    <div className="coverflow-overlay">
+                      <div className="instituto-headline-block">
+                        <h1 className="main-headline">
+                          Instituto <br /> Tecnológico
+                        </h1>
+                        <span className="sub-headline">De Ensenada</span>
+                      </div>
+                      <div>
+                        <a
+                          href="/desingn/vistaLogin"
+                          className="instituto-boton"
+                        >
+                          Regístrate
+                        </a>
+                      </div>
 
-              <div className="carousel-dots">
-                {images.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`carousel-dot ${
-                      index === currentSlide ? "active" : ""
-                    }`}
-                    onClick={() => handleSlideChange(index)}
-                  />
-                ))}
-              </div>
-            </div>
+                      {/* Categoría y título */}
+                      <span className="coverflow-category">
+                        {slide.categoria}
+                      </span>
+                      <h3 className="coverflow-title">{slide.titulo}</h3>
+                      <p className="coverflow-description">
+                        {slide.descripcion}
+                      </p>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            <Swiper
+              onSwiper={setThumbsSwiper}
+              spaceBetween={10}
+              slidesPerView={5}
+              freeMode={true}
+              watchSlidesProgress={true}
+              modules={[Thumbs]}
+              className="thumbs-swiper"
+              breakpoints={{
+                320: {
+                  slidesPerView: 3,
+                  spaceBetween: 8,
+                },
+                768: {
+                  slidesPerView: 4,
+                  spaceBetween: 10,
+                },
+                1024: {
+                  slidesPerView: 5,
+                  spaceBetween: 10,
+                },
+              }}
+            >
+              {slides.map((slide, index) => (
+                <SwiperSlide key={index} className="thumb-slide">
+                  <img src={slide.imagen} alt={slide.titulo} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         </main>
 
+        {/* Sección de Actividades Corregida con React Icons */}
+        <section className="category-cards-section" data-aos="fade-up">
+          <h2 className="section-title">Participa en nuestras actividades</h2>
+          <div className="cards-grid">
+            <div className="card-item">
+              <div className="icon">
+                <FaFootball color="white" size={30} />{" "}
+              </div>
+              <h3>Deportes</h3>
+              <p>Equipos competitivos</p>
+            </div>
+
+            <div className="card-item">
+              <div className="icon">
+                <FaMasksTheater color="white" size={30} />{" "}
+              </div>
+              <h3>Cultura</h3>
+              <p>Eventos artísticos</p>
+            </div>
+
+            <div className="card-item">
+              <div className="icon">
+                <FaUsers color="white" size={30} />
+              </div>
+              <h3>Clubs</h3>
+              <p>Únete a la comunidad</p>
+            </div>
+
+            <div className="card-item">
+              <div className="icon">
+                <FaHandHoldingHeart color="white" size={30} />{" "}
+              </div>
+              <h3>Voluntariado</h3>
+              <p>Contribuye a causas sociales</p>
+            </div>
+
+            <div className="card-item">
+              <div className="icon">
+                <FaChalkboardUser color="white" size={30} />{" "}
+              </div>
+              <h3>Talleres</h3>
+              <p>Desarrolla nuevas habilidades</p>
+            </div>
+
+            <div className="card-item">
+              <div className="icon">
+                <FaCalendarCheck color="white" size={30} />{" "}
+              </div>
+              <h3>Eventos</h3>
+              <p>Todo el año</p>
+            </div>
+          </div>
+        </section>
+
         <section className="activities-section">
-          <h2>¡Entérate!</h2>
+          <h2 data-aos="fade-up">¡Entérate!</h2>
           <div className="activities-content">
-            <div className="activity-item">
+            <div className="activity-item" data-aos="fade-right">
               <div className="text-content">
                 <h3 className="activity-title">Actividades Extraescolares</h3>
                 <p className="activity-description">
                   En el Instituto Tecnológico de Ensenada, ofrecemos una
                   variedad de actividades extraescolares diseñadas para
-                  enriquecer la experiencia educativa de nuestros estudiantes.
-                  Además, organizamos eventos deportivos y culturales que te
-                  permitirán desarrollar tus habilidades y conocer a otros
-                  estudiantes con intereses similares. ¡Únete a nosotros y
-                  enriquece tu vida estudiantil!
+                  enriquecer tu experiencia educativa. Participa en clubes,
+                  talleres y competencias que fortalecerán tus habilidades,
+                  ampliarán tu red de amigos y te ayudarán a crecer personal y
+                  profesionalmente.
                 </p>
+                <div className="button-group">
+                  <button className="btn-primary">Explorar Actividades</button>
+                </div>
               </div>
               <div className="image-content">
                 <img
@@ -137,7 +256,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="activity-item reverse">
+            <div className="activity-item reverse" data-aos="fade-left">
               <div className="image-content">
                 <img
                   src="/imagenes/inia.jpg"
@@ -148,23 +267,23 @@ const HomePage = () => {
               <div className="text-content">
                 <h3 className="activity-title">Eventos</h3>
                 <p className="activity-description">
-                  ¡No te pierdas los emocionantes eventos que organizamos en el
-                  Instituto Tecnológico de Ensenada! Desde competencias
-                  deportivas hasta festivales culturales, siempre hay algo en lo
-                  que puedes participar. Estos eventos son una excelente
-                  oportunidad para divertirte, aprender cosas nuevas y hacer
-                  amigos. ¡Ven y sé parte de nuestras actividades, y vive la
-                  experiencia al máximo!
+                  ¡No te pierdas los emocionantes eventos del Instituto
+                  Tecnológico de Ensenada! Desde competencias deportivas hasta
+                  festivales culturales y tecnológicos, siempre hay algo nuevo
+                  por vivir. Conoce las próximas fechas y forma parte de la
+                  comunidad que hace del ITE un lugar lleno de energía e
+                  innovación.
                 </p>
+                <div className="button-group">
+                  <button className="btn-primary">Explorar Eventos</button>
+                </div>
               </div>
             </div>
           </div>
         </section>
-
         <Footer />
       </div>
     </>
   );
 };
-
 export default HomePage;

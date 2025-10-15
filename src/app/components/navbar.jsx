@@ -1,14 +1,49 @@
+"use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // ⬅️ Importa useEffect
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  // 1. Estado para el scroll
+  const [scrolled, setScrolled] = useState(false);
+
+  // 2. Lógica para manejar el scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Si el scroll vertical es mayor a 50px, cambia el estado a true
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    // Añade el event listener cuando el componente se monta
+    window.addEventListener("scroll", handleScroll);
+
+    // Limpia el event listener cuando el componente se desmonta
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []); // El array vacío asegura que solo se ejecute al montar/desmontar
 
   return (
-    <nav className="navbar">
+    // 3. Aplica la clase dinámicamente
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar__container">
-        <div className="navbar__logo"></div>
+        {/* ... el resto de tu código HTML ... */}
+        <div className="navbar__logo-container">
+          <img
+            src="/imagenes/logoevento.png"
+            alt="Logo ITE"
+            className="navbar__logo"
+          />
+          <span className="navbar__logo-text">
+            Eventos <span className="navbar__logo-accent">ITE</span>
+          </span>
+        </div>
 
+        {/* Botón toggle para mobile */}
         <button
           className="navbar__toggle"
           onClick={() => setIsOpen(!isOpen)}
@@ -17,6 +52,7 @@ const Navbar = () => {
           ☰
         </button>
 
+        {/* Menú */}
         <ul className={`navbar__menu ${isOpen ? "navbar__menu--open" : ""}`}>
           <li>
             <Link href="/" className="navbar__link active">

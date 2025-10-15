@@ -10,7 +10,7 @@
    Navbar
 ========================== */
 .navbar {
-  background-color: var(--blue-primary);
+  background-color: red;
   color: var(--white);
   position: sticky;
   top: 0;
