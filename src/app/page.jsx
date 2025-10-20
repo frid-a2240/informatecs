@@ -17,7 +17,7 @@ const LoginPage = () => {
   const [fullName, setFullName] = useState('');
   const [studentData, setStudentData] = useState(null);
   
-  // Estados para administrador
+  // estados para administrador
   const [adminUser, setAdminUser] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
 
@@ -29,7 +29,7 @@ const LoginPage = () => {
     handleUpdatePassword,
   } = useAuth(setStep, setFullName, setError, setStudentData);
 
-  // Registro con validación de contraseña genérica
+  // registro con validación de contraseña genérica
   const onRegisterSubmit = (e) => {
     e.preventDefault();
     if (!matricula || !password) {
@@ -61,7 +61,7 @@ const LoginPage = () => {
       return;
     }
     
-    // Aquí puedes agregar la lógica de autenticación de administrador
+    // Aquí puedes agregar la logica de autenticación de administrador
     // Por ejemplo:
     if (adminUser === 'NodalTec' && adminPassword === 'eventosadmin2025') {
       // Redirigir a panel de administrador

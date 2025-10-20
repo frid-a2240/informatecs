@@ -251,12 +251,7 @@ const AdminDashboard = () => {
               textAlign: 'center'
             }}
           >
-            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-              {activeSection === 'users' && 'Gestión de Usuarios'}
-              {activeSection === 'inscriptions' && 'Inscripciones'}
-              {activeSection === 'reports' && 'Reportes'}
-              {activeSection === 'settings' && 'Configuración'}
-            </h2>
+            
 
             {/* Aquí van los paneles directamente relacionados */}
             {activeSection === 'inscriptions' && <InscripcionesPanel />}

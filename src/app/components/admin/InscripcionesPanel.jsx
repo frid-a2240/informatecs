@@ -21,7 +21,7 @@ const InscripcionesPanel = () => {
       const ofertas = await resOfertas.json();
       
       // Cargar todas las inscripciones
-      const resInscripciones = await fetch('/api/inscridispo');
+      const resInscripciones = await fetch('/api/inscripdispo');
       const todasInscripciones = await resInscripciones.json();
       
       // Agrupar inscripciones por actividad
@@ -93,7 +93,7 @@ const InscripcionesPanel = () => {
               <div key={oferta.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 {/* Header de la actividad */}
                 <button
-                  onClick={() => toggleActividad(oferta.Id)}
+                  onClick={() => toggleActividad(oferta.actividadId)}
                   className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex-1 text-left">

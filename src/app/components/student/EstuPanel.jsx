@@ -670,7 +670,7 @@ const cargarMisActividades = async () => {
                           </div>
                         </div>
 
-                        {/* Horario - Placeholder para futuras actualizaciones */}
+                        {/* horario xd  */}
                         <div style={{
                           marginTop: '1.5rem',
                           padding: '1.5rem',
