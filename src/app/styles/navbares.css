@@ -7,6 +7,41 @@
   --bg-activity-light: rgba(8, 94, 222, 0.05);
   font-family: "Noto Sans", sans-serif;
 }
+/* === Submenús anidados === */
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  padding-left: 1.5rem;
+}
+
+.submenu.show {
+  max-height: 300px;
+}
+
+.submenu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 0;
+  color: #ffffffb0;
+  font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+.submenu-link:hover {
+  color: white;
+}
+
+/* Chevron rotación */
+.chevron {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.chevron.rotate {
+  transform: rotate(180deg);
+}
 
 /* ─────────── ESTILO POR DEFECTO (escritorio) ─────────── */
 @media (max-width: 768px) {
@@ -101,7 +136,7 @@
 .icon {
   font-size: 1.5rem;
   min-width: 24px;
-  color: #fe9e10;
+  color: #ffffff;
 }
 
 .title {

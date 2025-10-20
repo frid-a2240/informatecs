@@ -142,46 +142,34 @@ const HomePage = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
-
             <Swiper
               onSwiper={setThumbsSwiper}
-              spaceBetween={10}
-              slidesPerView={5}
+              direction="vertical"
+              spaceBetween={12}
+              slidesPerView="auto"
               freeMode={true}
               watchSlidesProgress={true}
               modules={[Thumbs]}
-              className="thumbs-swiper"
-              breakpoints={{
-                320: {
-                  slidesPerView: 3,
-                  spaceBetween: 8,
-                },
-                768: {
-                  slidesPerView: 4,
-                  spaceBetween: 10,
-                },
-                1024: {
-                  slidesPerView: 5,
-                  spaceBetween: 10,
-                },
-              }}
+              className="thumbnails-swiper"
             >
               {slides.map((slide, index) => (
-                <SwiperSlide key={index} className="thumb-slide">
-                  <img src={slide.imagen} alt={slide.titulo} />
+                <SwiperSlide key={index}>
+                  <div className="thumbnail-wrapper">
+                    <img src={slide.imagen} alt={slide.titulo} />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
           </div>
         </main>
 
-        {/* Sección de Actividades Corregida con React Icons */}
+        {/* Sección de Actividades */}
         <section className="category-cards-section" data-aos="fade-up">
           <h2 className="section-title">Participa en nuestras actividades</h2>
           <div className="cards-grid">
             <div className="card-item">
               <div className="icon">
-                <FaFootball color="white" size={30} />{" "}
+                <FaFootball color="white" size={30} />
               </div>
               <h3>Deportes</h3>
               <p>Equipos competitivos</p>
@@ -189,7 +177,7 @@ const HomePage = () => {
 
             <div className="card-item">
               <div className="icon">
-                <FaMasksTheater color="white" size={30} />{" "}
+                <FaMasksTheater color="white" size={30} />
               </div>
               <h3>Cultura</h3>
               <p>Eventos artísticos</p>
@@ -205,7 +193,7 @@ const HomePage = () => {
 
             <div className="card-item">
               <div className="icon">
-                <FaHandHoldingHeart color="white" size={30} />{" "}
+                <FaHandHoldingHeart color="white" size={30} />
               </div>
               <h3>Voluntariado</h3>
               <p>Contribuye a causas sociales</p>
@@ -213,7 +201,7 @@ const HomePage = () => {
 
             <div className="card-item">
               <div className="icon">
-                <FaChalkboardUser color="white" size={30} />{" "}
+                <FaChalkboardUser color="white" size={30} />
               </div>
               <h3>Talleres</h3>
               <p>Desarrolla nuevas habilidades</p>
@@ -221,7 +209,7 @@ const HomePage = () => {
 
             <div className="card-item">
               <div className="icon">
-                <FaCalendarCheck color="white" size={30} />{" "}
+                <FaCalendarCheck color="white" size={30} />
               </div>
               <h3>Eventos</h3>
               <p>Todo el año</p>

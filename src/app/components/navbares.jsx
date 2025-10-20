@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   FiUser,
   FiClipboard,
-  FiUserPlus,
   FiHome,
   FiLogOut,
   FiMenu,
-  FiCalendar,
   FiAward,
   FiActivity,
 } from "react-icons/fi";
@@ -22,6 +20,7 @@ export default function Sidebar() {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
+  // Detecta tamaño de pantalla
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     handleResize();
@@ -29,6 +28,7 @@ export default function Sidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Colapsa automáticamente en móvil
   useEffect(() => {
     setOpen(!isMobile);
   }, [isMobile]);
@@ -42,6 +42,7 @@ export default function Sidebar() {
     <aside
       className={`sliderstu ${open ? "sliderstu-open" : "sliderstu-closed"}`}
     >
+      {/* HEADER */}
       <div className="sliderstu-header logo-toggle-container">
         {open && (
           <div className="logo-container">
@@ -49,15 +50,15 @@ export default function Sidebar() {
             <span className="designer-text">Eventos ITE</span>
           </div>
         )}
-
         <button className="sliderstu-toggle-btn" onClick={() => setOpen(!open)}>
           <FiMenu />
         </button>
       </div>
 
+      {/* MENU */}
       <ul className="menu">
         <li className="menu-item">
-          <Link href="/designs/vistaInicio" className="menu-link">
+          <Link href="/designs/menuestu/vistaInicio" className="menu-link">
             <FiHome className="icon" />
             {open && <span className="title">Inicio</span>}
           </Link>
@@ -71,16 +72,16 @@ export default function Sidebar() {
         </li>
 
         <li className="menu-item">
-          <Link href="/designs/vistaCategorias" className="menu-link">
+          <Link href="/designs/menuestu/vistaCategorias" className="menu-link">
             <FiClipboard className="icon" />
             {open && <span className="title">Actividades Ofertadas</span>}
           </Link>
         </li>
 
         <li className="menu-item">
-          <Link href="/designs/misActividades" className="menu-link">
+          <Link href="/designs/menuestu/misActividades" className="menu-link">
             <FiActivity className="icon" />
-            {open && <span className="title"> Mis Actividades</span>}
+            {open && <span className="title">Mis Actividades</span>}
           </Link>
         </li>
 

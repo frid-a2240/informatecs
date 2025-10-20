@@ -11,7 +11,6 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <AdminSidebar />
 
-      {/* Contenido principal */}
       <main
         style={{
           flex: 1,

@@ -8,9 +8,6 @@ export default function WelcomePage() {
 
   return (
     <div className="dashboard-container">
-      <NavbarEst open={sidebarOpen} setOpen={setSidebarOpen} />
-
-      {/* Contenido principal */}
       <main
         className={`dashboard-main welcome-main ${
           sidebarOpen ? "with-sidebar" : "full-width"

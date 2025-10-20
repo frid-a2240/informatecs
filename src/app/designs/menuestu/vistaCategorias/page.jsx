@@ -211,7 +211,6 @@ export default function App() {
 
   return (
     <div className="dashboard-container">
-      <NavbarEst />
       <main className="dashboard-main">
         <h1>Ofertas del Semestre</h1>
         <p className="subtitle">

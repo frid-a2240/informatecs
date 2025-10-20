@@ -17,12 +17,16 @@ const InscripcionesPanel = () => {
   const cargarDatos = async () => {
     try {
       setLoading(true);
+
+      // Cargar actividades ofertadas
       const resOfertas = await fetch("/api/act-disponibles");
       const ofertas = await resOfertas.json();
 
-      const resInscripciones = await fetch("/api/inscridispo");
+      // Cargar todas las inscripciones
+      const resInscripciones = await fetch("/api/inscripdispo");
       const todasInscripciones = await resInscripciones.json();
 
+      // Agrupar inscripciones por actividad
       const inscripcionesPorActividad = {};
       todasInscripciones.forEach((inscripcion) => {
         const actId = inscripcion.actividadId;
@@ -58,96 +62,90 @@ const InscripcionesPanel = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <div className="w-64 sticky top-0 h-screen bg-white shadow-md">
-        <AdminSidebar />
+    <div className="space-y-6">
+      <AdminSidebar />
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          Inscripciones por Actividad
+        </h2>
+        <p className="text-gray-600">
+          Lista de estudiantes inscritos en cada actividad
+        </p>
       </div>
 
-      {/* Contenido principal */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
-            Inscripciones por Actividad
-          </h2>
-          <p className="text-gray-600">
-            Lista de estudiantes inscritos en cada actividad
-          </p>
+      {/* Buscador */}
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Buscar actividad..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
         </div>
+      </div>
 
-        {/* Buscador */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Buscar actividad..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search
-              className="absolute left-3 top-2.5 text-gray-400"
-              size={18}
-            />
+      {/* Lista de actividades */}
+      <div className="space-y-3">
+        {actividadesFiltradas.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+            No se encontraron actividades ofertadas
           </div>
-        </div>
+        ) : (
+          actividadesFiltradas.map((oferta) => {
+            const inscritos = inscripciones[oferta.actividadId] || [];
+            const isExpanded = actividadExpandida === oferta.actividadId;
 
-        {/* Lista de actividades */}
-        <div className="space-y-3">
-          {actividadesFiltradas.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
-              No se encontraron actividades ofertadas
-            </div>
-          ) : (
-            actividadesFiltradas.map((oferta) => {
-              const inscritos = inscripciones[oferta.id] || [];
-              const isExpanded = actividadExpandida === oferta.id;
-
-              return (
-                <div
-                  key={oferta.id}
-                  className="bg-white rounded-lg shadow-md overflow-hidden"
+            return (
+              <div
+                key={oferta.id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
+                {/* Header de la actividad */}
+                <button
+                  onClick={() => toggleActividad(oferta.actividadId)}
+                  className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
                 >
-                  <button
-                    onClick={() => toggleActividad(oferta.id)}
-                    className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex-1 text-left">
-                      <h3 className="font-semibold text-gray-800 text-lg">
-                        {oferta.actividad?.aconco ||
-                          oferta.actividad?.aticve ||
-                          ""}
-                      </h3>
-                      <div className="flex gap-4 mt-1 text-sm text-gray-600">
-                        <span>Código: {oferta.actividad.aticve}</span>
-                        <span>Créditos: {oferta.actividad.acocre}</span>
-                        <span>Horas: {oferta.actividad.acohrs}</span>
-                      </div>
+                  <div className="flex-1 text-left">
+                    <h3 className="font-semibold text-gray-800 text-lg">
+                      {oferta.actividad?.aconco ||
+                        oferta.actividad?.aticve ||
+                        ""}
+                    </h3>
+                    <div className="flex gap-4 mt-1 text-sm text-gray-600">
+                      <span>Código: {oferta.actividad.aticve}</span>
+                      <span>Créditos: {oferta.actividad.acocre}</span>
+                      <span>Horas: {oferta.actividad.acohrs}</span>
                     </div>
+                  </div>
 
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          inscritos.length > 0
-                            ? "bg-green-100 text-green-800"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        <Users size={14} className="inline mr-1" />
-                        {inscritos.length} inscritos
-                      </span>
-                      {isExpanded ? <ChevronUp /> : <ChevronDown />}
-                    </div>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        inscritos.length > 0
+                          ? "bg-green-100 text-green-800"
+                          : "bg-gray-100 text-gray-600"
+                      }`}
+                    >
+                      <Users size={14} className="inline mr-1" />
+                      {inscritos.length} inscritos
+                    </span>
+                    {isExpanded ? <ChevronUp /> : <ChevronDown />}
+                  </div>
+                </button>
 
-                  {isExpanded && (
-                    <div className="border-t border-gray-200 p-4 bg-gray-50 overflow-x-auto max-h-[400px]">
-                      {inscritos.length === 0 ? (
-                        <p className="text-center text-gray-500 py-4">
-                          No hay estudiantes inscritos en esta actividad
-                        </p>
-                      ) : (
-                        <table className="w-full min-w-max divide-y divide-gray-200">
+                {/* Lista de estudiantes inscritos */}
+                {isExpanded && (
+                  <div className="border-t border-gray-200 p-4 bg-gray-50">
+                    {inscritos.length === 0 ? (
+                      <p className="text-center text-gray-500 py-4">
+                        No hay estudiantes inscritos en esta actividad
+                      </p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
                           <thead className="bg-gray-100">
                             <tr>
                               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
@@ -201,14 +199,14 @@ const InscripcionesPanel = () => {
                             })}
                           </tbody>
                         </table>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

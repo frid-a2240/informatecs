@@ -39,7 +39,6 @@ export default function MisActividades() {
 
   return (
     <div className="actividades-container">
-      <NavbarEst />
       <main className="actividades-main">
         <h1 className="titulo-principal">📅 Mis Actividades Inscritas</h1>
 

@@ -42,19 +42,27 @@ export default function AdminSidebar() {
   const menuItems = [
     { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
     {
-      href: "/designs/vistaeventosAdm",
+      href: "/designs/menuadmin/vistaeventosAdm",
       icon: <FiCalendar />,
       label: "Gestionar Eventos",
     },
-    { href: "/designs/vistaalumnosadm", icon: <FiUsers />, label: "Usuarios" },
     {
-      href: "/designs/vistaInscripcionesAdmin",
+      href: "/designs/menuadmin/vistaalumnosadm",
+      icon: <FiUsers />,
+      label: "Usuarios",
+    },
+    {
+      href: "/designs/menuadmin/vistaInscripcionesAdmin",
       icon: <FiFileText />,
       label: "Inscripciones",
     },
-    { href: "/admin/reportes", icon: <FiBarChart2 />, label: "Reportes" },
     {
-      href: "/admin/configuracion",
+      href: "/designs/menuadmin/reporte",
+      icon: <FiBarChart2 />,
+      label: "Reportes",
+    },
+    {
+      href: "/designs/menuadmin/configuracion",
       icon: <FiSettings />,
       label: "Configuración",
     },
