@@ -6,7 +6,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  
 }
 
 model estudiantes {
@@ -100,7 +99,7 @@ model estudiantes {
   aludch                   String?
   cve                      Int?
   merida                   Int?
-  inscripciones            estudicarr[]
+  inscripciones            estudicarr?
   inscripcionesActividades inscripact[]
 }
 
