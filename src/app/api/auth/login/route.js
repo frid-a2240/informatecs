@@ -11,7 +11,7 @@ export async function POST(req) {
   const estudiante = await prisma.estudiantes.findUnique({
     where: { aluctr: matricula },
     include: {
-      inscripciones: {  // relación con estudicarr
+      inscripciones: {  // relacion con estudicarr
         include: {
           carrera: true   // trae la info de la carrera
         }

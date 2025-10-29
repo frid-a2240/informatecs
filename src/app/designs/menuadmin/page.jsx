@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'events', label: 'Gestionar Eventos', icon: '📅' },
-    { id: 'users', label: 'Alumnos', icon: '👥' },
+    { id: 'users', label: 'Evaluaciones', icon: '👥' },
     { id: 'inscriptions', label: 'Inscripciones', icon: '📝' },
     { id: 'reports', label: 'Reportes', icon: '📈' },
     { id: 'settings', label: 'Configuración', icon: '⚙️' }
