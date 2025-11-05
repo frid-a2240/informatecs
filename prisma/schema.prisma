@@ -184,6 +184,8 @@ model actividades {
   puecve     String?          @db.VarChar(10)
   inscripact inscripact[]
   ofertas    ofertaSemestre[]
+  //  NUEVO: Campo para guardar el horario como JSON
+  horario   Json?    // Almacena: { dias: [], horaInicio: "", horaFin: "", salon: "" }
 }
 
 model ofertaSemestre {

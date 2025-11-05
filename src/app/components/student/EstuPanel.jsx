@@ -1,576 +1,825 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Trash2, Users, Calendar, Search, Clock } from 'lucide-react';
 
-const AdminPanel = () => {
-  const [todasActividades, setTodasActividades] = useState([]);
-  const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [publicando, setPublicando] = useState(false);
-  const [busqueda, setBusqueda] = useState("");
-  const [modalHorario, setModalHorario] = useState(null);
-  const [horarioForm, setHorarioForm] = useState({
-    dias: [],
-    horaInicio: '',
-    horaFin: '',
-    salon: ''
+const EstuPanel = ({ activeSection, studentData, setStudentData }) => {
+  const [actividadesDisponibles, setActividadesDisponibles] = useState([]);
+  const [loadingActividades, setLoadingActividades] = useState(false);
+  const [misActividades, setMisActividades] = useState([]);
+  const [selectedSport, setSelectedSport] = useState('');
+  const [showForm, setShowForm] = useState(false);
+   const [actividadExpandida, setActividadExpandida] = useState(null);
+  
+  const [formData, setFormData] = useState({
+    hasPracticed: '',
+    hasIllness: '',
+    purpose: '',
+    bloodType: ''
   });
 
-  const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+ useEffect(() => {
+  if (activeSection === 'activities') {
+    cargarActividadesDisponibles();
+  }
+}, [activeSection]);
 
-  useEffect(() => {
-    cargarActividades();
-  }, []);
+useEffect(() => {
+  if (activeSection === 'events') {
+    cargarMisActividades();
+  }
+}, [activeSection, studentData]);
 
-  const cargarActividades = async () => {
+const cargarMisActividades = async () => {
+  try {
+    const response = await fetch(`/api/inscripciones?aluctr=${studentData.numeroControl}`);
+    const data = await response.json();
+    setMisActividades(data);
+  } catch (error) {
+    console.error('Error al cargar mis actividades', error);
+  }
+};
+  const cargarActividadesDisponibles = async () => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/actividades');
+      setLoadingActividades(true);
+       setActividadesDisponibles([]); // <--- limpiar antes de cargar
+      const response = await fetch('/api/act-disponibles');
+      
       if (response.ok) {
         const actividades = await response.json();
-        setTodasActividades(actividades);
-      } else {
-        alert('Error al cargar actividades');
+        setActividadesDisponibles(actividades);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error de conexión');
     } finally {
-      setLoading(false);
+      setLoadingActividades(false);
     }
   };
 
-  const agregarAOferta = (actividad) => {
-    if (!actividadesOfertadas.find(act => act.id === actividad.id)) {
-      setActividadesOfertadas([...actividadesOfertadas, actividad]);
-    }
+  const handleSportClick = (ofertaId, actividad) => {
+    setSelectedSport({ 
+      ofertaId: ofertaId, 
+      actividadId: actividad.id,
+      name: actividad.aconco || actividad.aticve 
+    });
+    setShowForm(true);
+    setFormData({ hasPracticed: '', hasIllness: '', purpose: '', bloodType: '' });
   };
 
-  const quitarDeOferta = (actividadId) => {
-    setActividadesOfertadas(actividadesOfertadas.filter(act => act.id !== actividadId));
-  };
-
-  const abrirModalHorario = (actividad) => {
-    setModalHorario(actividad);
-    // Cargar horario existente si lo hay
-    if (actividad.horario) {
-      setHorarioForm(actividad.horario);
-    } else {
-      setHorarioForm({
-        dias: [],
-        horaInicio: '',
-        horaFin: '',
-        salon: ''
-      });
-    }
-  };
-
-  const toggleDia = (dia) => {
-    setHorarioForm(prev => ({
-      ...prev,
-      dias: prev.dias.includes(dia)
-        ? prev.dias.filter(d => d !== dia)
-        : [...prev.dias, dia]
-    }));
-  };
-
-  const guardarHorario = async () => {
-    if (horarioForm.dias.length === 0 || !horarioForm.horaInicio || !horarioForm.horaFin) {
-      alert('Por favor completa todos los campos del horario');
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/actividades/${modalHorario.id}/horario`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ horario: horarioForm })
-      });
-
-      if (response.ok) {
-        alert('Horario guardado exitosamente');
-        // Actualizar la actividad en el estado
-        setActividadesOfertadas(prev => 
-          prev.map(act => 
-            act.id === modalHorario.id 
-              ? { ...act, horario: horarioForm }
-              : act
-          )
-        );
-        setTodasActividades(prev => 
-          prev.map(act => 
-            act.id === modalHorario.id 
-              ? { ...act, horario: horarioForm }
-              : act
-          )
-        );
-        setModalHorario(null);
-      } else {
-        alert('Error al guardar horario');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error de conexión');
-    }
-  };
-
-  const publicarActividades = async () => {
-    if (actividadesOfertadas.length === 0) {
-      alert('Selecciona al menos una actividad para ofertar.');
-      return;
-    }
-
-    // Verificar que todas tengan horario
-    const sinHorario = actividadesOfertadas.filter(act => !act.horario);
-    if (sinHorario.length > 0) {
-      if (!window.confirm(`Hay ${sinHorario.length} actividad(es) sin horario asignado. ¿Deseas continuar?`)) {
-        return;
-      }
-    }
-
-    if (!window.confirm(`¿Publicar ${actividadesOfertadas.length} actividades para los estudiantes?`)) {
-      return;
-    }
-
-    try {
-      setPublicando(true);
-      
-      const ofertas = actividadesOfertadas.map(actividad => ({
-        actividadId: actividad.id,
-        semestre: '2024-2',
-        activa: true
-      }));
-
-      const response = await fetch('/api/ofertas-semestre/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ofertas })
-      });
-
-      if (response.ok) {
-        alert(`¡Actividades publicadas! ${actividadesOfertadas.length} actividades están disponibles para los estudiantes.`);
-        setActividadesOfertadas([]);
-      } else {
-        alert('Error al publicar actividades');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error de conexión');
-    } finally {
-      setPublicando(false);
-    }
-  };
-
-  if (loading) {
-    return <div className="text-center py-8">Cargando actividades...</div>;
+  const handleFormSubmit = async (e) => {
+  e.preventDefault();
+  if (!formData.hasPracticed || !formData.hasIllness || !formData.purpose || !formData.bloodType) {
+    alert('Por favor completa todas las preguntas');
+    return;
   }
 
-  const actividadesFiltradas = todasActividades.filter(act =>
-    (act.aconco || act.aticve || "").toLowerCase().includes(busqueda.toLowerCase())
-  );
+  // Obtener número de control
+  const numeroControl = studentData?.numeroControl;
+  
+  if (!numeroControl) {
+    alert('Error: No se pudo obtener tu número de control. Por favor recarga la página.');
+    console.error('studentData completo:', studentData);
+    return;
+  }
 
-  return (
-    <div className="space-y-6">
-      {/* Modal de Horario */}
-      {modalHorario && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1rem'
-        }}>
+  try {
+    const dataToSend = {
+      aluctr: numeroControl,
+      actividadId: selectedSport.actividadId,
+      ofertaId: selectedSport.ofertaId,  // ← aqui se arreglo
+      hasPracticed: formData.hasPracticed,
+      hasIllness: formData.hasIllness,
+      purpose: formData.purpose,
+      bloodType: formData.bloodType
+    };
+
+    
+    const response = await fetch('/api/inscripciones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    });
+
+    const data = await response.json();
+ 
+    if (response.ok) {
+      setStudentData({ ...studentData, bloodType: formData.bloodType });
+      setShowForm(false);
+      setSelectedSport('');
+      alert(`Inscripción a ${selectedSport.name} registrada exitosamente`);
+      cargarMisActividades(); // Recargar lista de actividades
+    } else {
+      alert('Error al registrar inscripción: ' + (data.error || 'Error desconocido'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error de conexión al servidor');
+  }
+};
+
+  // Renderizar según la sección activa
+  if (activeSection === 'activities' && !showForm) {
+    return (
+      <div style={{ padding: '1rem 0' }}>
+        {loadingActividades ? (
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <div style={{ fontSize: '1.2rem', color: '#666' }}>
+              Cargando actividades disponibles...
+            </div>
+          </div>
+        ) : (
           <div style={{
-            backgroundColor: 'white',
-            borderRadius: '15px',
-            width: '100%',
-            maxWidth: '600px',
-            maxHeight: '90vh',
-            overflow: 'auto'
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem'
           }}>
-            <div style={{
-              padding: '1.5rem',
-              borderBottom: '2px solid #f0f0f0',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
-              <h3 style={{ margin: 0, fontSize: '1.5rem', color: '#333' }}>
-                🕐 Configurar Horario
-              </h3>
-              <button
-                onClick={() => setModalHorario(null)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '1.5rem',
-                  cursor: 'pointer',
-                  color: '#666'
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            <div style={{ padding: '1.5rem' }}>
-              <div style={{
-                backgroundColor: '#f8f9fa',
-                padding: '1rem',
-                borderRadius: '8px',
-                marginBottom: '1.5rem'
-              }}>
-                <strong>{modalHorario.aconco || modalHorario.aticve}</strong>
-                <div style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.25rem' }}>
-                  Código: {modalHorario.aticve}
-                </div>
-              </div>
-
-              {/* Días */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ 
-                  display: 'block', 
-                  fontWeight: '600', 
-                  marginBottom: '0.75rem',
-                  color: '#333'
-                }}>
-                  Días de la semana:
-                </label>
-                <div style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                  gap: '0.5rem'
-                }}>
-                  {diasSemana.map(dia => (
-                    <button
-                      key={dia}
-                      type="button"
-                      onClick={() => toggleDia(dia)}
-                      style={{
-                        padding: '0.75rem',
-                        border: '2px solid',
-                        borderColor: horarioForm.dias.includes(dia) ? '#007bff' : '#ddd',
-                        borderRadius: '8px',
-                        backgroundColor: horarioForm.dias.includes(dia) ? '#e7f3ff' : 'white',
-                        color: horarioForm.dias.includes(dia) ? '#007bff' : '#666',
-                        fontWeight: horarioForm.dias.includes(dia) ? '600' : '400',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      {dia}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Horarios */}
+            {actividadesDisponibles.length === 0 ? (
               <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr',
-                gap: '1rem',
-                marginBottom: '1.5rem'
+                textAlign: 'center', 
+                padding: '3rem', 
+                gridColumn: '1 / -1',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderRadius: '15px',
+                boxShadow: '0 5px 15px rgba(0, 0, 0, 0.08)'
               }}>
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    fontWeight: '600', 
-                    marginBottom: '0.5rem',
-                    color: '#333'
-                  }}>
-                    Hora de inicio:
-                  </label>
-                  <input
-                    type="time"
-                    value={horarioForm.horaInicio}
-                    onChange={(e) => setHorarioForm({...horarioForm, horaInicio: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '2px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </div>
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    fontWeight: '600', 
-                    marginBottom: '0.5rem',
-                    color: '#333'
-                  }}>
-                    Hora de fin:
-                  </label>
-                  <input
-                    type="time"
-                    value={horarioForm.horaFin}
-                    onChange={(e) => setHorarioForm({...horarioForm, horaFin: e.target.value})}
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '2px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '1rem'
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Salón */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ 
-                  display: 'block', 
-                  fontWeight: '600', 
-                  marginBottom: '0.5rem',
-                  color: '#333'
-                }}>
-                  Salón/Ubicación:
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ej: Gimnasio, Cancha 1, Aula 301"
-                  value={horarioForm.salon}
-                  onChange={(e) => setHorarioForm({...horarioForm, salon: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: '2px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '1rem'
-                  }}
-                />
-              </div>
-
-              {/* Botones */}
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <button
-                  onClick={() => setModalHorario(null)}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: '2px solid #ddd',
-                    borderRadius: '8px',
-                    backgroundColor: 'white',
-                    color: '#666',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={guardarHorario}
-                  style={{
-                    flex: 1,
-                    padding: '0.75rem',
-                    border: 'none',
-                    borderRadius: '8px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    fontSize: '1rem',
-                    fontWeight: '600',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Guardar Horario
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Gestionar Actividades</h2>
-        <p className="text-gray-600">Selecciona las actividades que deseas ofertar este semestre</p>
-      </div>
-
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Panel izquierdo: Catálogo completo */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-semibold text-gray-800">
-              Catálogo de Actividades ({todasActividades.length})
-            </h3>
-          </div>
-
-          <div className="relative mb-4">
-            <input
-              type="text"
-              placeholder="Buscar actividad..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-          </div>
-
-          <div className="space-y-3 max-h-96 overflow-y-auto">
-            {actividadesFiltradas.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <p>No se encontraron actividades</p>
+                <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📅</div>
+                <h3 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '1rem' }}>
+                  No hay actividades disponibles
+                </h3>
+                <p style={{ fontSize: '1rem', color: '#666', lineHeight: '1.6' }}>
+                  El administrador aún no ha publicado actividades para este semestre.
+                </p>
               </div>
             ) : (
-              actividadesFiltradas.map((actividad) => (
-                <div key={actividad.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800">
-                        {actividad.aconco || actividad.aticve}
-                      </h4>
-                      <p className="text-sm text-gray-600">Código: {actividad.aticve}</p>
-                      <p className="text-sm text-gray-600">Clave: {actividad.acocve}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-500 flex-wrap">
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          {actividad.acocre} créditos
-                        </span>
-                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                          {actividad.acohrs} horas
-                        </span>
-                        <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                          {actividad.depcve} Dpt
-                        </span>
-                        {actividad.horario && (
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                            ✓ Con horario
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      <button
-                        onClick={() => abrirModalHorario(actividad)}
-                        style={{
-                          padding: '0.5rem',
-                          border: '1px solid #ffc107',
-                          borderRadius: '6px',
-                          backgroundColor: 'white',
-                          color: '#ffc107',
-                          fontSize: '0.9rem',
-                          fontWeight: '500',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
-                      >
-                        <Clock size={16} />
-                        Horario
-                      </button>
-                      <button
-                        onClick={() => agregarAOferta(actividad)}
-                        disabled={actividadesOfertadas.find(act => act.id === actividad.id)}
-                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                          actividadesOfertadas.find(act => act.id === actividad.id)
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white'
-                        }`}
-                      >
-                        {actividadesOfertadas.find(act => act.id === actividad.id) ? 'Agregada' : 'Agregar'}
-                      </button>
-                    </div>
+              actividadesDisponibles.map((oferta) => (
+                <div
+                  key={oferta.id}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '15px',
+                    padding: '2rem',
+                    textAlign: 'center',
+                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.08)',
+                    borderTop: '4px solid #007bff',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onClick={() => handleSportClick(oferta.id, oferta.actividad)}
+                >
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '2.5rem',
+                    margin: '0 auto 1rem',
+                    backgroundColor: '#007bff',
+                    color: '#fff'
+                  }}>
+                    🎯
                   </div>
+                  <h3 style={{
+                    fontSize: '1.5rem',
+                    color: '#333',
+                    margin: '0 0 0.5rem 0'
+                  }}>
+                    {oferta.actividad.aconco || oferta.actividad.aticve}
+                  </h3>
+                  <p style={{
+                    color: '#666',
+                    marginBottom: '1.5rem',
+                    lineHeight: '1.4'
+                  }}>
+                    Código: {oferta.actividad.aticve}
+                  </p>
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    gap: '0.5rem', 
+                    marginBottom: '1.5rem',
+                    flexWrap: 'wrap'
+                  }}>
+                    <span style={{ 
+                      backgroundColor: '#e3f2fd', 
+                      color: '#1976d2', 
+                      padding: '0.25rem 0.75rem', 
+                      borderRadius: '12px',
+                      fontSize: '0.8rem',
+                      fontWeight: '500'
+                    }}>
+                      {oferta.actividad.acocre} créditos
+                    </span>
+                    <span style={{ 
+                      backgroundColor: '#f3e5f5', 
+                      color: '#7b1fa2', 
+                      padding: '0.25rem 0.75rem', 
+                      borderRadius: '12px',
+                      fontSize: '0.8rem',
+                      fontWeight: '500'
+                    }}>
+                      {oferta.actividad.acohrs} horas
+                    </span>
+                  </div>
+                  <button style={{
+                    padding: '0.75rem 1.5rem',
+                    border: 'none',
+                    borderRadius: '25px',
+                    backgroundColor: '#007bff',
+                    color: '#fff',
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    Inscribirme
+                  </button>
                 </div>
               ))
             )}
           </div>
-        </div>
+        )}
+      </div>
+    );
+  }
 
-        {/* Panel derecho: Actividades seleccionadas */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-semibold text-gray-800">
-              Oferta del Semestre ({actividadesOfertadas.length})
+  if (showForm) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '15px',
+          width: '100%',
+          maxWidth: '600px',
+          boxShadow: '0 5px 15px rgba(0, 0, 0, 0.08)',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #667eea, #764ba2)',
+            color: '#fff',
+            padding: '1rem 2rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', margin: 0 }}>
+              📝 Inscripción a {selectedSport.name}
             </h3>
-            <button
-              onClick={publicarActividades}
-              disabled={actividadesOfertadas.length === 0 || publicando}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                actividadesOfertadas.length > 0 && !publicando
-                  ? 'bg-green-500 hover:bg-green-600 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+            <button 
+              onClick={() => setShowForm(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#fff',
+                fontSize: '1.2rem',
+                cursor: 'pointer'
+              }}
             >
-              <Calendar size={20} />
-              {publicando ? 'Publicando...' : 'Publicar Oferta'}
+              ✕
             </button>
           </div>
 
-          {actividadesOfertadas.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <Users size={48} className="mx-auto mb-4 opacity-50" />
-              <p>No hay actividades seleccionadas</p>
-              <p className="text-sm">Agrega actividades del catálogo</p>
+          <form onSubmit={handleFormSubmit} style={{ padding: '2rem' }}>
+            {/* Pregunta 1 */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '1rem'
+              }}>
+                1. ¿Has practicado esta actividad antes?
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="hasPracticed"
+                    value="si"
+                    checked={formData.hasPracticed === 'si'}
+                    onChange={(e) => setFormData({...formData, hasPracticed: e.target.value})}
+                    style={{ marginRight: '0.75rem', transform: 'scale(1.2)' }}
+                  />
+                  Sí
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="hasPracticed"
+                    value="no"
+                    checked={formData.hasPracticed === 'no'}
+                    onChange={(e) => setFormData({...formData, hasPracticed: e.target.value})}
+                    style={{ marginRight: '0.75rem', transform: 'scale(1.2)' }}
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {/* Pregunta 2 */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '1rem'
+              }}>
+                2. ¿Tienes alguna enfermedad o lesión relevante?
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="hasIllness"
+                    value="si"
+                    checked={formData.hasIllness === 'si'}
+                    onChange={(e) => setFormData({...formData, hasIllness: e.target.value})}
+                    style={{ marginRight: '0.75rem', transform: 'scale(1.2)' }}
+                  />
+                  Sí
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    name="hasIllness"
+                    value="no"
+                    checked={formData.hasIllness === 'no'}
+                    onChange={(e) => setFormData({...formData, hasIllness: e.target.value})}
+                    style={{ marginRight: '0.75rem', transform: 'scale(1.2)' }}
+                  />
+                  No
+                </label>
+              </div>
+            </div>
+
+            {/* Pregunta 3 */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '1rem'
+              }}>
+                3. Propósito de inscripción:
+              </label>
+              <input
+                type="text"
+                placeholder="Ej: Obtener créditos complementarios"
+                value={formData.purpose}
+                onChange={(e) => setFormData({...formData, purpose: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '1rem'
+                }}
+              />
+            </div>
+
+            {/* Pregunta 4 */}
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                color: '#333',
+                marginBottom: '1rem'
+              }}>
+                4. Tipo de sangre:
+              </label>
+              <select
+                value={formData.bloodType}
+                onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '2px solid #ddd',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  backgroundColor: 'white'
+                }}
+              >
+                <option value="">Selecciona tu tipo de sangre</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '1rem'
+            }}>
+              <button 
+                type="button" 
+                onClick={() => setShowForm(false)}
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  border: '2px solid #ddd',
+                  borderRadius: '8px',
+                  backgroundColor: '#fff',
+                  color: '#666',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                type="submit"
+                style={{
+                  flex: 1,
+                  padding: '0.75rem',
+                  border: 'none',
+                  borderRadius: '8px',
+                  backgroundColor: '#28a745',
+                  color: '#fff',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Enviar Inscripción
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+  // todo esto es nueVo y modificado para la seccion de Mis Actividades
+  if (activeSection === 'events') {
+
+
+    return (
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: '15px',
+        overflow: 'hidden',
+        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.08)'
+      }}>
+        <div style={{
+          backgroundColor: '#28a745',
+          color: '#fff',
+          padding: '1rem 2rem'
+        }}>
+          <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '600' }}>
+            📅 Mis Actividades Inscritas
+          </h3>
+        </div>
+        <div style={{ padding: '2rem' }}>
+          {misActividades.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📝</div>
+              <h4 style={{ marginBottom: '0.5rem' }}>No tienes actividades inscritas</h4>
+              <p>Ve a "Actividades Complementarias" para inscribirte en alguna actividad.</p>
             </div>
           ) : (
-            <div className="space-y-3">
-              {actividadesOfertadas.map((actividad) => (
-                <div key={actividad.id} className="border border-green-200 bg-green-50 rounded-lg p-4">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800">
-                        {actividad.aconco || actividad.aticve}
-                      </h4>
-                      <p className="text-sm text-gray-600">Código: {actividad.aticve}</p>
-                      <div className="flex gap-4 mt-2 text-sm text-gray-500">
-                        <span>Créditos: {actividad.acocre}</span>
-                        <span>Horas: {actividad.acohrs}</span>
-                      </div>
-                      {actividad.horario && (
-                        <div style={{
-                          marginTop: '0.75rem',
-                          padding: '0.5rem',
-                          backgroundColor: 'white',
-                          borderRadius: '6px',
-                          fontSize: '0.85rem'
-                        }}>
-                          <strong>📅 Horario:</strong> {actividad.horario.dias.join(', ')}<br/>
-                          <strong>🕐</strong> {actividad.horario.horaInicio} - {actividad.horario.horaFin}<br/>
-                          <strong>📍</strong> {actividad.horario.salon}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => quitarDeOferta(actividad.id)}
-                      className="text-red-500 hover:text-red-700 p-1 transition-colors"
+            <div style={{ display: 'grid', gap: '1.5rem' }}>
+              {misActividades.map((inscripcion, index) => {
+                const actividad = inscripcion.actividad;
+                const isExpanded = actividadExpandida === index;
+                
+                return (
+                  <div key={index} style={{
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '12px',
+                    overflow: 'hidden',
+                    backgroundColor: '#fff',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}>
+                    {/* Header - Nombre de la actividad */}
+                    <div 
+                      onClick={() => setActividadExpandida(isExpanded ? null : index)}
+                      style={{
+                        padding: '1.5rem',
+                        backgroundColor: '#f8f9fa',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        borderBottom: isExpanded ? '2px solid #e0e0e0' : 'none'
+                      }}
                     >
-                      <Trash2 size={20} />
-                    </button>
+                      <div>
+                        <h3 style={{ 
+                          margin: 0, 
+                          fontSize: '1.4rem', 
+                          color: '#333',
+                          fontWeight: '700'
+                        }}>
+                          {actividad?.aconco || actividad?.aticve || 'Actividad'}
+                        </h3>
+                        <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem', color: '#666' }}>
+                          Código: {actividad?.aticve} | Créditos: {actividad?.acocre} | Horas: {actividad?.acohrs}
+                        </p>
+                      </div>
+                      <div style={{ fontSize: '1.5rem', color: '#666' }}>
+                        {isExpanded ? '▼' : '▶'}
+                      </div>
+                    </div>
+
+                    {/* Contenido expandido */}
+                    {isExpanded && (
+                      <div style={{ padding: '2rem' }}>
+                        {/* Tabla de información */}
+                        <div style={{ 
+                          overflowX: 'auto',
+                          marginBottom: '2rem',
+                          border: '1px solid #e0e0e0',
+                          borderRadius: '8px'
+                        }}>
+                          <table style={{ 
+                            width: '100%', 
+                            borderCollapse: 'collapse',
+                            fontSize: '0.9rem'
+                          }}>
+                            <thead>
+                              <tr style={{ backgroundColor: '#f8f9fa' }}>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Periodo</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Código</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Actividad</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>QR</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Créditos</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Horas</th>
+                                <th style={{ padding: '0.75rem', textAlign: 'left', borderBottom: '2px solid #dee2e6', fontWeight: '600' }}>Departamento</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr style={{ backgroundColor: '#fff' }}>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {new Date(inscripcion.fechaInscripcion).getFullYear()}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.aticve || 'N/A'}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.aconco || actividad?.aticve || 'N/A'}
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  <span style={{ 
+                                    color: '#dc3545', 
+                                    fontSize: '1.2rem',
+                                    fontWeight: 'bold'
+                                  }}>✗</span>
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.acocre || 0}
+                                </td>
+                                <td style={{ padding: '0.75rem', textAlign: 'center', borderBottom: '1px solid #dee2e6' }}>
+                                  {actividad?.acohrs || 0}
+                                </td>
+                                <td style={{ padding: '0.75rem', borderBottom: '1px solid #dee2e6' }}>
+                                  Actividades Extraescolares
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+
+                        {/* Información del estudiante */}
+                        <div style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                          gap: '1.5rem',
+                          marginTop: '1.5rem'
+                        }}>
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #007bff'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Fecha de Inscripción
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {new Date(inscripcion.fechaInscripcion).toLocaleDateString('es-MX', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #28a745'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Tipo de Sangre
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.bloodType || 'N/A'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #ffc107'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Experiencia Previa
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.hasPracticed === 'si' ? 'Sí ha practicado' : 'No ha practicado'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #dc3545'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Condición Médica
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.hasIllness === 'si' ? 'Sí reportó' : 'No reportó'}
+                            </p>
+                          </div>
+
+                          <div style={{
+                            padding: '1rem',
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: '8px',
+                            borderLeft: '4px solid #6f42c1',
+                            gridColumn: 'span 2'
+                          }}>
+                            <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase' }}>
+                              Propósito de Inscripción
+                            </h4>
+                            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '600', color: '#333' }}>
+                              {inscripcion.formularioData?.purpose || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+
+                      {/* Bloque del horario */}
+<div
+  style={{
+    marginTop: '1.5rem',
+    padding: '1.5rem',
+    backgroundColor: '#e7f3ff',
+    borderRadius: '8px',
+    border: '1px dashed #007bff',
+  }}
+>
+  <h4
+    style={{
+      margin: '0 0 0.5rem 0',
+      color: '#0056b3',
+    }}
+  >
+    📅 Horario
+  </h4>
+
+  {actividad?.horario ? (
+    <div
+      style={{
+        display: 'grid',
+        gap: '1rem',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      }}
+    >
+      {/* Días */}
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: '1rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '0.85rem',
+            color: '#666',
+            marginBottom: '0.5rem',
+            fontWeight: '500',
+            textTransform: 'uppercase',
+          }}
+        >
+          📆 Días
+        </div>
+        <div
+          style={{
+            fontSize: '1.05rem',
+            fontWeight: '600',
+            color: '#333',
+            lineHeight: '1.4',
+          }}
+        >
+          {Array.isArray(actividad.horario.dias)
+            ? actividad.horario.dias.join(', ')
+            : actividad.horario.dias}
+        </div>
+      </div>
+
+      {/* Horario */}
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: '1rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '0.85rem',
+            color: '#666',
+            marginBottom: '0.5rem',
+            fontWeight: '500',
+            textTransform: 'uppercase',
+          }}
+        >
+          🕐 Horario
+        </div>
+        <div
+          style={{
+            fontSize: '1.05rem',
+            fontWeight: '600',
+            color: '#333',
+          }}
+        >
+          {actividad.horario.horaInicio} - {actividad.horario.horaFin}
+        </div>
+      </div>
+
+      {/* Salón/Ubicación */}
+      <div
+        style={{
+          backgroundColor: 'white',
+          padding: '1rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '0.85rem',
+            color: '#666',
+            marginBottom: '0.5rem',
+            fontWeight: '500',
+            textTransform: 'uppercase',
+          }}
+        >
+          📍 Ubicación
+        </div>
+        <div
+          style={{
+            fontSize: '1.05rem',
+            fontWeight: '600',
+            color: '#333',
+          }}
+        >
+          {actividad.horario.salon || 'Por asignar'}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <p
+      style={{
+        margin: 0,
+        color: '#333',
+        fontSize: '1rem',
+        fontWeight: '600',
+      }}
+    >
+      El horario será asignado por el administrador próximamente.
+    </p>
+  )}
+</div>
+
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
+    );
+  }
 
-      {/* Estadísticas */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-500 text-white p-4 rounded-lg">
-          <h4 className="font-semibold">Total Actividades</h4>
-          <p className="text-2xl font-bold">{todasActividades.length}</p>
-        </div>
-        <div className="bg-green-500 text-white p-4 rounded-lg">
-          <h4 className="font-semibold">Ofertadas</h4>
-          <p className="text-2xl font-bold">{actividadesOfertadas.length}</p>
-        </div>
-        <div className="bg-purple-500 text-white p-4 rounded-lg">
-          <h4 className="font-semibold">Créditos Totales</h4>
-          <p className="text-2xl font-bold">
-            {actividadesOfertadas.reduce((sum, act) => sum + (act.acocre || 0), 0)}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return null;
 };
 
-export default AdminPanel;
+export default EstuPanel;
