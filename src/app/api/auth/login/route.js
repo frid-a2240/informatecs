@@ -1,26 +1,27 @@
-
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 export async function POST(req) {
   const { matricula, password } = await req.json();
 
+  c
   const estudiante = await prisma.estudiantes.findUnique({
     where: { aluctr: matricula },
     include: {
       inscripciones: {  // relación con estudicarr
+      inscripciones: {  // relacion con estudicarr
         include: {
           carrera: true   // trae la info de la carrera
         }
-      }
-    }
-  });
 
   if (!estudiante) {
-    return NextResponse.json({ message: 'Matrícula no encontrada' }, { status: 404 });
+    return NextResponse.json(
+      { message: "Matrícula no encontrada" },
+      { status: 404 }
+    );
   }
 
   let student = await prisma.authStudents.findUnique({
@@ -28,8 +29,10 @@ export async function POST(req) {
   });
 
   if (!student) {
-    const nombreCompleto = `${estudiante.alunom ?? ''} ${estudiante.aluapp ?? ''} ${estudiante.aluapm ?? ''}`.trim();
-    const genericPassword = '123456';
+    const nombreCompleto = `${estudiante.alunom ?? ""} ${
+      estudiante.aluapp ?? ""
+    } ${estudiante.aluapm ?? ""}`.trim();
+    const genericPassword = "123456";
     const hashedPassword = await bcrypt.hash(genericPassword, 10);
 
     student = await prisma.authStudents.create({
@@ -37,7 +40,7 @@ export async function POST(req) {
         matricula,
         password: hashedPassword,
         nombreCompleto,
-        correo: '',
+        correo: "",
         isVerified: false,
       },
     });
@@ -46,7 +49,10 @@ export async function POST(req) {
   const passwordMatch = await bcrypt.compare(password, student.password);
 
   if (!passwordMatch) {
-    return NextResponse.json({ message: 'Contraseña incorrecta' }, { status: 401 });
+    return NextResponse.json(
+      { message: "Contraseña incorrecta" },
+      { status: 401 }
+    );
   }
 
   if (student.isVerified) {
@@ -54,31 +60,32 @@ export async function POST(req) {
     const perfilCompleto = {
       // Información básica
       numeroControl: estudiante.aluctr,
-      nombreCompleto: `${estudiante.alunom ?? ''} ${estudiante.aluapp ?? ''} ${estudiante.aluapm ?? ''}`.trim(),
+      nombreCompleto: `${estudiante.alunom ?? ""} ${estudiante.aluapp ?? ""} ${
+        estudiante.aluapm ?? ""
+      }`.trim(),
       fechaNacimiento: estudiante.alunac,
       rfc: estudiante.alurfc,
       curp: estudiante.alucur,
       telefono: estudiante.alute1,
       email: estudiante.alumai,
-      
+
       // Información académica
-      carrera: estudiante.inscripciones?.[0]?.carrera?.carnom || "Sin carrera asignada",
+      carrera:
+        estudiante.inscripciones?.[0]?.carrera?.carnom ||
+        "Sin carrera asignada",
       carreraId: estudiante.inscripciones?.[0]?.carrera?.carcve || null,
-      
     };
 
     return NextResponse.json({
       message: `Bienvenido, ${student.nombreCompleto}`,
       nombre: student.nombreCompleto,
-      estudiante: perfilCompleto  // ← TODA LA INFORMACIÓN
+      estudiante: perfilCompleto, // ← TODA LA INFORMACIÓN
     });
   }
-  
 
   return NextResponse.json({
-    message: 'Verificación requerida. Escribe tu correo electrónico.',
+    message: "Verificación requerida. Escribe tu correo electrónico.",
     requiresVerification: true,
-    correo: student.correo || '',
+    correo: student.correo || "",
   });
 }
-

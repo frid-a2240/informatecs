@@ -62,8 +62,7 @@ const InscripcionesPanel = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <AdminSidebar />
+    <div className="flex justify-center px-6 py-6 space-y-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Inscripciones por Actividad
@@ -73,7 +72,6 @@ const InscripcionesPanel = () => {
         </p>
       </div>
 
-      {/* Buscador */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="relative">
           <input
@@ -87,7 +85,6 @@ const InscripcionesPanel = () => {
         </div>
       </div>
 
-      {/* Lista de actividades */}
       <div className="space-y-3">
         {actividadesFiltradas.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
@@ -103,7 +100,6 @@ const InscripcionesPanel = () => {
                 key={oferta.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden"
               >
-                {/* Header de la actividad */}
                 <button
                   onClick={() => toggleActividad(oferta.actividadId)}
                   className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"

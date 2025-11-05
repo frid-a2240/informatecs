@@ -1,27 +1,40 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaUser, FaLock, FaChalkboardTeacher } from "react-icons/fa";
 import { useAuth } from "@/app/components/hooks/authHandlers";
-import styles from "./login.css";
+import "./login.css";
+
+// Importar formularios
+
+import TeacherForm from "@/app/components/TeacherForm";
+import AdminForm from "@/app/components/AdminForm";
+import RegisterForm from "@/app/components/RegisterForm";
+import LoginForm from "@/app/components/loginform";
+import AskEmailForm from "@/app/components/AskEmailForm";
+import VerifyCodeForm from "@/app/components/hooks/VerifyCodeForm";
+import UpdatePasswordForm from "@/app/components/UpdatePasswordForm";
+import SchoolRainEffect from "@/app/components/SchoolRainEffect";
 
 const LoginPage = () => {
   const router = useRouter();
 
+  const [step, setStep] = useState("login");
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
-  const [step, setStep] = useState("login"); // login, adm, register, askEmail, verify, update, success
+  const [showPassword, setShowPassword] = useState(false);
+  const [teacherId, setTeacherId] = useState("");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [studentData, setStudentData] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
-  // Estados para administrador
   const [adminUser, setAdminUser] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+
+  const [particles, setParticles] = useState([]);
 
   const {
     handleLogin,
@@ -31,7 +44,38 @@ const LoginPage = () => {
     handleUpdatePassword,
   } = useAuth(setStep, setFullName, setError, setStudentData);
 
-  // Funciones de submit
+  useEffect(() => {
+    const generatedParticles = [...Array(20)].map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 5}s`,
+      animationDuration: `${5 + Math.random() * 10}s`,
+    }));
+    setParticles(generatedParticles);
+  }, []);
+
+  const resetForm = () => {
+    setMatricula("");
+    setPassword("");
+    setTeacherId("");
+    setAdminUser("");
+    setAdminPassword("");
+    setEmail("");
+    setCode("");
+    setNewPassword("");
+    setError("");
+    setShowPassword(false);
+  };
+
+  // ----------------------
+  // Funciones de envío
+  // ----------------------
+  const onLoginSubmit = (e) => {
+    e.preventDefault();
+    if (!matricula || !password)
+      return setError("Escribe matrícula y contraseña");
+    handleLogin(e, matricula, password);
+  };
   const onRegisterSubmit = (e) => {
     e.preventDefault();
     if (!matricula || !password)
@@ -40,305 +84,184 @@ const LoginPage = () => {
       return setError('La contraseña para registro debe ser "123456"');
     handleRegister(e, matricula, password);
   };
-
-  const onLoginSubmit = (e) => {
+  const onTeacherSubmit = (e) => {
     e.preventDefault();
-    if (!matricula || !password)
-      return setError("Escribe matrícula y contraseña");
-    handleLogin(e, matricula, password);
+    if (!teacherId || !password)
+      return setError("Escribe identificación y contraseña de maestro");
+    setError("Funcionalidad de maestros en desarrollo");
   };
-
-  // Admin login submit
   const onAdminSubmit = (e) => {
     e.preventDefault();
-    if (!adminUser || !adminPassword) {
-      setError("Escribe usuario y contraseña de administrador");
-      return;
-    }
-
-    if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025") {
+    if (!adminUser || !adminPassword)
+      return setError("Escribe usuario y contraseña de administrador");
+    if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025")
       router.push("/designs/menuadmin");
-    } else {
-      setError("Credenciales de administrador incorrectas");
-    }
+    else setError("Credenciales de administrador incorrectas");
   };
+  const onSendCode = (e) => {
+    e.preventDefault();
+    handleSendCode(e, matricula, email);
+  };
+  const onVerifyCode = (e) => {
+    e.preventDefault();
+    handleVerifyCode(e, matricula, code);
+  };
+  const onUpdatePassword = (e) => {
+    e.preventDefault();
+    handleUpdatePassword(e, matricula, newPassword);
+  };
+
+  // ----------------------
+  // Componente interno de redirección
+  // ----------------------
+  const RedirectAfterLogin = ({ fullName, studentData }) => {
+    useEffect(() => {
+      if (studentData)
+        localStorage.setItem("studentData", JSON.stringify(studentData));
+      router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+    }, [router, fullName, studentData]);
+    return null;
+  };
+
+  const formSteps = {
+    login: (
+      <LoginForm
+        matricula={matricula}
+        setMatricula={setMatricula}
+        password={password}
+        setPassword={setPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onLoginSubmit}
+      />
+    ),
+    register: (
+      <RegisterForm
+        matricula={matricula}
+        setMatricula={setMatricula}
+        password={password}
+        setPassword={setPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onRegisterSubmit}
+      />
+    ),
+    teacher: (
+      <TeacherForm
+        teacherId={teacherId}
+        setTeacherId={setTeacherId}
+        password={password}
+        setPassword={setPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onTeacherSubmit}
+      />
+    ),
+    adm: (
+      <AdminForm
+        adminUser={adminUser}
+        setAdminUser={setAdminUser}
+        adminPassword={adminPassword}
+        setAdminPassword={setAdminPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onAdminSubmit}
+      />
+    ),
+    askEmail: (
+      <AskEmailForm email={email} setEmail={setEmail} onSubmit={onSendCode} />
+    ),
+    verify: (
+      <VerifyCodeForm code={code} setCode={setCode} onSubmit={onVerifyCode} />
+    ),
+    update: (
+      <UpdatePasswordForm
+        newPassword={newPassword}
+        setNewPassword={setNewPassword}
+        onSubmit={onUpdatePassword}
+      />
+    ),
+    success: (
+      <RedirectAfterLogin fullName={fullName} studentData={studentData} />
+    ),
+  };
+
+  const tabs = [
+    { id: "login", label: "Estudiantes", icon: <FaUser /> },
+    { id: "register", label: "Registro", icon: <FaUser /> },
+    { id: "teacher", label: "Maestros", icon: <FaChalkboardTeacher /> },
+    { id: "adm", label: "Admin", icon: <FaLock /> },
+  ];
 
   return (
     <div className="login-container">
+      <div className="particles">
+        {particles.map((particle) => (
+          <div
+            key={particle.id}
+            className="particle"
+            style={{
+              left: particle.left,
+              animationDelay: particle.animationDelay,
+              animationDuration: particle.animationDuration,
+            }}
+          ></div>
+        ))}
+      </div>
+
       <div className="form-section">
-        <WaveSVG />
-
-        <h1 className="login-title animate__heartBeat">Eventos ITE</h1>
-
-        {/* Tabs */}
-        <div className="login-tabs">
-          <button
-            className={
-              step === "login" || step === "success"
-                ? "tab-active"
-                : "tab-inactive"
-            }
-            onClick={() => {
-              setStep("login");
-              setError("");
-              setPassword("");
-              setMatricula("");
-              setAdminUser("");
-              setAdminPassword("");
-            }}
-          >
-            Iniciar Sesión
-          </button>
-          <button
-            className={step === "register" ? "tab-active" : "tab-inactive"}
-            onClick={() => {
-              setStep("register");
-              setError("");
-              setPassword("");
-              setMatricula("");
-              setAdminUser("");
-              setAdminPassword("");
-            }}
-          >
-            Registrarse
-          </button>
-          <button
-            className={step === "adm" ? "tab-active" : "tab-inactive"}
-            onClick={() => {
-              setStep("adm");
-              setError("");
-              setPassword("");
-              setMatricula("");
-              setAdminUser("");
-              setAdminPassword("");
-            }}
-          >
-            Administrador
-          </button>
+        <div className="login-header">
+          <h1 className="login-title">Eventos ITE</h1>
+          <p className="login-subtitle">Sistema de Gestión Académica</p>
         </div>
 
-        {error && <p className="error-message">{error}</p>}
+        <div className="login-card">
+          <div className="login-tabs">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={`tab-button ${
+                  step === tab.id ? "tab-active" : "tab-inactive"
+                }`}
+                onClick={() => {
+                  resetForm();
+                  setStep(tab.id);
+                }}
+              >
+                <span className="tab-icon">{tab.icon}</span>
+                <span className="tab-label">{tab.label}</span>
+              </button>
+            ))}
+          </div>
 
-        {/* Formulario de estudiante */}
-        {(step === "login" || step === "register") && (
-          <form
-            onSubmit={step === "login" ? onLoginSubmit : onRegisterSubmit}
-            className="login-form"
-          >
-            <label className="login-label">Matrícula:</label>
-            <input
-              type="text"
-              className="login-input"
-              value={matricula}
-              placeholder="Ingresa tu matrícula"
-              onChange={(e) => setMatricula(e.target.value)}
-              required
-            />
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              {error}
+            </div>
+          )}
 
-            <label className="login-label">Contraseña:</label>
-            <PasswordInput
-              password={password}
-              setPassword={setPassword}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-            />
-
-            {step === "register" && (
-              <p>
-                La contraseña debe ser la genérica: <b>123456</b>. Luego deberás
-                verificar tu correo y cambiarla.
-              </p>
-            )}
-
-            {step === "login" && (
-              <div className="forgot-password">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setStep("askEmail");
-                    setError("");
-                  }}
-                >
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
-            )}
-
-            <button type="submit" className="submit-button">
-              {step === "login" ? "Iniciar sesión" : "Registrarse"}
-            </button>
-          </form>
-        )}
-
-        {/* Formulario de administrador */}
-        {step === "adm" && (
-          <form onSubmit={onAdminSubmit} className="login-form">
-            <label className="login-label">Usuario:</label>
-            <input
-              type="text"
-              className="login-input"
-              value={adminUser}
-              placeholder="Ingresa tu usuario"
-              onChange={(e) => setAdminUser(e.target.value)}
-              required
-            />
-            <label className="login-label">Contraseña:</label>
-            <PasswordInput
-              password={adminPassword}
-              setPassword={setAdminPassword}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-            />
-            <button type="submit" className="submit-button">
-              Administrador
-            </button>
-          </form>
-        )}
-
-        {/* Recuperación de contraseña */}
-        {step === "askEmail" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendCode(e, matricula, email);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Correo electrónico</label>
-            <input
-              type="email"
-              className="login-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Enviar código
-            </button>
-          </form>
-        )}
-
-        {step === "verify" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleVerifyCode(e, matricula, code);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Código de verificación</label>
-            <input
-              type="text"
-              className="login-input"
-              value={code}
-              placeholder="Ingresa el código de 6 dígitos"
-              onChange={(e) => setCode(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Verificar código
-            </button>
-          </form>
-        )}
-
-        {step === "update" && (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleUpdatePassword(e, matricula, newPassword);
-            }}
-            className="login-form"
-          >
-            <label className="login-label">Nueva contraseña</label>
-            <input
-              type="password"
-              className="login-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-            <button type="submit" className="submit-button">
-              Actualizar contraseña
-            </button>
-          </form>
-        )}
-
-        {step === "success" && (
-          <RedirectAfterLogin fullName={fullName} studentData={studentData} />
-        )}
+          <div className="form-container">{formSteps[step]}</div>
+        </div>
       </div>
 
       <div className="logo-section">
-        <img
-          src="/imagenes/foondoo.gif"
-          alt="Logo del sistema Albatros corriendo"
-        />
+        <SchoolRainEffect />
+        <div className="divider-enhancer"></div>
+        <div className="mascot-container">
+          <img
+            src="/imagenes/foondoo.gif"
+            alt="Logo del sistema Albatros corriendo"
+            className="mascot-image"
+          />
+          <div className="mascot-shadow"></div>
+        </div>
+        <div className="wave"></div>
+        <div className="wave second"></div>
+        <div className="wave third"></div>
       </div>
     </div>
   );
 };
-
-// Componentes auxiliares
-const PasswordInput = ({
-  password,
-  setPassword,
-  showPassword,
-  setShowPassword,
-}) => (
-  <div className="password-input-container">
-    <input
-      type={showPassword ? "text" : "password"}
-      className="login-input"
-      placeholder="Ingresa tu contraseña"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      required
-    />
-    <span
-      onClick={() => setShowPassword(!showPassword)}
-      className="password-toggle-icon"
-    >
-      {showPassword ? <FaEyeSlash /> : <FaEye />}
-    </span>
-  </div>
-);
-
-const WaveSVG = () => (
-  <div className="wave-overlay">
-    <svg
-      width="1440"
-      height="560"
-      preserveAspectRatio="none"
-      viewBox="0 0 1440 560"
-    >
-      <g mask="url(#SvgjsMask1033)" fill="none">
-        <path
-          d="M 0,324 C 41.2,292.4 123.6,160.6 206,166 C 288.4,171.4 329.6,380 412,351 C 494.4,322 535.6,22.8 618,21 C 700.4,19.2 741.6,320.6 824,342 C 906.4,363.4 947.6,111 1030,128 C 1112.4,145 1154,413 1236,427 C 1318,441 1399.2,243.8 1440,198L1440 560L0 560z"
-          fill="rgba(27, 57, 106, 1)"
-        />
-        <path
-          d="M 0,412 C 48,375.8 144,210.2 240,231 C 336,251.8 384,530.8 480,516 C 576,501.2 624,159.2 720,157 C 816,154.8 864,524.4 960,505 C 1056,485.6 1104,55.2 1200,60 C 1296,64.8 1392,435.2 1440,529L1440 560L0 560z"
-          fill="rgba(34, 100, 171, 0.74)"
-        />
-      </g>
-      <defs>
-        <mask id="SvgjsMask1033">
-          <rect width="1440" height="560" fill="#ffffff" />
-        </mask>
-      </defs>
-    </svg>
-  </div>
-);
-
-function RedirectAfterLogin({ fullName, studentData }) {
-  const router = useRouter();
-  useEffect(() => {
-    if (studentData)
-      localStorage.setItem("studentData", JSON.stringify(studentData));
-    router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
-  }, [router, fullName, studentData]);
-  return null;
-}
 
 export default LoginPage;

@@ -5,6 +5,7 @@ import Footer from "@/app/components/footer";
 import TopBar from "@/app/components/topbar";
 import Navbar from "@/app/components/navbar";
 import styles from "./style.css";
+export const dynamic = "force-dynamic";
 const Page = () => {
   const [data, setData] = useState([]);
 
@@ -32,11 +33,6 @@ const Page = () => {
 
   return (
     <div>
-      <TopBar />
-      <section className="main-title-section">
-        <h1>Eventos ITE</h1>
-      </section>
-
       <Navbar />
 
       <div className="content-container">

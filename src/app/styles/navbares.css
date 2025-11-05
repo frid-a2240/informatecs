@@ -103,6 +103,14 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+} /* Link activo */
+.menu-item.active .menu-link {
+  background-color: rgba(255, 255, 255, 0.1); /* tono más claro */
+  color: var(--yellow-accent);
+}
+
+.menu-item.active .icon {
+  color: var(--yellow-accent);
 }
 
 /* Menú (escritorio) */

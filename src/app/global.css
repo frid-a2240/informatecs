@@ -8,6 +8,9 @@
   --yellow-accent: #fe9e10;
   --blue-hover: #8eafef;
   --text-dark: #333333;
+  --act-primary: #1b396a;
+  --act-primary-dark: #142a50;
+  --act-primary-light: #8eafef;
   --bg-light: linear-gradient(
     to left,
     rgba(8, 94, 222, 0.7),
@@ -714,12 +717,13 @@
   left: 0;
   height: 100vh;
   background-color: var(--blue-primary);
-  border-right: 1px solid #dddddd;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
   transition: width 0.3s ease;
   z-index: 1000;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  color: white;
 }
 
 .sliderbaradm.open {
@@ -730,47 +734,36 @@
   width: 80px;
 }
 
+/* Ocultar texto y badge en versión cerrada */
 .sliderbaradm.closed .logo-text-container,
 .sliderbaradm.closed .admin-badge {
   display: none;
 }
 
+/* Centrar íconos al colapsar */
 .sliderbaradm.closed .menu-link {
   justify-content: center;
+  padding: 0.75rem 0;
 }
 
-.sliderbaradm.closed .menu-link span {
+.sliderbaradm.closed .menu-link .icon {
+  margin: 0 auto;
+  font-size: 1.7rem;
+}
+
+.sliderbaradm.closed .menu-link .title {
   display: none;
 }
 
-.sliderbaradm.closed .menu-link {
-  padding: 0.75rem 0.5rem;
-}
-
-.logo-text-container {
-  display: flex;
-  text-align: center;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.admin-badge {
-  background-color: #1d1f8a;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 4px;
-  width: fit-content;
-  text-align: center;
-}
-
+/* ==========================
+   Header
+========================== */
 .sliderbaradm-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo-container {
@@ -779,11 +772,29 @@
   gap: 0.5rem;
 }
 
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: bold;
+.logo-text-container {
+  display: flex;
+  flex-direction: column;
   text-align: center;
-  color: var(--blue-primary);
+  gap: 0.2rem;
+}
+
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+}
+
+.admin-badge {
+  background-color: #2d5aa0;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+  width: fit-content;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .toggle-btn {
@@ -791,15 +802,18 @@
   border: none;
   cursor: pointer;
   font-size: 1.8rem;
-  color: var(--blue-primary);
+  color: var(--yellow-accent);
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .toggle-btn:hover {
   transform: rotate(90deg);
-  color: var(--yellow-accent);
+  color: var(--orange-primary);
 }
 
+/* ==========================
+   Menú
+========================== */
 .menu {
   list-style: none;
   margin: 0;
@@ -815,44 +829,52 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: black;
+  color: white;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
   transition: background 0.2s ease, color 0.2s ease;
   font-size: 0.95rem;
   border-radius: 0.5rem;
+  white-space: nowrap;
 }
 
 .menu-link:hover {
-  background-color: var(--blue-primary);
+  background-color: var(--blue-hover);
   color: white;
 }
 
 .menu-link:hover .icon {
-  color: white;
-}
-
-.icon {
-  font-size: 1.7rem;
-  display: flex;
-  align-items: center;
   color: var(--yellow-accent);
 }
 
+.icon {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--yellow-accent);
+}
+
+/* ==========================
+   Logout
+========================== */
 .menu-item.logout {
   margin-top: auto;
-  color: #ff6666;
+  color: #ffb3b3;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
 }
 
 .menu-item.logout:hover {
-  background-color: yellow;
-  color: var(--text-dark);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ff6666;
 }
 
+/* ==========================
+   Responsive
+========================== */
 @media (max-width: 768px) {
   .sliderbaradm {
     height: 100%;
@@ -865,10 +887,7 @@
 
   .sliderbaradm.closed {
     width: 0;
-  }
-
-  .menu-link {
-    justify-content: flex-start;
+    overflow: hidden;
   }
 }
 
@@ -1203,6 +1222,12 @@
   font-size: 20px !important;
   font-weight: 900 !important;
 }
+.thumbs-swiper,
+.swiper-container-thumbs {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 
 /* ==========================
    Botón Regístrate
@@ -1261,27 +1286,32 @@
   }
 }
 
+/* ===========================
+   Estilos responsivos para móviles
+=========================== */
 @media (max-width: 768px) {
-  .coverflow-swiper {
-    height: 65vh;
+  /* Oculta las miniaturas del carrusel */
+  .thumbs-swiper,
+  .swiper-container-thumbs {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 
+  /* Ajusta las slides del coverflow */
   .coverflow-swiper .swiper-slide {
     width: 100vw;
     height: 60vh;
   }
 
+  /* Ajusta padding de la overlay */
   .coverflow-overlay {
     padding: 1.5rem;
   }
 
+  /* Ajusta tamaño del título */
   .coverflow-title {
     font-size: 1.5rem;
-  }
-
-  /* Oculta las miniaturas en móviles */
-  .thumbs-swiper {
-    display: none !important;
   }
 
   /* Oculta el botón Regístrate en móviles */
@@ -1484,6 +1514,10 @@
     text-align: center;
   }
 
+  .thumbs-swiper {
+    display: none !important;
+  }
+
   .activity-item {
     padding: 2rem 1rem;
   }
@@ -1495,61 +1529,13 @@
   .activity-image {
     max-width: 90%;
   }
-}
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+  .thumbs-swiper {
+    display: none;
   }
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+
+  .thumb-vertical {
+    display: none;
   }
 }
 
@@ -1559,5 +1545,182 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ==========================
+   Contenedor principal
+========================== */
+.actividad-form-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.actividad-form {
+  background-color: #ffffff;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ==========================
+   Header del formulario
+========================== */
+.actividad-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.actividad-form-header h3 {
+  font-size: 1.5rem;
+  color: #1b396a;
+}
+
+.actividad-form-header button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.actividad-form-header button:hover {
+  transform: rotate(90deg);
+  color: #fe9e10;
+}
+
+/* ==========================
+   Pregunta Cards
+========================== */
+.pregunta-card {
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Diferentes colores de fondo */
+.p-color1 {
+  background-color: #e3f2fd;
+} /* Azul suave */
+.p-color2 {
+  background-color: #fff3e0;
+} /* Naranja suave */
+.p-color3 {
+  background-color: #e8f5e9;
+} /* Verde suave */
+.p-color4 {
+  background-color: #f3e5f5;
+} /* Morado suave */
+
+/* Inputs y selects */
+.pregunta-card input[type="text"],
+.pregunta-card select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pregunta-card input[type="text"]:focus,
+.pregunta-card select:focus {
+  border-color: #1b396a;
+}
+
+/* Radios */
+.pregunta-card label input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #1b396a;
+}
+
+/* ==========================
+   Botones del formulario
+========================== */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.form-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.form-buttons button[type="submit"] {
+  background-color: #1b396a;
+  color: #fff;
+}
+
+.form-buttons button[type="submit"]:hover {
+  background-color: #16315b;
+}
+
+.form-buttons button[type="button"] {
+  background-color: #ccc;
+  color: #333;
+}
+
+.form-buttons button[type="button"]:hover {
+  background-color: #b3b3b3;
+}
+
+/* ==========================
+   Animaciones
+========================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================
+   Responsive
+========================== */
+@media (max-width: 480px) {
+  .actividad-form {
+    padding: 15px;
+  }
+
+  .actividad-form-header h3 {
+    font-size: 1.2rem;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-buttons button {
+    width: 100%;
   }
 }

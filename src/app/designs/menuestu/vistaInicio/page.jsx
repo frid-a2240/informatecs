@@ -1,21 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import NavbarEst from "@/app/components/navbares";
-import styles from "./inicio.css";
 export default function WelcomePage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
   return (
     <div className="dashboard-container">
-      <main
-        className={`dashboard-main welcome-main ${
-          sidebarOpen ? "with-sidebar" : "full-width"
-        }`}
-      >
+      <main className="dashboard-main welcome-main">
         <div className="welcome-card">
-          <h1>¡Bienvenido a tu panel!</h1>
-          <p>
+          <h1 className="welcome-title">¡Bienvenido a tu panel!</h1>
+          <p className="welcome-text">
             En este portal podrás verificar toda tu información personal y
             académica antes de realizar tu inscripción a cualquier evento
             institucional. Esta revisión te permitirá asegurarte de que cumples

@@ -42,12 +42,10 @@ const AlumnosPanel = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar fija */}
       <div className="w-64 sticky top-0 h-screen bg-white shadow-md">
         <AdminSidebar />
       </div>
 
-      {/* Contenido principal */}
       <div className="flex-1 p-6 space-y-6 overflow-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6">

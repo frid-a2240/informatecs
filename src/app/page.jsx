@@ -31,6 +31,7 @@ import {
   FaUsers,
   FaMasksTheater,
 } from "react-icons/fa6";
+import AlbatroCursor from "./components/cursor";
 
 const HomePage = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -163,7 +164,6 @@ const HomePage = () => {
           </div>
         </main>
 
-        {/* Sección de Actividades */}
         <section className="category-cards-section" data-aos="fade-up">
           <h2 className="section-title">Participa en nuestras actividades</h2>
           <div className="cards-grid">

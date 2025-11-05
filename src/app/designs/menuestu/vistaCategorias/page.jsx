@@ -1,201 +1,57 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import {
-  X,
-  BookOpen,
-  Clock,
-  Code2,
-  Star,
-  Inbox,
-  ChevronLeft,
-  ChevronRight,
-  Timer,
-} from "lucide-react";
-import NavbarEst from "@/app/components/navbares";
+import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import ActividadForm from "@/app/components/formulario";
+// Importar los hooks personalizados
 import "./eventos.css";
-
-const Card = ({ item, isSelected, onClick }) => (
-  <div
-    className={`card ${isSelected ? "selected" : ""}`}
-    onClick={() => onClick(item)}
-  >
-    <div className="card-header">
-      <BookOpen className="icon" /> Asignatura
-    </div>
-    <h3>{item.actividad.aconco}</h3>
-    <p className="description">
-      Descubre más sobre esta actividad y sus beneficios.
-    </p>
-    <div className="card-footer">
-      <span>
-        <Inbox /> {item.actividad.acodes}
-      </span>
-      Información
-    </div>
-  </div>
-);
-
-const OfferModal = ({ item, onClose, onRegister }) => (
-  <div className="modal-overlay" onClick={onClose}>
-    <div className="modal" onClick={(e) => e.stopPropagation()}>
-      <button className="close-btn" onClick={onClose}>
-        <X />
-      </button>
-      {item.actividad.image && (
-        <img src={item.actividad.image} alt={item.actividad.aconco} />
-      )}
-      <h2>{item.actividad.aconco}</h2>
-      <div className="modal-content">
-        <p>
-          Esta actividad forma parte de la oferta del semestre. Conoce sus
-          detalles y regístrate para participar.
-        </p>
-        <div className="info-grid">
-          <p>
-            <Timer /> Horas: {item.actividad.acohrs}
-          </p>
-          <p>
-            <Code2 /> Código: {item.actividad.acocve}
-          </p>
-          <p>
-            <Star /> Créditos: {item.actividad.acocre}
-          </p>
-        </div>
-      </div>
-      <button className="register-btn" onClick={() => onRegister(item)}>
-        Registrarme
-      </button>
-    </div>
-  </div>
-);
-
+import { useStudentData } from "@/app/components/hooks/useStudentData";
+import { useOfertas } from "@/app/components/hooks/useOfertas";
+import { useModalHandler } from "@/app/components/hooks/useModalHandler";
+import { useInscripcion } from "@/app/components/hooks/useInscripcion";
+import { useCarousel } from "@/app/components/hooks/useCarousel";
+import Card from "@/app/components/card";
+import OfferModal from "@/app/components/offterModal";
 export default function App() {
-  const [ofertas, setOfertas] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
+  // Hook para datos del estudiante
+  const { studentData, updateStudentData } = useStudentData();
 
-  const [formSport, setFormSport] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    hasPracticed: "",
-    hasIllness: "",
-    purpose: "",
-    bloodType: "",
-  });
+  // Hook para ofertas
+  const { ofertas, loading, error } = useOfertas("/api/act-disponibles");
 
-  const [studentData, setStudentData] = useState(null); // Traer datos del estudiante
-  const carouselRef = useRef(null);
+  // Hook para control del modal
+  const { selectedItem, selectedId, handleOpen, handleClose } =
+    useModalHandler();
 
-  const API_OFERTAS = "/api/act-disponibles";
+  // Hook para inscripción
+  const {
+    formSport,
+    showForm,
+    isSubmitting,
+    formData,
+    setFormData,
+    iniciarInscripcion,
+    cancelarInscripcion,
+    submitInscripcion,
+  } = useInscripcion();
 
-  // Traer datos del estudiante desde localStorage (como tu ejemplo de perfil)
-  useEffect(() => {
-    const savedData = localStorage.getItem("studentData");
-    if (savedData) {
-      setStudentData(JSON.parse(savedData));
-    }
-  }, []);
+  // Hook para el carousel
+  const { carouselRef, scrollCarousel } = useCarousel(408);
 
-  useEffect(() => {
-    const cargarOfertas = async () => {
-      try {
-        const res = await fetch(API_OFERTAS);
-        const data = await res.json();
-        setOfertas(Array.isArray(data) ? data : data.ofertas || []);
-      } catch (error) {
-        console.error("Error al cargar ofertas:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    cargarOfertas();
-  }, []);
-
-  const handleOpen = (item) => {
-    setSelectedItem(item);
-    setSelectedId(item.id);
-  };
-
-  const handleClose = () => {
-    setSelectedItem(null);
-    setSelectedId(null);
-  };
-
+  // Handler para registrar (abre el formulario)
   const handleRegister = (item) => {
-    setFormSport({
-      ofertaId: item.id,
-      actividadId: item.actividad.id,
-      name: item.actividad.aconco,
-    });
-    setFormData({
-      hasPracticed: "",
-      hasIllness: "",
-      purpose: "",
-      bloodType: "",
-    });
-    setShowForm(true);
+    iniciarInscripcion(item);
     handleClose();
   };
 
+  // Handler para enviar formulario
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formSport || !studentData?.numeroControl) {
-      alert("Faltan datos esenciales para la inscripción");
-      return;
-    }
-
-    const { hasPracticed, hasIllness, purpose, bloodType } = formData;
-    if (!hasPracticed || !hasIllness || !purpose || !bloodType) {
-      alert("Por favor completa todas las preguntas");
-      return;
-    }
-
-    const dataToSend = {
-      aluctr: studentData.numeroControl,
-      actividadId: formSport.actividadId,
-      ofertaId: formSport.ofertaId,
-      formData: { ...formData },
-    };
-
-    try {
-      setIsSubmitting(true);
-      const response = await fetch("/api/inscripciones", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setStudentData({ ...studentData, bloodType: formData.bloodType });
-        setShowForm(false);
-        setFormSport(null);
-        alert(`Inscripción a ${formSport.name} registrada exitosamente`);
-      } else {
-        alert(
-          "Error al registrar inscripción: " +
-            (data.error || "Error desconocido")
-        );
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error de conexión al servidor");
-    } finally {
-      setIsSubmitting(false);
-    }
+    await submitInscripcion(studentData, (bloodType) => {
+      updateStudentData({ bloodType });
+    });
   };
 
-  const scrollCarousel = (dir) => {
-    if (carouselRef.current) {
-      const amt = dir === "left" ? -408 : 408;
-      carouselRef.current.scrollBy({ left: amt, behavior: "smooth" });
-    }
-  };
-
+  // Mostrar formulario de inscripción
   if (showForm && formSport) {
     return (
       <ActividadForm
@@ -203,7 +59,7 @@ export default function App() {
         setFormData={setFormData}
         handleFormSubmit={handleFormSubmit}
         selectedSport={formSport}
-        cancelar={() => setShowForm(false)}
+        cancelar={cancelarInscripcion}
         isSubmitting={isSubmitting}
       />
     );
@@ -219,11 +75,14 @@ export default function App() {
 
         {loading ? (
           <p>Cargando...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
         ) : ofertas.length > 0 ? (
           <div className="carousel-container">
             <button
               className="carousel-btn left"
               onClick={() => scrollCarousel("left")}
+              aria-label="Desplazar ofertas a la izquierda"
             >
               <ChevronLeft />
             </button>
@@ -240,6 +99,7 @@ export default function App() {
             <button
               className="carousel-btn right"
               onClick={() => scrollCarousel("right")}
+              aria-label="Desplazar ofertas a la derecha"
             >
               <ChevronRight />
             </button>

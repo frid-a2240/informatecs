@@ -42,14 +42,9 @@ export default function AdminSidebar() {
   const menuItems = [
     { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
     {
-      href: "/designs/menuadmin/vistaeventosAdm",
+      href: "/designs/menuadmin/vistaInicioAdmin",
       icon: <FiCalendar />,
       label: "Gestionar Eventos",
-    },
-    {
-      href: "/designs/menuadmin/vistaalumnosadm",
-      icon: <FiUsers />,
-      label: "Usuarios",
     },
     {
       href: "/designs/menuadmin/vistaInscripcionesAdmin",
@@ -77,8 +72,7 @@ export default function AdminSidebar() {
             <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
             <div className="logo-text-container">
               <span className="logo-text">Eventos ITE</span>
-              <span className="admin-badge">ADMIN</span>{" "}
-              {/* Badge de administrador */}
+              <span className="admin-badge">ADMIN</span>
             </div>
           </div>
         )}
@@ -100,9 +94,11 @@ export default function AdminSidebar() {
           />
         ))}
 
-        <li className="menu-item" onClick={handleLogout}>
+        <li className="menu-item logout" onClick={handleLogout}>
           <div className="menu-link">
-            <FiLogOut className="icon" />
+            <span className="icon">
+              <FiLogOut />
+            </span>
             {open && <span className="title">Cerrar Sesión</span>}
           </div>
         </li>
