@@ -13,6 +13,6 @@ export async function POST(req) {
   if (!student || student.emailCode !== code) {
     return NextResponse.json({ message: 'Código inválido' }, { status: 401 });
   }
-
+        
   return NextResponse.json({ message: 'Código válido. Puedes cambiar tu contraseña.' });
 }

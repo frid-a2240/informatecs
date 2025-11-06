@@ -1,110 +1,100 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const aluctr = searchParams.get("aluctr");
+    const aluctr = searchParams.get('aluctr');
 
     if (!aluctr) {
-      return new Response(
-        JSON.stringify({ error: "Número de control faltante" }),
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({ error: 'Número de control faltante' }), { status: 400 });
     }
 
     const inscripciones = await prisma.inscripact.findMany({
       where: { estudianteId: aluctr },
-      include: { actividad: true },
+      include: { actividad: true }
     });
 
     return new Response(JSON.stringify(inscripciones), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' }
     });
   } catch (error) {
-    console.error("Error GET inscripciones:", error);
-    return new Response(JSON.stringify({ error: "Error interno" }), {
+    console.error('Error GET inscripciones:', error);
+    return new Response(JSON.stringify({ error: 'Error interno' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }
-// Función POST corregida para recibir todos los datos necesarios
+
 export async function POST(request) {
   try {
-    // 1. Desestructurar los datos de la solicitud
-    const {
-      aluctr, // Corresponde a estudianteId
-      actividadId,
-      ofertaId, // ¡Necesitas este ID del frontend!
-      formData, // El objeto completo del formulario (hasPracticed, purpose, etc.)
-    } = await request.json();
+    const body = await request.json();
+    const { aluctr, actividadId, ofertaId, hasPracticed, hasIllness, purpose, bloodType } = body;
 
-    // 2. Validación de datos esenciales
-    if (!aluctr || !actividadId || !ofertaId || !formData) {
+    console.log('Datos recibidos en inscripciones:', body);
+
+    // Validar campos requeridos
+    if (!aluctr || !actividadId || !ofertaId || !hasPracticed || !hasIllness || !purpose || !bloodType) {
+      console.error('Faltan datos:', { aluctr, actividadId, ofertaId, hasPracticed, hasIllness, purpose, bloodType });
+      return new Response(JSON.stringify({ error: 'Faltan datos requeridos' }), { 
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Verificar si ya está inscrito
+    const yaInscrito = await prisma.inscripact.findFirst({
+      where: {
+        estudianteId: aluctr,
+        actividadId: parseInt(actividadId)
+      }
+    });
+
+    if (yaInscrito) {
       return new Response(
-        JSON.stringify({
-          error:
-            "Faltan datos esenciales para la inscripción (Número de control, IDs o datos del formulario).",
-        }),
-        {
-          status: 400,
-        }
+        JSON.stringify({ error: 'Ya estás inscrito en esta actividad' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    // Convertir IDs a números enteros, ya que probablemente son de tipo Int en Prisma
-    const actividadIdInt = parseInt(actividadId);
-    const ofertaIdInt = parseInt(ofertaId);
+    // Verificar que la oferta existe
+    const ofertaExiste = await prisma.ofertaSemestre.findUnique({
+      where: { id: parseInt(ofertaId) }
+    });
 
-    // 3. Crear el registro de inscripción en Prisma
+    if (!ofertaExiste) {
+      return new Response(
+        JSON.stringify({ error: 'La oferta de actividad no existe' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Crear inscripción
     const inscripcion = await prisma.inscripact.create({
       data: {
-        // Mapeo a las columnas de la tabla Inscripact (según tu imagen):
-        estudianteId: aluctr, // OJO: Asume que es un String ('20750204')
-        actividadId: actividadIdInt,
-        ofertaId: ofertaIdInt,
-
-        // Almacena el objeto del formulario directamente en un campo JSON
-        // Prisma maneja la conversión automáticamente si el campo es de tipo Json
-        formularioData: formData,
-
-        // Las columnas 'calificacion', 'liberado', y 'fechaInscripcion'
-        // probablemente tienen valores por defecto definidos en tu schema.prisma.
-      },
+        estudianteId: aluctr,
+        actividadId: parseInt(actividadId),
+        ofertaId: parseInt(ofertaId),
+        formularioData: {
+          hasPracticed,
+          hasIllness,
+          purpose,
+          bloodType
+        }
+      }
     });
 
     return new Response(
-      JSON.stringify({
-        message: "Inscripción registrada con éxito",
-        inscripcion,
-      }),
-      {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      }
+      JSON.stringify({ message: 'Inscripción registrada exitosamente', inscripcion }),
+      { status: 201, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error("Error en POST Inscripción:", error);
-    // Verificar si es un error de clave duplicada (ej. ya inscrito)
-    if (error.code === "P2002") {
-      return new Response(
-        JSON.stringify({
-          error: "Ya existe una inscripción activa para esta oferta.",
-        }),
-        {
-          status: 409,
-        }
-      );
-    }
+    console.error('Error completo en POST inscripciones:', error);
     return new Response(
-      JSON.stringify({
-        error: "Error interno del servidor al crear la inscripción.",
-      }),
-      {
-        status: 500,
-      }
+      JSON.stringify({ error: error.message || 'Error interno del servidor' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }

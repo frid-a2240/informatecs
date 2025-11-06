@@ -14,6 +14,7 @@ import {
   FiLogOut,
   FiMenu,
 } from "react-icons/fi";
+import { Fa0, FaStar } from "react-icons/fa6";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(true);
@@ -45,6 +46,11 @@ export default function AdminSidebar() {
       href: "/designs/menuadmin/vistaInicioAdmin",
       icon: <FiCalendar />,
       label: "Gestionar Eventos",
+    },
+    {
+      href: "/designs/menuadmin/vistaEvaluaciones",
+      icon: <FaStar />,
+      label: "Evaluaciones",
     },
     {
       href: "/designs/menuadmin/vistaInscripcionesAdmin",

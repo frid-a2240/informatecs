@@ -182,6 +182,7 @@ model actividades {
   acohrs     Int?
   depcve     String?          @db.VarChar(10)
   puecve     String?          @db.VarChar(10)
+  horario    Json?
   inscripact inscripact[]
   ofertas    ofertaSemestre[]
 }

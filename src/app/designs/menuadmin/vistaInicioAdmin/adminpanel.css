@@ -24,13 +24,217 @@ Contenedor principal
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", sans-serif;
+
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
   background: var(--background);
   min-height: 100vh;
+}
+/* ===== Modal general ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 95%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-content h3 {
+  margin-bottom: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+.modal-content p {
+  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ===== Secciones ===== */
+.modal-section {
+  margin-bottom: 1rem;
+}
+
+.modal-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #222;
+}
+
+/* ===== Días ===== */
+.dias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.dia {
+  padding: 0.5rem 0.3rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dia:hover {
+  background: #e0e7ff;
+  border-color: #6366f1;
+  color: #1e3a8a;
+}
+
+.dia.activo {
+  background: #4f46e5;
+  color: white;
+  border-color: #4338ca;
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+}
+
+/* ===== Inputs ===== */
+.modal-section input[type="time"],
+.modal-section input[type="text"] {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  transition: border 0.2s ease-in-out;
+}
+
+.modal-section input:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 4px rgba(79, 70, 229, 0.3);
+}
+
+/* ===== Botones ===== */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons .cancelar,
+.modal-buttons .guardar {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s ease-in-out;
+}
+
+.modal-buttons .cancelar {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.modal-buttons .cancelar:hover {
+  background: #d1d5db;
+}
+
+.modal-buttons .guardar {
+  background: #4f46e5;
+  color: white;
+}
+
+.modal-buttons .guardar:hover {
+  background: #4338ca;
+  transform: scale(1.02);
+}
+
+/* ===== Animaciones ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .dias-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .modal-content {
+    padding: 1.5rem;
+  }
+}
+.con-horario {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.act-horario-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.act-horario-card {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.act-horario-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.act-horario-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+}
+
+.act-horario-value {
+  font-size: 14px;
+  color: #555;
+}
+
+.act-horario-pendiente {
+  font-style: italic;
+  color: #888;
+  margin-top: 6px;
 }
 
 /* ==========================
