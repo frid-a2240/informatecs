@@ -212,18 +212,35 @@ body::before {
 }
 
 .hero-name {
-  font-size: 2rem;
-  font-weight: 800;
+  font-size: 2.4rem; /* mantiene el impacto */
+  font-weight: 900;
   padding: 0.4rem 2.5rem;
-  background: linear-gradient(135deg, var(--white) 0%, var(--blue-hover) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--white) 5%,
+    var(--blue-primary) 40%,
+    var(--blue-hover) 95%
+  );
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: var(--blue-primary);
   background-clip: text;
-  margin-bottom: 0.5rem;
-  letter-spacing: -1px;
-  line-height: 1.1;
-  text-shadow: 0 4px 20px rgba(142, 175, 239, 0.4);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+
+  /* 💡 Un toque más suave en el brillo */
+  text-shadow: 0 0 12px rgba(124, 220, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.35);
+
+  /* 💡 Un drop shadow más difuminado (más realista) */
+  filter: drop-shadow(0 3px 10px rgba(0, 102, 255, 0.6));
+
+  transition: transform 0.3s ease, filter 0.3s ease, text-shadow 0.3s ease;
+}
+
+.hero-name:hover {
+  transform: scale(1.05); /* un poco más de “pop” */
+  filter: drop-shadow(0 6px 14px rgba(176, 208, 255, 0.9));
+  text-shadow: 0 0 16px rgba(173, 216, 255, 0.8);
 }
 
 .hero-control {

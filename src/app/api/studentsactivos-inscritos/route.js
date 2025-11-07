@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function GET() {
@@ -12,28 +12,28 @@ export async function GET() {
             alunom: true,
             aluapp: true,
             aluapm: true,
-            alumai: true,
-          },
+            alumai: true
+          }
         },
         actividad: {
           select: {
             id: true,
             aconco: true,
-            aticve: true,
-          },
-        },
+            aticve: true
+          }
+        }
       },
       orderBy: {
-        fechaInscripcion: "desc",
-      },
+        fechaInscripcion: 'desc'
+      }
     });
 
     // Agrupar por estudiante
     const estudiantesMap = new Map();
-
-    inscripciones.forEach((inscripcion) => {
+    
+    inscripciones.forEach(inscripcion => {
       const estudianteId = inscripcion.estudiante.aluctr;
-
+      
       if (!estudiantesMap.has(estudianteId)) {
         estudiantesMap.set(estudianteId, {
           aluctr: inscripcion.estudiante.aluctr,
@@ -41,10 +41,10 @@ export async function GET() {
           aluapp: inscripcion.estudiante.aluapp,
           aluapm: inscripcion.estudiante.aluapm,
           alumai: inscripcion.estudiante.alumai,
-          inscripciones: [],
+          inscripciones: []
         });
       }
-
+      
       estudiantesMap.get(estudianteId).inscripciones.push({
         id: inscripcion.id,
         actividadId: inscripcion.actividadId,
@@ -52,23 +52,23 @@ export async function GET() {
         formularioData: inscripcion.formularioData,
         actividad: {
           id: inscripcion.actividad.id,
-          actnom: inscripcion.actividad.aconco || inscripcion.actividad.aticve,
-        },
+          actnom: inscripcion.actividad.aconco || inscripcion.actividad.aticve
+        }
       });
     });
 
     // Convertir Map a Array y ordenar por nombre
-    const estudiantesInscritos = Array.from(estudiantesMap.values()).sort(
-      (a, b) => a.alunom.localeCompare(b.alunom)
+    const estudiantesInscritos = Array.from(estudiantesMap.values()).sort((a, b) => 
+      a.alunom.localeCompare(b.alunom)
     );
 
     return Response.json(estudiantesInscritos);
   } catch (error) {
-    console.error("Error al obtener estudiantes inscritos:", error);
+    console.error('Error al obtener estudiantes inscritos:', error);
     return Response.json(
-      {
-        error: "Error al obtener estudiantes inscritos",
-        details: error.message,
+      { 
+        error: 'Error al obtener estudiantes inscritos',
+        details: error.message 
       },
       { status: 500 }
     );

@@ -31,7 +31,6 @@ import {
   FaUsers,
   FaMasksTheater,
 } from "react-icons/fa6";
-import AlbatroCursor from "./components/cursor";
 
 const HomePage = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);

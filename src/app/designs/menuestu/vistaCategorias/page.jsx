@@ -2,7 +2,6 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ActividadForm from "@/app/components/formulario";
-// Importar los hooks personalizados
 import "./eventos.css";
 import { useStudentData } from "@/app/components/hooks/useStudentData";
 import { useOfertas } from "@/app/components/hooks/useOfertas";
@@ -11,6 +10,7 @@ import { useInscripcion } from "@/app/components/hooks/useInscripcion";
 import { useCarousel } from "@/app/components/hooks/useCarousel";
 import Card from "@/app/components/card";
 import OfferModal from "@/app/components/offterModal";
+
 export default function App() {
   // Hook para datos del estudiante
   const { studentData, updateStudentData } = useStudentData();
@@ -43,12 +43,23 @@ export default function App() {
     handleClose();
   };
 
-  // Handler para enviar formulario
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    await submitInscripcion(studentData, (bloodType) => {
-      updateStudentData({ bloodType });
-    });
+  // Handler para enviar formulario - CORREGIDO
+  const handleFormSubmit = async (formDataFromChild) => {
+    console.log("🟢 handleFormSubmit recibió:", formDataFromChild);
+    console.log("🟢 studentData:", studentData);
+    console.log("🟢 formSport:", formSport); // ← NUEVO LOG
+
+    try {
+      await submitInscripcion(
+        studentData,
+        (bloodType) => {
+          updateStudentData({ bloodType });
+        },
+        formDataFromChild
+      );
+    } catch (error) {
+      console.error("🔴 Error en handleFormSubmit:", error);
+    }
   };
 
   // Mostrar formulario de inscripción
