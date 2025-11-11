@@ -1,0 +1,57 @@
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --bg-light: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.7),
+    rgba(8, 94, 222, 0)
+  );
+  --white: #ffffff;
+  font-family: "Noto Sans", sans-serif;
+}
+
+/* Página de bienvenida */
+.welcome-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.welcome-card {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+}
+
+.welcome-card h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blue-primary);
+  margin-bottom: 1rem;
+}
+
+.welcome-card p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #333;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+  .dashboard-main {
+    padding: 1.5rem 2rem;
+  }
+
+  .welcome-card h1 {
+    font-size: 1.7rem;
+  }
+
+  .welcome-card p {
+    font-size: 0.95rem;
+  }
+}

@@ -1,0 +1,694 @@
+/* ==========================
+Variables de color modernas
+========================== */
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #10b981;
+  --accent: #8b5cf6;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --background: #f8fafc;
+  --card-bg: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================
+Contenedor principal
+========================== */
+.admin-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--background);
+  min-height: 100vh;
+}
+/* ===== Modal general ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 95%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-content h3 {
+  margin-bottom: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a237e;
+}
+
+.modal-content p {
+  color: #444;
+  font-size: 0.95rem;
+  margin-bottom: 1.2rem;
+}
+
+/* ===== Secciones ===== */
+.modal-section {
+  margin-bottom: 1rem;
+}
+
+.modal-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #222;
+}
+
+/* ===== Días ===== */
+.dias-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.dia {
+  padding: 0.5rem 0.3rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dia:hover {
+  background: #e0e7ff;
+  border-color: #6366f1;
+  color: #1e3a8a;
+}
+
+.dia.activo {
+  background: #4f46e5;
+  color: white;
+  border-color: #4338ca;
+  box-shadow: 0 0 6px rgba(99, 102, 241, 0.5);
+}
+
+/* ===== Inputs ===== */
+.modal-section input[type="time"],
+.modal-section input[type="text"] {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  transition: border 0.2s ease-in-out;
+}
+
+.modal-section input:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 4px rgba(79, 70, 229, 0.3);
+}
+
+/* ===== Botones ===== */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.modal-buttons .cancelar,
+.modal-buttons .guardar {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s ease-in-out;
+}
+
+.modal-buttons .cancelar {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.modal-buttons .cancelar:hover {
+  background: #d1d5db;
+}
+
+.modal-buttons .guardar {
+  background: #4f46e5;
+  color: white;
+}
+
+.modal-buttons .guardar:hover {
+  background: #4338ca;
+  transform: scale(1.02);
+}
+
+/* ===== Animaciones ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .dias-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .modal-content {
+    padding: 1.5rem;
+  }
+}
+.con-horario {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.act-horario-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.act-horario-card {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.act-horario-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.act-horario-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+}
+
+.act-horario-value {
+  font-size: 14px;
+  color: #555;
+}
+
+.act-horario-pendiente {
+  font-style: italic;
+  color: #888;
+  margin-top: 6px;
+}
+
+/* ==========================
+Tarjetas limpias y modernas
+========================== */
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================
+Grid 2 columnas
+========================== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ==========================
+Encabezados limpios
+========================== */
+h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+h4 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+  line-height: 1.5;
+}
+
+/* ==========================
+Panel catálogo moderno
+========================== */
+.catalogo {
+  display: flex;
+  flex-direction: column;
+}
+
+.busqueda {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.busqueda input[type="text"] {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  padding-left: 2.75rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  outline: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  background: var(--card-bg);
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.busqueda input[type="text"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.busqueda input[type="text"]::placeholder {
+  color: #94a3b8;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.busqueda:focus-within .search-icon {
+  color: var(--primary);
+  opacity: 1;
+}
+
+/* Lista de actividades */
+.lista-actividades {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Scrollbar personalizado */
+.lista-actividades::-webkit-scrollbar {
+  width: 8px;
+}
+
+.lista-actividades::-webkit-scrollbar-track {
+  background: var(--background);
+  border-radius: 4px;
+}
+
+.lista-actividades::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.lista-actividades::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.actividad-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  background: var(--card-bg);
+}
+
+.actividad-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.actividad-item > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.actividad-item .meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-wrap: wrap;
+}
+
+.actividad-item .meta span {
+  padding: 0.375rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+}
+
+/* Botones modernos */
+.actividad-item button {
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.actividad-item button.agregar {
+  background: var(--primary);
+  color: white;
+}
+
+.actividad-item button.agregar:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.actividad-item button.agregado {
+  background: var(--secondary);
+  color: white;
+  cursor: default;
+}
+
+/* ==========================
+Panel de oferta
+========================== */
+.oferta {
+  background: var(--card-bg);
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-publicar {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-publicar.enabled {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-publicar.enabled:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-publicar.disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.sin-actividades {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  gap: 1rem;
+}
+
+.sin-actividades svg {
+  opacity: 0.4;
+  color: var(--text-secondary);
+}
+
+.sin-actividades .small {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.actividad-oferta {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
+  background: var(--card-bg);
+}
+
+.actividad-oferta:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.actividad-oferta > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.actividad-oferta .meta {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-wrap: wrap;
+}
+
+.actividad-oferta .meta span {
+  padding: 0.375rem 0.75rem;
+  background: #fef3c7;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #92400e;
+}
+
+.actividad-oferta button {
+  padding: 0.625rem;
+  border-radius: 8px;
+  border: none;
+  background: #fee2e2;
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.actividad-oferta button:hover {
+  background: var(--danger);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ==========================
+Estadísticas modernas
+========================== */
+.estadisticas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 0;
+}
+
+.estadisticas .card {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.estadisticas .card.total {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.estadisticas .card.ofertadas {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.estadisticas .card.creditos {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.estadisticas h4 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.75rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.estadisticas p {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1;
+}
+
+.estadisticas .card svg {
+  opacity: 0.9;
+}
+
+/* ==========================
+Responsive
+========================== */
+@media (max-width: 768px) {
+  .admin-panel {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .estadisticas {
+    grid-template-columns: 1fr;
+  }
+
+  .estadisticas p {
+    font-size: 2.5rem;
+  }
+
+  .flex-between {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-publicar {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actividad-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actividad-item button {
+    width: 100%;
+  }
+
+  .actividad-oferta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actividad-oferta button {
+    align-self: flex-end;
+  }
+
+  .lista-actividades {
+    max-height: 400px;
+  }
+}

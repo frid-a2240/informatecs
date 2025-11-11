@@ -1,0 +1,279 @@
+/* horario.css */
+
+.horarios-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* El main se expande para empujar el footer hacia abajo */
+.horarios-main {
+  flex: 1;
+}
+
+/* ======= HEADER ======= */
+.horarios-header {
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.horarios-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.horarios-header h1 {
+  color: black;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.horarios-subtitle {
+  color: black;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ======= FILTROS ======= */
+.horarios-filtros {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filtro-busqueda,
+.filtro-dia {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.filtro-busqueda:focus-within,
+.filtro-dia:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.filtro-busqueda svg,
+.filtro-dia svg {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.filtro-busqueda input,
+.filtro-dia select {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #1f2937;
+  background: transparent;
+}
+
+/* ======= CONTADOR ======= */
+.horarios-contador {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.horarios-contador p {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.horarios-contador strong {
+  color: #1b396a;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* ======= GRID ======= */
+.horarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+}
+
+/* ======= TARJETAS ======= */
+.horario-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.horario-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+  border-color: #2563eb;
+}
+
+.horario-card-header {
+  background: #1b396a;
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.horario-icon {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.75rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.horario-title h3 {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ======= CUERPO DE TARJETA ======= */
+.horario-card-body {
+  padding: 1.5rem;
+}
+
+.horario-info-destacada {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1b396a;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* ======= DÍAS ======= */
+.horario-dias {
+  margin-bottom: 1.5rem;
+}
+
+.dias-label {
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.dias-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dia-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border: 1px solid #dbeafe;
+}
+
+/* ======= TABLA ======= */
+.horario-table-small {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.horario-table-small th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.horario-table-small td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #6b7280;
+}
+
+/* ======= ESTADOS ======= */
+.horarios-empty,
+.horarios-loading {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.horarios-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #1b396a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ======= FOOTER ======= */
+footer {
+  margin-top: auto;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 768px) {
+  .horarios-header h1 {
+    font-size: 2rem;
+  }
+
+  .horarios-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .horarios-filtros {
+    flex-direction: column;
+  }
+}
