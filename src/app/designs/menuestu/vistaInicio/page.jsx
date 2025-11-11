@@ -1,5 +1,5 @@
 "use client";
-
+import "./inicio.css";
 export default function WelcomePage() {
   return (
     <div className="dashboard-container">

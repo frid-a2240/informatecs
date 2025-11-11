@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -12,19 +12,19 @@ export async function GET() {
             aluctr: true,
             alunom: true,
             aluapp: true,
-            aluapm: true
-          }
+            aluapm: true,
+          },
         },
-        oferta: true
+        oferta: true,
       },
       orderBy: {
-        fechaInscripcion: 'desc'
-      }
+        fechaInscripcion: "desc",
+      },
     });
 
     return Response.json(inscripciones);
   } catch (error) {
-    console.error('Error:', error);
-    return Response.json({ error: 'Error interno' }, { status: 500 });
+    console.error("Error:", error);
+    return Response.json({ error: "Error interno" }, { status: 500 });
   }
 }

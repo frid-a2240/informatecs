@@ -31,7 +31,6 @@ import {
   FaUsers,
   FaMasksTheater,
 } from "react-icons/fa6";
-
 const HomePage = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const router = useRouter();

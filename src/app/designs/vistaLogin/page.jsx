@@ -114,12 +114,41 @@ const LoginPage = () => {
   // ----------------------
   // Componente interno de redirección
   // ----------------------
+
   const RedirectAfterLogin = ({ fullName, studentData }) => {
+    const router = useRouter();
+
     useEffect(() => {
-      if (studentData)
-        localStorage.setItem("studentData", JSON.stringify(studentData));
-      router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+      if (studentData) {
+        // 🧩 Aseguramos que los nombres de campo sean los correctos
+        const cleanedData = {
+          nombreCompleto: studentData.nombreCompleto || "",
+          numeroControl: studentData.numeroControl || "",
+          ubicacion: studentData.ubicacion || "",
+          fotoUrl: studentData.fotoUrl || "",
+          fechaNacimiento: studentData.fechaNacimiento || "",
+          rfc: studentData.rfc || "",
+          curp: studentData.curp || "",
+          telefono: studentData.telefono || "",
+          email: studentData.email || "",
+          sexo: studentData.sexo || "",
+          alunac: studentData.alunac || "Sin carrera asignada", // 👈 nombre carrera
+          cve: studentData.cve || "N/A", // 👈 clave carrera
+          inscripciones: studentData.inscripciones || [],
+        };
+
+        // 🗂️ Guardar datos limpios en localStorage
+        localStorage.setItem("studentData", JSON.stringify(cleanedData));
+        console.log(
+          "✅ Datos del estudiante guardados en localStorage:",
+          cleanedData
+        );
+
+        // 🔁 Redirigir al menú del estudiante
+        router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+      }
     }, [router, fullName, studentData]);
+
     return null;
   };
 

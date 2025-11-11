@@ -31,7 +31,6 @@ const Navbar = () => {
     // 3. Aplica la clase dinámicamente
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="navbar__container">
-        {/* ... el resto de tu código HTML ... */}
         <div className="navbar__logo-container">
           <img
             src="/imagenes/logoevento.png"
@@ -43,7 +42,6 @@ const Navbar = () => {
           </span>
         </div>
 
-        {/* Botón toggle para mobile */}
         <button
           className="navbar__toggle"
           onClick={() => setIsOpen(!isOpen)}
@@ -61,7 +59,7 @@ const Navbar = () => {
           </li>
           <li>
             <Link href="/designs/vistaEventos" className="navbar__link active">
-              EVENTOS
+              NOTICIAS
             </Link>
           </li>
           <li>
@@ -75,7 +73,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/VistaHorarios" className="navbar__link active">
+            <Link href="/designs/vistaHorarios" className="navbar__link active">
               HORARIOS
             </Link>
           </li>

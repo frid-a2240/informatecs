@@ -4,15 +4,19 @@ import NavbarEst from "@/app/components/navbares";
 import "./perfil.css";
 
 const initialStudentData = {
-  nombreCompleto: null,
-  numeroControl: null,
-  ubicacion: null,
-  fotoUrl: null,
-  fechaNacimiento: null,
-  rfc: null,
-  curp: null,
-  telefono: null,
-  email: null,
+  nombreCompleto: "",
+  numeroControl: "",
+  ubicacion: "",
+  fotoUrl: "",
+  fechaNacimiento: "",
+  rfc: "",
+  curp: "",
+  telefono: "",
+  email: "",
+  sexo: "",
+  carrera: "", // Nombre de la carrera
+  carreraId: "", // ID de la carrera
+  semestre: "", // Semestre
   inscripciones: [],
 };
 
@@ -24,17 +28,31 @@ export default function DashboardPage() {
   const fetchStudentData = useCallback(() => {
     try {
       const savedData = localStorage.getItem("studentData");
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        setStudentData(data);
-        console.log("Datos cargados del estudiante:", data);
-      } else {
-        setError(
-          "No se encontraron datos de estudiante en el almacenamiento local."
-        );
-      }
+      if (!savedData) throw new Error("No se encontraron datos");
+
+      const parsed = JSON.parse(savedData);
+      const firstInscripcion = parsed.inscripciones?.[0] || {};
+      const carreraObj = firstInscripcion.carrera || {};
+
+      const merged = {
+        ...initialStudentData,
+        ...parsed,
+        carrera: carreraObj.carnom || "Sin carrera asignada",
+        carreraId: carreraObj.carcve?.toString() || "N/A",
+        semestre: firstInscripcion.calnpe || "No disponible",
+        sexo:
+          parsed.alusex === 1
+            ? "Masculino"
+            : parsed.alusex === 2
+            ? "Femenino"
+            : parsed.sexo || "No disponible",
+      };
+
+      setStudentData(merged);
+      console.log("✅ Datos del estudiante actualizados:", merged);
+      setError(null);
     } catch (err) {
-      console.error("Error al obtener o parsear datos del estudiante:", err);
+      console.error("❌ Error al procesar datos del estudiante:", err);
       setError("Error al procesar la información del estudiante.");
       setStudentData(initialStudentData);
     } finally {
@@ -46,7 +64,29 @@ export default function DashboardPage() {
     fetchStudentData();
   }, [fetchStudentData]);
 
-  if (loading) {
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === "studentData") fetchStudentData();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    const interval = setInterval(() => {
+      const savedData = localStorage.getItem("studentData");
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        if (parsed.numeroControl !== studentData.numeroControl) {
+          fetchStudentData();
+        }
+      }
+    }, 5000);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [fetchStudentData, studentData.numeroControl]);
+
+  if (loading)
     return (
       <div className="perfil-container perfil-centered">
         <div className="perfil-loading">
@@ -55,17 +95,14 @@ export default function DashboardPage() {
         </div>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="perfil-container perfil-centered">
         <div className="perfil-error">{error}</div>
       </div>
     );
-  }
 
-  const defaultText = "No disponible";
   const {
     nombreCompleto,
     numeroControl,
@@ -76,12 +113,13 @@ export default function DashboardPage() {
     curp,
     telefono,
     email,
-    inscripciones,
+    carrera,
+    carreraId,
+    semestre,
+    sexo,
   } = studentData;
 
-  const primeraInscripcion = inscripciones?.[0];
-  const carrera = primeraInscripcion?.carrera?.carnom || "Sin carrera asignada";
-  const carreraId = primeraInscripcion?.carrera?.carcve || "N/A";
+  const defaultText = "No disponible";
 
   const InfoCard = ({ icon, title, items }) => (
     <div className="info-card">
@@ -90,13 +128,14 @@ export default function DashboardPage() {
         <h2 className="card-title">{title}</h2>
       </div>
       <div className="card-content">
-        {items.map((item, index) =>
-          item.value ? (
-            <div key={index} className="info-item">
-              <span className="info-label">{item.label}</span>
-              <span className="info-value">{item.value}</span>
-            </div>
-          ) : null
+        {items.map(
+          (item, index) =>
+            item.value && (
+              <div key={index} className="info-item">
+                <span className="info-label">{item.label}</span>
+                <span className="info-value">{item.value}</span>
+              </div>
+            )
         )}
       </div>
     </div>
@@ -148,8 +187,11 @@ export default function DashboardPage() {
               { label: "CURP", value: curp },
               { label: "Teléfono", value: telefono },
               { label: "Email", value: email },
+              { label: "Sexo", value: sexo },
+              { label: "Semestre", value: semestre },
             ]}
           />
+
           <InfoCard
             icon={
               <svg viewBox="0 0 24 24" fill="currentColor">
