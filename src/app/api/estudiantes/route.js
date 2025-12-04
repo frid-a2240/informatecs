@@ -82,8 +82,8 @@ export async function POST(req) {
           : estudiante.alusex === 2
           ? "Femenino"
           : "No especificado",
-      semestre: estudiante.alusme
-        ? estudiante.alusme.toString()
+      semestre: inscripciones[0]?.calnpe // 🔥 CAMBIO: acceder desde inscripciones[0]
+        ? inscripciones[0].calnpe.toString()
         : "No asignado",
       carrera: carrera?.carnom || "Sin carrera asignada",
       carreraId: carrera?.carcve?.toString() || "",

@@ -7,8 +7,7 @@ import {
   TrendingUp,
   Award,
   Clock,
-  MapPin,
-  Star,
+  GraduationCap,
 } from "lucide-react";
 import {
   BarChart,
@@ -22,78 +21,216 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Area,
-  AreaChart,
-  LineChart,
-  Line,
 } from "recharts";
 
 const AdminDashboard = () => {
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    eventosActivos: 0,
-    participantesTotal: 0,
-    inscripcionesHoy: 0,
-    tasaAsistencia: 0,
+    totalActividades: 0,
+    totalEstudiantes: 0,
+    totalHombres: 0,
+    totalMujeres: 0,
+    primerSemestre: 0,
+    segundoSemestreEnAdelante: 0,
   });
 
-  // Simular carga de datos
+  const [dataPorTipo, setDataPorTipo] = useState([]);
+  const [dataPorSexo, setDataPorSexo] = useState([]);
+  const [dataPorSemestre, setDataPorSemestre] = useState([]);
+  const [dataSemestreAgrupado, setDataSemestreAgrupado] = useState([]);
+
   useEffect(() => {
-    setTimeout(() => {
-      setStats({
-        eventosActivos: 18,
-        participantesTotal: 2847,
-        inscripcionesHoy: 142,
-        tasaAsistencia: 87,
-      });
-    }, 500);
+    cargarEstadisticas();
   }, []);
 
-  // Datos de participación por mes
-  const participacionMensual = [
-    { mes: "Ene", participantes: 245, eventos: 12 },
-    { mes: "Feb", participantes: 312, eventos: 15 },
-    { mes: "Mar", participantes: 398, eventos: 18 },
-    { mes: "Abr", participantes: 456, eventos: 21 },
-    { mes: "May", participantes: 523, eventos: 19 },
-    { mes: "Jun", participantes: 587, eventos: 24 },
-  ];
+  // Función para obtener tipo de actividad
+  const obtenerTipoActividad = (codigo, nombreActividad, descripcion) => {
+    const codigoUpper = (codigo || "").toUpperCase().trim();
+    const nombreUpper = (nombreActividad || "").toUpperCase();
+    const descripcionUpper = (descripcion || "").toUpperCase();
+    const textoCompleto = `${nombreUpper} ${descripcionUpper}`;
 
-  // Datos por categorías de eventos PTA
-  const categoriasPTA = [
-    { nombre: "Deportivos", valor: 28, color: "#10b981" },
-    { nombre: "Culturales", valor: 22, color: "#3b82f6" },
-    { nombre: "Académicos", valor: 18, color: "#f59e0b" },
-    { nombre: "Recreativos", valor: 32, color: "#8b5cf6" },
-  ];
+    if (codigoUpper === "D") return "DEPORTIVA";
 
-  // Eventos más populares del PTA
-  const eventosMasPopulares = [
-    { nombre: "Torneo Futbol", participantes: 324 },
-    { nombre: "Festival Verano", participantes: 298 },
-    { nombre: "Taller Arte", participantes: 256 },
-    { nombre: "Maratón Familia", participantes: 234 },
-    { nombre: "Cine al Aire Libre", participantes: 187 },
-  ];
+    const palabrasDeportivas = [
+      "FUTBOL", "SOCCER", "VOLEIBOL", "VOLLEYBALL", "BEISBOL", "BASEBALL",
+      "SOFTBOL", "SOFTBALL", "BASQUETBOL", "BASKETBALL",
+      "ATLETISMO", "NATACION", "SWIMMING", "TENIS", "TENNIS", "AJEDREZ", "CHESS"
+    ];
 
-  // Participación semanal
-  const participacionSemanal = [
-    { dia: "Lun", participantes: 156, inscritos: 34 },
-    { dia: "Mar", participantes: 198, inscritos: 45 },
-    { dia: "Mié", participantes: 234, inscritos: 52 },
-    { dia: "Jue", participantes: 212, inscritos: 48 },
-    { dia: "Vie", participantes: 267, inscritos: 61 },
-    { dia: "Sáb", participantes: 345, inscritos: 89 },
-    { dia: "Dom", participantes: 298, inscritos: 76 },
-  ];
+    for (let palabra of palabrasDeportivas) {
+      if (textoCompleto.includes(palabra)) return "DEPORTIVA";
+    }
 
-  // Horarios más populares
-  const horariosMasUsados = [
-    { hora: "9:00", eventos: 8 },
-    { hora: "11:00", eventos: 12 },
-    { hora: "14:00", eventos: 6 },
-    { hora: "16:00", eventos: 15 },
-    { hora: "18:00", eventos: 11 },
-  ];
+    const palabrasExcluir = [
+      "TUTORIA", "TALLER TALENTO", "TICS", "TECNOLOGIA",
+      "CONGRESO", "INVESTIGACION", "RALLY"
+    ];
+
+    for (let palabra of palabrasExcluir) {
+      if (textoCompleto.includes(palabra)) return "OTRA";
+    }
+
+    const palabrasCivicas = [
+      "ACT CIVICAS", "ACTIVIDAD CIVICA", "ESCOLTA", 
+      "CENTRO DE ACOPIO", "CARRERA ALBATROS"
+    ];
+
+    for (let palabra of palabrasCivicas) {
+      if (textoCompleto.includes(palabra)) return "CIVICA";
+    }
+
+    const palabrasCulturales = [
+      "ACT CULTURALES", "ACT ARTISTICAS", "MUSICA", "DANZA",
+      "ARTES VISUALES", "ALTAR", "CLUB DE LECTURA", "BANDA DE GUERRA"
+    ];
+
+    for (let palabra of palabrasCulturales) {
+      if (textoCompleto.includes(palabra)) return "CULTURAL";
+    }
+
+    if (codigoUpper === "C") return "CULTURAL";
+
+    return "OTRA";
+  };
+
+  const cargarEstadisticas = async () => {
+    try {
+      setLoading(true);
+
+      // Cargar actividades ofertadas
+      const resOfertas = await fetch("/api/act-disponibles");
+      const ofertas = await resOfertas.json();
+
+      // Cargar inscripciones
+      const resInscripciones = await fetch("/api/inscripciones");
+      const todasInscripciones = await resInscripciones.json();
+
+      // Agrupar inscripciones por actividad
+      const inscripcionesPorActividad = {};
+      todasInscripciones.forEach((inscripcion) => {
+        const actId = inscripcion.actividadId;
+        if (!inscripcionesPorActividad[actId]) {
+          inscripcionesPorActividad[actId] = [];
+        }
+        inscripcionesPorActividad[actId].push(inscripcion);
+      });
+
+      // Calcular estadísticas
+      const estudiantesUnicos = new Set();
+      const estudiantesUnicosPorSexo = { M: new Set(), F: new Set() };
+      const actividadesPorTipo = {
+        CIVICA: new Set(),
+        CULTURAL: new Set(),
+        DEPORTIVA: new Set(),
+        OTRA: new Set(),
+      };
+
+      let porSemestre = {};
+      let contadorPrimerSemestre = 0;
+      let contadorSegundoEnAdelante = 0;
+
+      ofertas.forEach((oferta) => {
+        const inscritos = inscripcionesPorActividad[oferta.actividadId] || [];
+        const tipoActividad = obtenerTipoActividad(
+          oferta.actividad?.aticve,
+          oferta.actividad?.aconco,
+          oferta.actividad?.acodes
+        );
+
+        if (inscritos.length > 0) {
+          actividadesPorTipo[tipoActividad].add(oferta.actividadId);
+        }
+
+        inscritos.forEach((inscripcion) => {
+          const numeroControl = inscripcion.estudiante?.aluctr;
+          const sexo = inscripcion.estudiante?.alusex;
+          const semestre = inscripcion.estudiante?.inscripciones?.calnpe?.toString() || "N/A";
+
+          if (numeroControl) {
+            estudiantesUnicos.add(numeroControl);
+
+            if (sexo === 1) {
+              estudiantesUnicosPorSexo.M.add(numeroControl);
+            } else if (sexo === 2) {
+              estudiantesUnicosPorSexo.F.add(numeroControl);
+            }
+
+            // Contar por semestre (solo una vez por estudiante)
+            if (!porSemestre[`${numeroControl}-${semestre}`]) {
+              porSemestre[semestre] = (porSemestre[semestre] || 0) + 1;
+              porSemestre[`${numeroControl}-${semestre}`] = true;
+
+              // Contar 1er semestre vs 2do en adelante
+              if (semestre === "1") {
+                contadorPrimerSemestre++;
+              } else if (parseInt(semestre) >= 2 && !isNaN(parseInt(semestre))) {
+                contadorSegundoEnAdelante++;
+              }
+            }
+          }
+        });
+      });
+
+      // Preparar datos para gráficas
+      const dataActividades = [
+        { tipo: "Cívicas", cantidad: actividadesPorTipo.CIVICA.size, color: "#3b82f6" },
+        { tipo: "Culturales", cantidad: actividadesPorTipo.CULTURAL.size, color: "#8b5cf6" },
+        { tipo: "Deportivas", cantidad: actividadesPorTipo.DEPORTIVA.size, color: "#f59e0b" },
+        { tipo: "Otras", cantidad: actividadesPorTipo.OTRA.size, color: "#6b7280" },
+      ];
+
+      const dataSexo = [
+        { sexo: "Hombres", cantidad: estudiantesUnicosPorSexo.M.size, color: "#3b82f6" },
+        { sexo: "Mujeres", cantidad: estudiantesUnicosPorSexo.F.size, color: "#ec4899" },
+      ];
+
+      // Datos de semestre individual (1,2,3,4,5,6)
+      const semestreData = Object.entries(porSemestre)
+        .filter(([key]) => !key.includes("-") && !isNaN(parseInt(key)))
+        .map(([sem, count]) => ({
+          semestre: `${sem}°`,
+          cantidad: count,
+        }))
+        .sort((a, b) => parseInt(a.semestre) - parseInt(b.semestre));
+
+      // Datos agrupados: 1er semestre vs 2do+
+      const semestreAgrupado = [
+        { grupo: "1er Semestre", cantidad: contadorPrimerSemestre, color: "#8b5cf6" },
+        { grupo: "2do Semestre+", cantidad: contadorSegundoEnAdelante, color: "#14b8a6" },
+      ];
+
+      setStats({
+        totalActividades: ofertas.length,
+        totalEstudiantes: estudiantesUnicos.size,
+        totalHombres: estudiantesUnicosPorSexo.M.size,
+        totalMujeres: estudiantesUnicosPorSexo.F.size,
+        primerSemestre: contadorPrimerSemestre,
+        segundoSemestreEnAdelante: contadorSegundoEnAdelante,
+      });
+
+      setDataPorTipo(dataActividades);
+      setDataPorSexo(dataSexo);
+      setDataPorSemestre(semestreData);
+      setDataSemestreAgrupado(semestreAgrupado);
+
+    } catch (error) {
+      console.error("❌ Error al cargar estadísticas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Cargando estadísticas...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 p-6">
@@ -109,34 +246,31 @@ const AdminDashboard = () => {
               })}
             </p>
             <h2 className="text-3xl font-bold text-white mb-2">
-              Panel de Control - PTA
+              Estadísticas de Inscripciones
             </h2>
             <p className="text-blue-100">
-              Gestión y monitoreo de eventos deportivos y recreativos
+              Datos en tiempo real de actividades extraescolares
             </p>
           </div>
           <img
             src="/imagenes/logosin.gif"
-            alt="Logo PTA"
+            alt="Logo"
             className="w-24 h-24 object-contain bg-white/10 rounded-xl p-2"
           />
         </div>
 
-        {/* Cards de métricas */}
+        {/* Cards de métricas principales */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all hover:-translate-y-1">
             <div className="flex items-center justify-between mb-4">
               <div className="bg-blue-100 p-3 rounded-lg">
                 <Calendar className="w-6 h-6 text-blue-600" />
               </div>
-              <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                +15%
-              </span>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.eventosActivos}
+              {stats.totalActividades}
             </div>
-            <div className="text-gray-600 text-sm">Eventos Activos</div>
+            <div className="text-gray-600 text-sm">Actividades Ofertadas</div>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-emerald-500 hover:shadow-xl transition-all hover:-translate-y-1">
@@ -144,73 +278,81 @@ const AdminDashboard = () => {
               <div className="bg-emerald-100 p-3 rounded-lg">
                 <Users className="w-6 h-6 text-emerald-600" />
               </div>
-              <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                +28%
-              </span>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.participantesTotal.toLocaleString()}
+              {stats.totalEstudiantes}
             </div>
-            <div className="text-gray-600 text-sm">Participantes Total</div>
+            <div className="text-gray-600 text-sm">Total Estudiantes Inscritos</div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-amber-500 hover:shadow-xl transition-all hover:-translate-y-1">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-400 hover:shadow-xl transition-all hover:-translate-y-1">
             <div className="flex items-center justify-between mb-4">
-              <div className="bg-amber-100 p-3 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-amber-600" />
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <Users className="w-6 h-6 text-blue-400" />
               </div>
-              <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                +12%
-              </span>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.inscripcionesHoy}
+              {stats.totalHombres}
             </div>
-            <div className="text-gray-600 text-sm">Inscripciones Hoy</div>
+            <div className="text-gray-600 text-sm">Hombres</div>
           </div>
 
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-pink-500 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-pink-100 p-3 rounded-lg">
+                <Users className="w-6 h-6 text-pink-600" />
+              </div>
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {stats.totalMujeres}
+            </div>
+            <div className="text-gray-600 text-sm">Mujeres</div>
+          </div>
+        </div>
+
+        {/* NUEVAS Cards de semestre */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all hover:-translate-y-1">
             <div className="flex items-center justify-between mb-4">
               <div className="bg-purple-100 p-3 rounded-lg">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+                <GraduationCap className="w-6 h-6 text-purple-600" />
               </div>
-              <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
-                +9%
-              </span>
             </div>
             <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.tasaAsistencia}%
+              {stats.primerSemestre}
             </div>
-            <div className="text-gray-600 text-sm">Tasa de Asistencia</div>
+            <div className="text-gray-600 text-sm">Estudiantes 1er Semestre</div>
+            <p className="text-xs text-gray-500 mt-2">Alumnos inscritos únicamente</p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-teal-500 hover:shadow-xl transition-all hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <div className="bg-teal-100 p-3 rounded-lg">
+                <GraduationCap className="w-6 h-6 text-teal-600" />
+              </div>
+            </div>
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {stats.segundoSemestreEnAdelante}
+            </div>
+            <div className="text-gray-600 text-sm">Estudiantes 2do Semestre+</div>
+            <p className="text-xs text-gray-500 mt-2">Del 2° al 12° semestre</p>
           </div>
         </div>
 
         {/* Gráficas principales */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Participación Mensual */}
+          {/* Actividades por Tipo */}
           <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-500">
             <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-blue-600" />
+              <Award className="w-5 h-5 text-blue-600" />
               <h3 className="text-xl font-bold text-gray-900">
-                Participación Mensual
+                Actividades por Tipo
               </h3>
             </div>
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={participacionMensual}>
-                <defs>
-                  <linearGradient
-                    id="colorParticipantes"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
+              <BarChart data={dataPorTipo}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="mes" stroke="#6b7280" />
+                <XAxis dataKey="tipo" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
                 <Tooltip
                   contentStyle={{
@@ -220,48 +362,42 @@ const AdminDashboard = () => {
                     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                   }}
                 />
-                <Area
-                  type="monotone"
-                  dataKey="participantes"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorParticipantes)"
-                />
-              </AreaChart>
+                <Bar dataKey="cantidad" radius={[8, 8, 0, 0]}>
+                  {dataPorTipo.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Categorías de Eventos */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-emerald-500">
+          {/* Estudiantes por Sexo */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-pink-500">
             <div className="flex items-center gap-2 mb-4">
-              <Award className="w-5 h-5 text-emerald-600" />
+              <Users className="w-5 h-5 text-pink-600" />
               <h3 className="text-xl font-bold text-gray-900">
-                Distribución por Categoría
+                Estudiantes por Género
               </h3>
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={categoriasPTA}
+                  data={dataPorSexo}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ nombre, percent }) =>
-                    `${nombre} ${(percent * 100).toFixed(0)}%`
-                  }
+                  label={({ sexo, cantidad }) => `${sexo}: ${cantidad}`}
                   outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="valor"
+                  dataKey="cantidad"
                 >
-                  {categoriasPTA.map((entry, index) => (
+                  {dataPorSexo.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "white",
-                    border: "2px solid #10b981",
+                    border: "2px solid #ec4899",
                     borderRadius: "12px",
                     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                   }}
@@ -271,20 +407,20 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Gráficas secundarias */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Participación Semanal */}
-          <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-500">
+        {/* Gráficas de semestre */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Estudiantes por Semestre (Individual) */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-500">
             <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-5 h-5 text-purple-600" />
+              <GraduationCap className="w-5 h-5 text-purple-600" />
               <h3 className="text-xl font-bold text-gray-900">
-                Actividad Semanal
+                Estudiantes por Semestre
               </h3>
             </div>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={participacionSemanal}>
+              <BarChart data={dataPorSemestre}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="dia" stroke="#6b7280" />
+                <XAxis dataKey="semestre" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
                 <Tooltip
                   contentStyle={{
@@ -294,83 +430,40 @@ const AdminDashboard = () => {
                     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                   }}
                 />
-                <Legend />
-                <Bar
-                  dataKey="participantes"
-                  fill="#8b5cf6"
-                  radius={[8, 8, 0, 0]}
-                  name="Participantes"
-                />
-                <Bar
-                  dataKey="inscritos"
-                  fill="#c084fc"
-                  radius={[8, 8, 0, 0]}
-                  name="Nuevos Inscritos"
-                />
+                <Bar dataKey="cantidad" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Horarios Populares */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-amber-500">
+          {/* 1er Semestre vs 2do+ (NUEVA GRÁFICA) */}
+          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-teal-500">
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-amber-600" />
+              <TrendingUp className="w-5 h-5 text-teal-600" />
               <h3 className="text-xl font-bold text-gray-900">
-                Horarios Populares
+                1er Semestre vs 2do Semestre+
               </h3>
             </div>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={horariosMasUsados}>
+              <BarChart data={dataSemestreAgrupado}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="hora" stroke="#6b7280" />
+                <XAxis dataKey="grupo" stroke="#6b7280" />
                 <YAxis stroke="#6b7280" />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "white",
-                    border: "2px solid #f59e0b",
+                    border: "2px solid #14b8a6",
                     borderRadius: "12px",
                     boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
                   }}
                 />
-                <Bar dataKey="eventos" fill="#f59e0b" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="cantidad" radius={[8, 8, 0, 0]}>
+                  {dataSemestreAgrupado.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        {/* Eventos Populares */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-rose-500">
-          <div className="flex items-center gap-2 mb-4">
-            <Star className="w-5 h-5 text-rose-600" />
-            <h3 className="text-xl font-bold text-gray-900">
-              Top 5 Eventos Más Populares
-            </h3>
-          </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={eventosMasPopulares} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis type="number" stroke="#6b7280" />
-              <YAxis
-                dataKey="nombre"
-                type="category"
-                stroke="#6b7280"
-                width={120}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "white",
-                  border: "2px solid #f43f5e",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                }}
-              />
-              <Bar
-                dataKey="participantes"
-                fill="#f43f5e"
-                radius={[0, 8, 8, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
         </div>
       </main>
     </div>

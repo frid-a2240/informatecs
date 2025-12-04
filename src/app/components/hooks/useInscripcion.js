@@ -5,47 +5,77 @@ export const useInscripcion = () => {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    hasPracticed: "",
-    hasIllness: "",
-    purpose: "",
-    bloodType: "",
+    hasCondition: "",
+    conditionDetails: "",
+    takesMedication: "",
+    medicationDetails: "",
+    hasAllergy: "",
+    allergyDetails: "",
+    hasInjury: "",
+    injuryDetails: "",
+    hasRestriction: "",
+    restrictionDetails: "",
   });
 
-  const iniciarInscripcion = (sport) => {
-    setFormSport(sport);
-    setShowForm(true);
-    setFormData({
-      hasPracticed: "",
-      hasIllness: "",
-      purpose: "",
-      bloodType: "",
-    });
+  const iniciarInscripcion = async (sport, numeroControl) => {
+    try {
+      const response = await fetch(
+        `/api/inscripciones?aluctr=${numeroControl}`
+      );
+      const inscripciones = await response.json();
+
+      const yaInscrito = inscripciones.some(
+        (insc) => insc.actividadId === sport.actividadId
+      );
+
+      if (yaInscrito) {
+        alert("Ya estás inscrito en esta actividad");
+        return;
+      }
+
+      setFormSport(sport);
+      setShowForm(true);
+      setFormData({
+        hasCondition: "",
+        conditionDetails: "",
+        takesMedication: "",
+        medicationDetails: "",
+        hasAllergy: "",
+        allergyDetails: "",
+        hasInjury: "",
+        injuryDetails: "",
+        hasRestriction: "",
+        restrictionDetails: "",
+      });
+    } catch (error) {
+      alert("Error al verificar inscripciones");
+    }
   };
 
   const cancelarInscripcion = () => {
     setShowForm(false);
     setFormSport(null);
     setFormData({
-      hasPracticed: "",
-      hasIllness: "",
-      purpose: "",
-      bloodType: "",
+      hasCondition: "",
+      conditionDetails: "",
+      takesMedication: "",
+      medicationDetails: "",
+      hasAllergy: "",
+      allergyDetails: "",
+      hasInjury: "",
+      injuryDetails: "",
+      hasRestriction: "",
+      restrictionDetails: "",
     });
   };
 
-  const submitInscripcion = async (
-    studentData,
-    updateBloodType,
-    formDataFromChild
-  ) => {
+  const submitInscripcion = async (studentData, updateBloodType, formDataFromChild) => {
     if (!formSport) {
-      console.error("❌ No hay deporte seleccionado (formSport es null)");
       alert("Error: No se ha seleccionado ninguna actividad");
       return;
     }
 
     if (!formSport.actividadId || (!formSport.id && !formSport.ofertaId)) {
-      console.error(formSport);
       alert("Error: Datos de actividad incompletos");
       return;
     }
@@ -53,32 +83,12 @@ export const useInscripcion = () => {
     setIsSubmitting(true);
 
     try {
-      // Construir payload aplanado
       const payload = {
         aluctr: studentData.numeroControl,
         actividadId: formSport.actividadId,
-        ofertaId: formSport.ofertaId || formSport.id, // ← Soporta ambos nombres
-        hasPracticed: formDataFromChild.hasPracticed,
-        hasIllness: formDataFromChild.hasIllness,
-        purpose: formDataFromChild.purpose,
-        bloodType: formDataFromChild.bloodType,
+        ofertaId: formSport.ofertaId || formSport.id,
+        ...formDataFromChild,
       };
-
-      // Verificación de campos
-      const camposFaltantes = [];
-      if (!payload.aluctr) camposFaltantes.push("aluctr (numeroControl)");
-      if (!payload.actividadId) camposFaltantes.push("actividadId");
-      if (!payload.ofertaId) camposFaltantes.push("ofertaId");
-      if (!payload.hasPracticed) camposFaltantes.push("hasPracticed");
-      if (!payload.hasIllness) camposFaltantes.push("hasIllness");
-      if (!payload.purpose) camposFaltantes.push("purpose");
-      if (!payload.bloodType) camposFaltantes.push("bloodType");
-
-      if (camposFaltantes.length > 0) {
-        throw new Error(
-          `Faltan campos en el payload: ${camposFaltantes.join(", ")}`
-        );
-      }
 
       const response = await fetch("/api/inscripciones", {
         method: "POST",
@@ -94,21 +104,11 @@ export const useInscripcion = () => {
         throw new Error(data.error || "Error al inscribir");
       }
 
-      // Actualizar tipo de sangre si cambió
-      if (
-        formDataFromChild.bloodType &&
-        formDataFromChild.bloodType !== studentData.bloodType &&
-        updateBloodType
-      ) {
-        updateBloodType(formDataFromChild.bloodType);
-      }
-
       alert("¡Inscripción exitosa!");
       cancelarInscripcion();
 
       return data;
     } catch (error) {
-      console.error("❌ Error en inscripción:", error);
       alert(error.message || "Error al procesar la inscripción");
       throw error;
     } finally {

@@ -6,19 +6,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
   FiHome,
-  FiCalendar,
-  FiUsers,
+  FiBook,
+  FiClock,
   FiFileText,
-  FiBarChart2,
-  FiSettings,
+  FiUser,
   FiLogOut,
   FiMenu,
-  FiFile,
 } from "react-icons/fi";
-import { Fa0, FaStar } from "react-icons/fa6";
-import { Bell, Edit } from "lucide-react";
 
-export default function AdminSidebar() {
+export default function NavbarMaestro() {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
@@ -37,47 +33,36 @@ export default function AdminSidebar() {
 
   const handleLogout = () => {
     if (window.confirm("¿Seguro que deseas cerrar sesión?")) {
-      localStorage.removeItem("adminData");
+      localStorage.removeItem("maestroData");
       router.push("/designs/vistaLogin");
     }
   };
 
   const menuItems = [
-    { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
-    {
-      href: "/designs/menuadmin/vistaInicioAdmin",
-      icon: <FiCalendar />,
-      label: "Gestionar Eventos",
+    { 
+      href: "/designs/menumaestros", 
+      icon: <FiHome />, 
+      label: "Inicio" 
     },
     {
-      href: "/designs/menuadmin/vistaEvaluaciones",
-      icon: <FaStar />,
-      label: "Evaluaciones",
+      href: "/designs/menumaestros/perfil",
+      icon: <FiUser />,
+      label: "Mi Perfil",
     },
     {
-      href: "/designs/menuadmin/vistaInscripcionesAdmin",
+      href: "/designs/menumaestros/vistaMismaterias",
+      icon: <FiBook />,
+      label: "Mis Materias",
+    },
+    {
+      href: "/designs/menumaestros/vistaMihorario",
+      icon: <FiClock />,
+      label: "Mi Horario",
+    },
+    {
+      href: "/designs/menumaestros/vistaCalificaciones",
       icon: <FiFileText />,
-      label: "Inscripciones",
-    },
-    {
-      href: "/designs/menuadmin/vistaReportes",
-      icon: <FiBarChart2 />,
-      label: "Reportes",
-    },
-    {
-      href: "/designs/menuadmin/vistaConstancias",
-      icon: <FiFile />,
-      label: "Constancias",
-    },
-    {
-      href: "/designs/menuadmin/configuracion",
-      icon: <FiSettings />,
-      label: "Configuración",
-    },
-    {
-      href: "/designs/menuadmin/publicaciones",
-      icon: <Edit />,
-      label: "Publicaciones",
+      label: "Calificaciones",
     },
   ];
 
@@ -90,7 +75,7 @@ export default function AdminSidebar() {
             <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
             <div className="logo-text-container">
               <span className="logo-text">Eventos ITE</span>
-              <span className="admin-badge">ADMIN</span>
+              <span className="teacher-badge">MAESTRO</span>
             </div>
           </div>
         )}

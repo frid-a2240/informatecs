@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaUser, FaLock, FaChalkboardTeacher } from "react-icons/fa";
 import { useAuth } from "@/app/components/hooks/authHandlers";
+import { useMaestroAuth } from "@/app/components/hooks/useMaestroAuth";
 import "./login.css";
 
 // Importar formularios
-
 import TeacherForm from "@/app/components/TeacherForm";
 import AdminForm from "@/app/components/AdminForm";
 import RegisterForm from "@/app/components/RegisterForm";
@@ -20,6 +20,7 @@ import SchoolRainEffect from "@/app/components/SchoolRainEffect";
 const LoginPage = () => {
   const router = useRouter();
 
+  // Estados generales
   const [step, setStep] = useState("login");
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
@@ -30,12 +31,13 @@ const LoginPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [studentData, setStudentData] = useState(null);
+  const [maestroData, setMaestroData] = useState(null);
   const [error, setError] = useState("");
   const [adminUser, setAdminUser] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
-
   const [particles, setParticles] = useState([]);
 
+  // Hooks de autenticación
   const {
     handleLogin,
     handleRegister,
@@ -43,6 +45,14 @@ const LoginPage = () => {
     handleVerifyCode,
     handleUpdatePassword,
   } = useAuth(setStep, setFullName, setError, setStudentData);
+
+  const {
+    handleMaestroLogin,
+    handleMaestroSendCode,
+    handleMaestroVerifyCode,
+    handleMaestroUpdatePassword,
+    handleMaestroRegister,
+  } = useMaestroAuth(setStep, setFullName, setError, setMaestroData);
 
   useEffect(() => {
     const generatedParticles = [...Array(20)].map((_, i) => ({
@@ -68,7 +78,7 @@ const LoginPage = () => {
   };
 
   // ----------------------
-  // Funciones de envío
+  // Funciones de envío ESTUDIANTES
   // ----------------------
   const onLoginSubmit = (e) => {
     e.preventDefault();
@@ -76,6 +86,7 @@ const LoginPage = () => {
       return setError("Escribe matrícula y contraseña");
     handleLogin(e, matricula, password);
   };
+
   const onRegisterSubmit = (e) => {
     e.preventDefault();
     if (!matricula || !password)
@@ -84,12 +95,59 @@ const LoginPage = () => {
       return setError('La contraseña para registro debe ser "123456"');
     handleRegister(e, matricula, password);
   };
+
+  const onSendCode = (e) => {
+    e.preventDefault();
+    handleSendCode(e, matricula, email);
+  };
+
+  const onVerifyCode = (e) => {
+    e.preventDefault();
+    handleVerifyCode(e, matricula, code);
+  };
+
+  const onUpdatePassword = (e) => {
+    e.preventDefault();
+    handleUpdatePassword(e, matricula, newPassword);
+  };
+
+  // ----------------------
+  // Funciones de envío MAESTROS
+  // ----------------------
   const onTeacherSubmit = (e) => {
     e.preventDefault();
     if (!teacherId || !password)
-      return setError("Escribe identificación y contraseña de maestro");
-    setError("Funcionalidad de maestros en desarrollo");
+      return setError("Escribe ID y contraseña de maestro");
+    handleMaestroLogin(e, teacherId, password);
   };
+
+  const onTeacherRegisterSubmit = (e) => {
+    e.preventDefault();
+    if (!teacherId || !password)
+      return setError("Escribe ID de maestro");
+    if (password !== "profe123")
+      return setError('La contraseña para registro debe ser "profe123"');
+    handleMaestroRegister(e, teacherId);
+  };
+
+  const onMaestroSendCode = (e) => {
+    e.preventDefault();
+    handleMaestroSendCode(e, teacherId, email);
+  };
+
+  const onMaestroVerifyCode = (e) => {
+    e.preventDefault();
+    handleMaestroVerifyCode(e, teacherId, code);
+  };
+
+  const onMaestroUpdatePassword = (e) => {
+    e.preventDefault();
+    handleMaestroUpdatePassword(e, teacherId, newPassword);
+  };
+
+  // ----------------------
+  // ADMIN
+  // ----------------------
   const onAdminSubmit = (e) => {
     e.preventDefault();
     if (!adminUser || !adminPassword)
@@ -98,29 +156,15 @@ const LoginPage = () => {
       router.push("/designs/menuadmin");
     else setError("Credenciales de administrador incorrectas");
   };
-  const onSendCode = (e) => {
-    e.preventDefault();
-    handleSendCode(e, matricula, email);
-  };
-  const onVerifyCode = (e) => {
-    e.preventDefault();
-    handleVerifyCode(e, matricula, code);
-  };
-  const onUpdatePassword = (e) => {
-    e.preventDefault();
-    handleUpdatePassword(e, matricula, newPassword);
-  };
 
   // ----------------------
-  // Componente interno de redirección
+  // Componentes de redirección
   // ----------------------
-
   const RedirectAfterLogin = ({ fullName, studentData }) => {
     const router = useRouter();
 
     useEffect(() => {
       if (studentData) {
-        // 🧩 Aseguramos que los nombres de campo sean los correctos
         const cleanedData = {
           nombreCompleto: studentData.nombreCompleto || "",
           numeroControl: studentData.numeroControl || "",
@@ -132,19 +176,13 @@ const LoginPage = () => {
           telefono: studentData.telefono || "",
           email: studentData.email || "",
           sexo: studentData.sexo || "",
-          alunac: studentData.alunac || "Sin carrera asignada", // 👈 nombre carrera
-          cve: studentData.cve || "N/A", // 👈 clave carrera
+          alunac: studentData.alunac || "Sin carrera asignada",
+          cve: studentData.cve || "N/A",
           inscripciones: studentData.inscripciones || [],
         };
 
-        // 🗂️ Guardar datos limpios en localStorage
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
-        console.log(
-          "✅ Datos del estudiante guardados en localStorage:",
-          cleanedData
-        );
-
-        // 🔁 Redirigir al menú del estudiante
+        console.log("✅ Datos del estudiante guardados:", cleanedData);
         router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
       }
     }, [router, fullName, studentData]);
@@ -152,7 +190,25 @@ const LoginPage = () => {
     return null;
   };
 
+  const RedirectAfterMaestroLogin = ({ fullName, maestroData }) => {
+    const router = useRouter();
+
+    useEffect(() => {
+      if (maestroData) {
+        localStorage.setItem("maestroData", JSON.stringify(maestroData));
+        console.log("✅ Datos del maestro guardados:", maestroData);
+        router.push(`/designs/menumaestros?name=${encodeURIComponent(fullName)}`);
+      }
+    }, [router, fullName, maestroData]);
+
+    return null;
+  };
+
+  // ----------------------
+  // Form Steps
+  // ----------------------
   const formSteps = {
+    // ESTUDIANTES
     login: (
       <LoginForm
         matricula={matricula}
@@ -175,28 +231,6 @@ const LoginPage = () => {
         onSubmit={onRegisterSubmit}
       />
     ),
-    teacher: (
-      <TeacherForm
-        teacherId={teacherId}
-        setTeacherId={setTeacherId}
-        password={password}
-        setPassword={setPassword}
-        showPassword={showPassword}
-        setShowPassword={setShowPassword}
-        onSubmit={onTeacherSubmit}
-      />
-    ),
-    adm: (
-      <AdminForm
-        adminUser={adminUser}
-        setAdminUser={setAdminUser}
-        adminPassword={adminPassword}
-        setAdminPassword={setAdminPassword}
-        showPassword={showPassword}
-        setShowPassword={setShowPassword}
-        onSubmit={onAdminSubmit}
-      />
-    ),
     askEmail: (
       <AskEmailForm email={email} setEmail={setEmail} onSubmit={onSendCode} />
     ),
@@ -212,6 +246,56 @@ const LoginPage = () => {
     ),
     success: (
       <RedirectAfterLogin fullName={fullName} studentData={studentData} />
+    ),
+
+    // MAESTROS
+    teacher: (
+      <TeacherForm
+        teacherId={teacherId}
+        setTeacherId={setTeacherId}
+        password={password}
+        setPassword={setPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onTeacherSubmit}
+      />
+    ),
+    askEmailMaestro: (
+      <AskEmailForm
+        email={email}
+        setEmail={setEmail}
+        onSubmit={onMaestroSendCode}
+      />
+    ),
+    verifyMaestro: (
+      <VerifyCodeForm
+        code={code}
+        setCode={setCode}
+        onSubmit={onMaestroVerifyCode}
+      />
+    ),
+    updateMaestro: (
+      <UpdatePasswordForm
+        newPassword={newPassword}
+        setNewPassword={setNewPassword}
+        onSubmit={onMaestroUpdatePassword}
+      />
+    ),
+    successMaestro: (
+      <RedirectAfterMaestroLogin fullName={fullName} maestroData={maestroData} />
+    ),
+
+    // ADMIN
+    adm: (
+      <AdminForm
+        adminUser={adminUser}
+        setAdminUser={setAdminUser}
+        adminPassword={adminPassword}
+        setAdminPassword={setAdminPassword}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
+        onSubmit={onAdminSubmit}
+      />
     ),
   };
 

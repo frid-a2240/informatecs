@@ -12,9 +12,15 @@ import {
   Activity,
   FileText,
   MapPin,
+  Pill,
+  Stethoscope,
+  Heart,
+  Ban,
 } from "lucide-react";
 import { FaRunning } from "react-icons/fa";
 import "./actividades.css";
+import BloodTypeValidator from "@/app/components/blood";
+
 
 export default function MisActividades() {
   const [inscripciones, setInscripciones] = useState([]);
@@ -31,7 +37,6 @@ export default function MisActividades() {
       fetch(`/api/inscripciones?aluctr=${parsed.numeroControl}`)
         .then((res) => res.json())
         .then((data) => setInscripciones(data))
-        .catch((err) => console.error("Error cargando inscripciones:", err))
         .finally(() => setLoading(false));
     }
   }, []);
@@ -75,7 +80,8 @@ export default function MisActividades() {
           </p>
         </div>
       </div>
-
+{/* Validador de tipo de sangre */}
+<BloodTypeValidator numeroControl={studentData.numeroControl} />
       <main className="act-main">
         {inscripciones.length === 0 ? (
           <div className="act-empty-state">
@@ -92,6 +98,7 @@ export default function MisActividades() {
             {inscripciones.map((item, index) => {
               const act = item.actividad;
               const horario = act?.horario;
+              const formData = item.formularioData || {};
 
               return (
                 <div
@@ -131,7 +138,7 @@ export default function MisActividades() {
 
                   {expanded === index && (
                     <div className="act-card-body">
-                      {/* Datos del formulario */}
+                      {/* Información General */}
                       <div className="act-info-section">
                         <div className="act-info-card act-info-primary">
                           <div className="act-info-icon">
@@ -160,51 +167,158 @@ export default function MisActividades() {
                           <div className="act-info-content">
                             <p className="act-info-label">Tipo de sangre</p>
                             <p className="act-info-value">
-                              {item.formularioData?.bloodType ||
-                                "No especificado"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="act-info-card act-info-experience">
-                          <div className="act-info-icon">
-                            <Activity size={20} />
-                          </div>
-                          <div className="act-info-content">
-                            <p className="act-info-label">Experiencia previa</p>
-                            <p className="act-info-value">
-                              {item.formularioData?.hasPracticed === "si"
-                                ? "Sí ha practicado"
-                                : "No ha practicado"}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="act-info-card act-info-health">
-                          <div className="act-info-icon">
-                            <AlertCircle size={20} />
-                          </div>
-                          <div className="act-info-content">
-                            <p className="act-info-label">Condición médica</p>
-                            <p className="act-info-value">
-                              {item.formularioData?.hasIllness === "si"
-                                ? "Sí reportó"
-                                : "No reportó"}
+                              {formData.bloodType || "No especificado"}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Propósito */}
-                      {item.formularioData?.purpose && (
-                        <div className="act-purpose-section">
-                          <h4>
-                            <FileText size={18} />
-                            Propósito de inscripción
-                          </h4>
-                          <p>{item.formularioData.purpose}</p>
+                      {/* Información Médica */}
+                      <div className="act-medical-section">
+                        <h4 className="medical-title">
+                          <Stethoscope size={20} />
+                          Información Médica
+                        </h4>
+
+                        <div className="medical-grid">
+                          {/* Condición Médica */}
+                          <div className="medical-item">
+                            <div className="medical-item-header">
+                              <Heart size={18} className="medical-icon" />
+                              <span className="medical-label">
+                                Condición médica
+                              </span>
+                            </div>
+                            <p className="medical-value">
+                              {formData.hasCondition === "si" ? (
+                                <>
+                                  <span className="badge-warning">Sí</span>
+                                  {formData.conditionDetails && (
+                                    <span className="medical-details">
+                                      {formData.conditionDetails}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="badge-success">No</span>
+                              )}
+                            </p>
+                          </div>
+
+                          {/* Medicamentos */}
+                          <div className="medical-item">
+                            <div className="medical-item-header">
+                              <Pill size={18} className="medical-icon" />
+                              <span className="medical-label">
+                                Medicamentos regulares
+                              </span>
+                            </div>
+                            <p className="medical-value">
+                              {formData.takesMedication === "si" ? (
+                                <>
+                                  <span className="badge-warning">Sí</span>
+                                  {formData.medicationDetails && (
+                                    <span className="medical-details">
+                                      {formData.medicationDetails}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="badge-success">No</span>
+                              )}
+                            </p>
+                          </div>
+
+                          {/* Alergias */}
+                          <div className="medical-item">
+                            <div className="medical-item-header">
+                              <AlertCircle size={18} className="medical-icon" />
+                              <span className="medical-label">Alergias</span>
+                            </div>
+                            <p className="medical-value">
+                              {formData.hasAllergy === "si" ? (
+                                <>
+                                  <span className="badge-danger">Sí</span>
+                                  {formData.allergyDetails && (
+                                    <span className="medical-details">
+                                      {formData.allergyDetails}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="badge-success">No</span>
+                              )}
+                            </p>
+                          </div>
+
+                          {/* Lesiones */}
+                          <div className="medical-item">
+                            <div className="medical-item-header">
+                              <Activity size={18} className="medical-icon" />
+                              <span className="medical-label">
+                                Lesión reciente
+                              </span>
+                            </div>
+                            <p className="medical-value">
+                              {formData.hasInjury === "si" ? (
+                                <>
+                                  <span className="badge-warning">Sí</span>
+                                  {formData.injuryDetails && (
+                                    <span className="medical-details">
+                                      {formData.injuryDetails}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="badge-success">No</span>
+                              )}
+                            </p>
+                          </div>
+
+                          {/* Restricciones */}
+                          <div className="medical-item">
+                            <div className="medical-item-header">
+                              <Ban size={18} className="medical-icon" />
+                              <span className="medical-label">
+                                Restricción médica
+                              </span>
+                            </div>
+                            <p className="medical-value">
+                              {formData.hasRestriction === "si" ? (
+                                <>
+                                  <span className="badge-danger">Sí</span>
+                                  {formData.restrictionDetails && (
+                                    <span className="medical-details">
+                                      {formData.restrictionDetails}
+                                    </span>
+                                  )}
+                                </>
+                              ) : (
+                                <span className="badge-success">No</span>
+                              )}
+                            </p>
+                          </div>
+                          {/* Propósito de inscripción */}
+<div className="medical-item medical-item-full">
+  <div className="medical-item-header">
+    <FileText size={18} className="medical-icon" />
+    <span className="medical-label">Propósito de inscripción</span>
+  </div>
+
+  <p className="medical-value">
+    {formData.purpose ? (
+      <>
+        <span className="badge-info">{formData.purpose}</span>
+      </>
+    ) : (
+      <span className="badge-success">No especificado</span>
+    )}
+  </p>
+</div>
+
+
                         </div>
-                      )}
+                      </div>
 
                       {/* Horario */}
                       <div className="act-horario-section">

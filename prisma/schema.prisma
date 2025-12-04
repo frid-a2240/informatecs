@@ -183,8 +183,11 @@ model actividades {
   depcve     String?          @db.VarChar(10)
   puecve     String?          @db.VarChar(10)
   horario    Json?
+  maestroId  Int?     //  ID del maestro asignado
+  maestro    maestros? @relation(fields: [maestroId], references: [percve])
   inscripact inscripact[]
   ofertas    ofertaSemestre[]
+
 }
 
 model ofertaSemestre {
@@ -197,6 +200,10 @@ model ofertaSemestre {
   fechaPublicacion  DateTime     @default(now())
   inscripact        inscripact[]
   actividad         actividades  @relation(fields: [actividadId], references: [id])
+   maestro           maestros?    @relation(fields: [maestroId], references: [percve])
+// Asignar maestro
+ // 🔥 NUEVO: Asignar maestro
+  maestroId         Int?
 
   @@map("oferta_semestre")
 }
@@ -216,4 +223,87 @@ model inscripact {
 
   @@unique([estudianteId, actividadId])
   @@map("inscripciones_actividades")
+}
+
+// Modelo de maestros actualizado con relaciones
+model maestros {
+  percve   Int       @id
+  perapp   String?   @db.VarChar(50)
+  perapm   String?   @db.VarChar(50)
+  pernom   String?   @db.VarChar(100)
+  persig   String?   @db.VarChar(50)
+  pertar   Int?
+  perrfc   String?   @db.VarChar(50)
+  percur   String?   @db.VarChar(18)
+  pernac   DateTime? @db.Date
+  perdep   Int?     
+  perdepa  Int?     
+  perlna   String?   @db.VarChar(10)
+  persex   Int?     
+  pereci   Int?    
+  perdec   Int?     
+  percmi   String?   @db.VarChar(100)
+  perdcl   String?   @db.VarChar(100)
+  perdnu   String?   @db.VarChar(20)
+  perdcp   Int?
+  perdco   String?   @db.VarChar(100)
+  perdmu   Int?
+  perdlo   String?   @db.VarChar(100)
+  perdte   String?   @db.VarChar(50)
+  perdet2  String?   @db.VarChar(50)
+  pernot   String?   @db.VarChar(100)
+  pernte1  String?   @db.VarChar(50)
+  perdvi   Int?
+  perdce   String?   @db.VarChar(100)
+  perdcei  String?   @db.VarChar(100)
+  peragf   DateTime? @db.Date
+  perase   DateTime? @db.Date
+  perara   DateTime? @db.Date
+  peroct   Int?
+  peroct1h Int?     
+  peroct2  Int?
+  peroct2h Int?     
+  perinv   Int?
+  perinvo  Int?
+  perinvd  Int?
+  perinva  Int?     
+  percom   Int?
+  percomo  Int?
+  percomd  Int?
+  percoma  Int?
+  persit   Int?
+  perins   Int?
+  perinsp  String?   @db.VarChar(100)
+  perfun   Int?
+  perpro   Int?
+  perpme   Int?
+  peridi   Int?
+  percon   String?   @db.VarChar(100)
+  pertal   String?   @db.VarChar(50)
+  perexp   Int?
+  perpas   String?   @db.VarChar(64)
+  perpasc  String?   @db.VarChar(50)
+  perseg   Int?
+  percalf  String?   @db.VarChar(50)
+  perape   String?   @db.VarChar(100)
+  cve      Int?
+  id       Int?
+  ofertasImpartidas ofertaSemestre[]
+   actividades    actividades[] // ✅ NUEVO: Relación con actividades
+  @@map("maestros")
+}
+
+// Modelo de authMaestros para login de profesores
+model authMaestros {
+  id             Int       @id @default(autoincrement())
+  percve         Int       @unique
+  password       String
+  nombreCompleto String
+  isVerified     Boolean   @default(false)
+   emailCode      String?   // ✅ AGREGAR ESTA LÍNEA
+  correo         String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime? @updatedAt
+  
+  @@map("auth_maestros")
 }

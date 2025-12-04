@@ -1,5 +1,5 @@
 import React from "react";
-import { FaLock, FaChalkboardTeacher } from "react-icons/fa";
+import { FaLock, FaChalkboardTeacher, FaEye, FaEyeSlash } from "react-icons/fa";
 
 const TeacherForm = ({
   teacherId,
@@ -13,14 +13,15 @@ const TeacherForm = ({
   <form onSubmit={onSubmit} className="login-form">
     <label className="login-label">
       <FaChalkboardTeacher className="inline mr-2" />
-      Identificación del Maestro:
+      ID de Maestro:
     </label>
     <div className="input-with-icon">
+      <FaChalkboardTeacher className="input-icon-left" />
       <input
         type="text"
-        className="login-input"
+        className="login-input with-left-icon"
         value={teacherId}
-        placeholder="Ingresa tu ID de maestro"
+        placeholder="Ingresa tu ID (percve)"
         onChange={(e) => setTeacherId(e.target.value)}
         required
       />
@@ -37,6 +38,12 @@ const TeacherForm = ({
         onChange={(e) => setPassword(e.target.value)}
         required
       />
+      <span
+        onClick={() => setShowPassword(!showPassword)}
+        className="password-toggle-icon"
+      >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+      </span>
     </div>
 
     <button type="submit" className="submit-button teacher-button">

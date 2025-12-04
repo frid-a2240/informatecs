@@ -1,0 +1,473 @@
+/* Loading */
+.materias-loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loader-circle {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-text {
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 20px;
+  font-weight: 500;
+}
+
+/* Main Wrapper */
+.materias-main-wrapper {
+  margin-left: 250px;
+  min-height: 100vh;
+  background: #f8f9fc;
+  transition: margin-left 0.3s ease;
+}
+
+.sliderbaradm.closed ~ .materias-main-wrapper {
+  margin-left: 80px;
+}
+
+/* Header */
+.materias-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px;
+  color: white;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.inline-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.header-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.header-stats {
+  display: flex;
+  gap: 15px;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.stat-badge svg {
+  font-size: 1.5rem;
+}
+
+/* Content */
+.materias-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+/* Empty State */
+.materias-empty {
+  text-align: center;
+  padding: 80px 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+.materias-empty h2 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.materias-empty p {
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+/* Materias Grid */
+.materias-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Materia Card */
+.materia-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.materia-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.materia-card-header {
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.materia-card-header:hover {
+  background: #f9fafb;
+}
+
+.materia-info {
+  flex: 1;
+}
+
+.materia-nombre {
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.materia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.materia-horario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #667eea;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-top: 10px;
+}
+
+.materia-horario .salon {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.materia-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.estudiantes-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+/* Materia Card Body */
+.materia-card-body {
+  border-top: 2px solid #f3f4f6;
+  padding: 25px;
+  background: #f9fafb;
+}
+
+/* Estudiantes Empty */
+.estudiantes-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.estudiantes-empty svg {
+  margin-bottom: 15px;
+}
+
+.estudiantes-empty p {
+  font-size: 1.1rem;
+}
+
+/* Toolbar */
+.estudiantes-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 250px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-export:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Tabla */
+.estudiantes-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.estudiantes-table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+}
+
+.estudiantes-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.estudiantes-table th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.estudiantes-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.2s ease;
+}
+
+.estudiantes-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.estudiantes-table td {
+  padding: 15px;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.font-mono {
+  font-family: "Courier New", monospace;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.carrera-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #6b7280;
+}
+
+.sexo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.sexo-badge.masculino {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.sexo-badge.femenino {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+.fecha-cell {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.no-results {
+  text-align: center;
+  color: #9ca3af;
+  padding: 40px !important;
+  font-style: italic;
+}
+
+/* Footer */
+.estudiantes-footer {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid #e5e7eb;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .materias-main-wrapper {
+    margin-left: 0;
+  }
+
+  .materias-header {
+    padding: 30px 20px;
+  }
+
+  .header-title {
+    font-size: 2rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-stats {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .stat-badge {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .materias-content {
+    padding: 20px;
+  }
+
+  .materia-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .materia-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .estudiantes-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-export {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .estudiantes-table {
+    font-size: 0.85rem;
+  }
+
+  .estudiantes-table th,
+  .estudiantes-table td {
+    padding: 10px;
+  }
+}

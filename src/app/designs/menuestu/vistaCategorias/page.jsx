@@ -13,7 +13,7 @@ import OfferModal from "@/app/components/offterModal";
 
 export default function App() {
   // Hook para datos del estudiante
-  const { studentData, updateStudentData } = useStudentData();
+  const { studentData } = useStudentData(); // ← Eliminé updateStudentData porque solo se usaba para tipo de sangre
 
   // Hook para ofertas
   const { ofertas, loading, error } = useOfertas("/api/act-disponibles");
@@ -43,18 +43,16 @@ export default function App() {
     handleClose();
   };
 
-  // Handler para enviar formulario - CORREGIDO
+  // Handler para enviar formulario
   const handleFormSubmit = async (formDataFromChild) => {
     console.log("🟢 handleFormSubmit recibió:", formDataFromChild);
     console.log("🟢 studentData:", studentData);
-    console.log("🟢 formSport:", formSport); // ← NUEVO LOG
+    console.log("🟢 formSport:", formSport);
 
     try {
       await submitInscripcion(
         studentData,
-        (bloodType) => {
-          updateStudentData({ bloodType });
-        },
+        null, // ← AQUÍ QUITÉ LA FUNCIÓN QUE ACTUALIZABA EL TIPO DE SANGRE
         formDataFromChild
       );
     } catch (error) {

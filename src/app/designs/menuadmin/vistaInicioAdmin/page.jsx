@@ -7,19 +7,23 @@ import {
   Calendar,
   Search,
   Sparkles,
-  TrendingUp,
-  Award,
   Clock,
+  User, // ✅ AGREGAR ESTE IMPORT
 } from "lucide-react";
 import "./adminpanel.css";
 
 const AdminPanel = () => {
+  const [modalVerMaestro, setModalVerMaestro] = useState(null);
   const [todasActividades, setTodasActividades] = useState([]);
   const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [modalHorario, setModalHorario] = useState(null);
+  const [modalMaestro, setModalMaestro] = useState(null);
+  const [busquedaMaestro, setBusquedaMaestro] = useState("");
+  const [maestrosEncontrados, setMaestrosEncontrados] = useState([]);
+  const [buscandoMaestro, setBuscandoMaestro] = useState(false);
   const [horarioForm, setHorarioForm] = useState({
     dias: [],
     horaInicio: "",
@@ -35,6 +39,81 @@ const AdminPanel = () => {
     "Viernes",
     "Sábado",
   ];
+
+  // Buscar maestros
+  const buscarMaestros = async (query) => {
+    if (query.length < 2) {
+      setMaestrosEncontrados([]);
+      return;
+    }
+
+    try {
+      setBuscandoMaestro(true);
+      const response = await fetch(
+        `/api/maestros-buscar?q=${encodeURIComponent(query)}`
+      );
+      const maestros = await response.json();
+      setMaestrosEncontrados(maestros);
+    } catch (error) {
+      console.error("Error al buscar maestros:", error);
+    } finally {
+      setBuscandoMaestro(false);
+    }
+  };
+
+  // Asignar maestro a actividad
+const asignarMaestro = async (maestro) => {
+   
+  try {
+    const response = await fetch("/api/asignar-maestros", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        actividadId: modalMaestro.id, // ✅ Esto envía el código correcto
+        maestroId: maestro.id,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Error al asignar maestro");
+
+    alert(`Maestro ${maestro.nombreCompleto} asignado correctamente`);
+
+    // Actualizar actividades en memoria
+    setTodasActividades((prev) =>
+      prev.map((act) =>
+        act.id === modalMaestro.id // ✅ COMPARAR POR ID NUMÉRICO
+          ? { ...act, maestroId: maestro.id, maestro: {
+              percve: maestro.id,
+              pernom: maestro.nombreCompleto.split(' ')[0],
+              perapp: maestro.nombreCompleto.split(' ')[1] || '',
+              perapm: maestro.nombreCompleto.split(' ')[2] || ''
+            }}
+          : act
+      )
+    );
+    setActividadesOfertadas((prev) =>
+      prev.map((act) =>
+        act.id === modalMaestro.id // ✅ COMPARAR POR ID NUMÉRICO
+          ? { ...act, maestroId: maestro.id, maestro: {
+              percve: maestro.id,
+              pernom: maestro.nombreCompleto.split(' ')[0],
+              perapp: maestro.nombreCompleto.split(' ')[1] || '',
+              perapm: maestro.nombreCompleto.split(' ')[2] || ''
+            }}
+          : act
+      )
+    );
+
+    setModalMaestro(null);
+    setBusquedaMaestro("");
+    setMaestrosEncontrados([]);
+    cargarActividades(); // ✅ Recargar para obtener datos actualizados
+  } catch (error) {
+    console.error("Error al asignar maestro:", error);
+    alert("Error al asignar maestro");
+  }
+};
+
 
   useEffect(() => {
     cargarActividades();
@@ -94,7 +173,6 @@ const AdminPanel = () => {
     }
 
     try {
-      // 🟢 Agregamos logs para verificar los datos enviados
       console.log("🕐 Guardando horario...");
       console.log("Actividad ID:", modalHorario?.id);
       console.log("Datos de horario:", horarioForm);
@@ -282,6 +360,98 @@ const AdminPanel = () => {
         </div>
       )}
 
+      {/* ✅ Modal Asignar Maestro */}
+      {modalMaestro && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>👨‍🏫 Asignar Maestro</h3>
+            <p>
+              {modalMaestro.aconco || modalMaestro.aticve} — Código:{" "}
+              {modalMaestro.aticve}
+            </p>
+
+            {modalMaestro.maestro && (
+              <div className="maestro-actual">
+                <p>
+                  <strong>Maestro actual:</strong>{" "}
+                  {modalMaestro.maestro.nombreCompleto}
+                </p>
+                <button
+                  className="btn-remover"
+                  onClick={async () => {
+                    if (confirm("¿Remover maestro asignado?")) {
+                      try {
+                        await fetch(
+                          `/api/asignar-maestros?actividadId=${modalMaestro.aticve}`,
+                          {
+                            method: "DELETE",
+                          }
+                        );
+                        alert("Maestro removido");
+                        setModalMaestro(null);
+                        cargarActividades();
+                      } catch (error) {
+                        alert("Error al remover maestro");
+                      }
+                    }
+                  }}
+                >
+                  Remover Maestro
+                </button>
+              </div>
+            )}
+
+            <div className="modal-section">
+              <label>Buscar por ID o Nombre:</label>
+              <input
+                type="text"
+                value={busquedaMaestro}
+                onChange={(e) => {
+                  setBusquedaMaestro(e.target.value);
+                  buscarMaestros(e.target.value);
+                }}
+                placeholder="Ej: 88 o César Noel"
+              />
+            </div>
+
+            {buscandoMaestro && <p>Buscando...</p>}
+
+            {maestrosEncontrados.length > 0 && (
+              <div className="lista-maestros">
+                {maestrosEncontrados.map((maestro) => (
+                  <div key={maestro.id} className="maestro-item">
+                    <div>
+                      <strong>{maestro.nombreCompleto}</strong>
+                      <p>ID: {maestro.id}</p>
+                      <p>{maestro.departamento || "Sin departamento"}</p>
+                    </div>
+                    <button
+                      className="btn-asignar"
+                      onClick={() => asignarMaestro(maestro)}
+                    >
+                      Asignar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="modal-buttons">
+              <button
+                className="cancelar"
+                onClick={() => {
+                  setModalMaestro(null);
+                  setBusquedaMaestro("");
+                  setMaestrosEncontrados([]);
+                }}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="card header-card">
         <h2>Gestionar Actividades</h2>
         <p>Selecciona las actividades que deseas ofertar este semestre</p>
@@ -302,46 +472,109 @@ const AdminPanel = () => {
           </div>
 
           <div className="lista-actividades">
-            {actividadesFiltradas.length === 0 ? (
-              <p>No se encontraron actividades</p>
-            ) : (
-              actividadesFiltradas.map((actividad) => {
-                const agregada = actividadesOfertadas.find(
-                  (act) => act.id === actividad.id
-                );
-                return (
-                  <div key={actividad.id} className="actividad-item">
-                    <div>
-                      <h4>{actividad.aconco || actividad.aticve}</h4>
-                      <p>Código: {actividad.aticve}</p>
-                      <div className="meta">
-                        <span>{actividad.acocre} créditos</span>
-                        <span>{actividad.acohrs} hrs</span>
-                        {actividad.horario && (
-                          <span className="con-horario">✓ Con horario</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="botones">
-                      <button
-                        className="btn-horario"
-                        onClick={() => abrirModalHorario(actividad)}
-                      >
-                        <Clock size={16} /> Horario
-                      </button>
-                      <button
-                        className={agregada ? "agregado" : "agregar"}
-                        onClick={() => agregarAOferta(actividad)}
-                        disabled={!!agregada}
-                      >
-                        {agregada ? "Agregada" : "+ Agregar"}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
+  {actividadesFiltradas.length === 0 ? (
+    <p>No se encontraron actividades</p>
+  ) : (
+    actividadesFiltradas.map((actividad) => {
+      const agregada = actividadesOfertadas.find(
+        (act) => act.id === actividad.id
+      );
+      return (
+        <div key={actividad.id} className="actividad-item">
+          <div>
+            <h4>{actividad.aconco || actividad.aticve}</h4>
+            <p>Código: {actividad.aticve}</p>
+            
+            <div className="meta">
+              <span>{actividad.acocre} créditos</span>
+              <span>{actividad.acohrs} hrs</span>
+              {actividad.horario && (
+                <span className="con-horario">✓ Con horario</span>
+              )}
+              {/* ✅ BADGE CLICKEABLE DE MAESTRO */}
+              {actividad.maestroId && (
+                <span 
+                  className="con-maestro clickeable"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setModalVerMaestro(actividad);
+                  }}
+                  title="Click para ver maestro"
+                >
+                  ✓ Con maestro
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="botones">
+            <button
+              className="btn-horario"
+              onClick={() => abrirModalHorario(actividad)}
+            >
+              <Clock size={16} /> Horario
+            </button>
+            {/* ✅ BOTÓN MAESTRO */}
+            <button
+              className="btn-maestro"
+              onClick={() => setModalMaestro(actividad)}
+            >
+              <User size={16} /> Maestro
+            </button>
+            <button
+              className={agregada ? "agregado" : "agregar"}
+              onClick={() => agregarAOferta(actividad)}
+              disabled={!!agregada}
+            >
+              {agregada ? "Agregada" : "+ Agregar"}
+            </button>
+          </div>
+        </div>
+      );
+    })
+  )}
+</div>
+{/* ✅ NUEVO: Modal Ver Maestro Asignado */}
+{modalVerMaestro && (
+  <div className="modal-overlay" onClick={() => setModalVerMaestro(null)}>
+    <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
+      <h3>👨‍🏫 Maestro Asignado</h3>
+      <p className="materia-modal-title">
+        {modalVerMaestro.aconco || modalVerMaestro.aticve}
+      </p>
+      <p className="codigo-modal">Código: {modalVerMaestro.aticve}</p>
+      
+      {modalVerMaestro.maestro ? (
+        <div className="maestro-info-box">
+          <div className="maestro-avatar">
+            <User size={48} />
+          </div>
+          <div className="maestro-detalles">
+            <h4>{modalVerMaestro.maestro.pernom} {modalVerMaestro.maestro.perapp} {modalVerMaestro.maestro.perapm}</h4>
+            <p><strong>ID:</strong> {modalVerMaestro.maestro.percve}</p>
+            {modalVerMaestro.maestro.perdce && (
+              <p><strong>Email:</strong> {modalVerMaestro.maestro.perdce}</p>
+            )}
+            {modalVerMaestro.maestro.perdep && (
+              <p><strong>Departamento:</strong> {modalVerMaestro.maestro.perdep}</p>
             )}
           </div>
+        </div>
+      ) : (
+        <p>No hay maestro asignado</p>
+      )}
+
+      <div className="modal-buttons">
+        <button
+          className="btn-primary"
+          onClick={() => setModalVerMaestro(null)}
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
 
         <div className="card oferta">

@@ -1,0 +1,308 @@
+/* Loading Screen */
+.horario-loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.loader-circle {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loader-text {
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Main Wrapper */
+.horario-main-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 2rem;
+}
+
+/* Header */
+.horario-header {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.header-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inline-icon {
+  color: #667eea;
+}
+
+.header-subtitle {
+  color: #718096;
+  margin-top: 0.5rem;
+}
+
+.header-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.stat-badge.stat-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Horario Container */
+.horario-container {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.horario-grid-wrapper {
+  min-width: 700px;
+}
+
+/* Tabla de Horario */
+.horario-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.horario-table thead tr {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.horario-table th {
+  padding: 1rem;
+  text-align: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.horario-header-materia {
+  width: 250px;
+  text-align: left !important;
+  padding-left: 1.5rem !important;
+}
+
+.horario-header-dia {
+  min-width: 140px;
+}
+
+.horario-table tbody tr {
+  border-bottom: 2px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.horario-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.horario-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Celda de Materia */
+.horario-materia-cell {
+  padding: 1.25rem 1rem;
+  font-weight: 600;
+  vertical-align: middle;
+  border-right: 2px solid #e2e8f0;
+}
+
+.materia-nombre-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.materia-codigo-row {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-left: 1.75rem;
+}
+
+/* Celdas de días */
+.horario-cell {
+  padding: 1rem;
+  min-height: 80px;
+  vertical-align: middle;
+  text-align: center;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.horario-cell:last-child {
+  border-right: none;
+}
+
+.horario-cell-filled {
+  cursor: pointer;
+}
+
+.horario-cell-filled:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+/* Info dentro de celda */
+.horario-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.horario-hora {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.horario-salon {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+/* Empty State */
+.horario-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+  color: #cbd5e0;
+  margin-bottom: 1rem;
+}
+
+.horario-empty h2 {
+  font-size: 1.5rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.horario-empty p {
+  color: #718096;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .horario-grid-wrapper {
+    min-width: 600px;
+  }
+
+  .horario-header-materia {
+    width: 200px;
+  }
+
+  .horario-header-dia {
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .horario-main-wrapper {
+    padding: 1rem;
+  }
+
+  .horario-header {
+    padding: 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .horario-container {
+    padding: 0.75rem;
+  }
+
+  .horario-grid-wrapper {
+    min-width: 500px;
+  }
+
+  .horario-table th,
+  .horario-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .horario-header-materia {
+    width: 150px;
+    font-size: 0.875rem;
+  }
+
+  .horario-header-dia {
+    min-width: 100px;
+  }
+
+  .materia-nombre-row {
+    font-size: 0.875rem;
+  }
+
+  .materia-codigo-row {
+    font-size: 0.7rem;
+  }
+}
