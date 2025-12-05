@@ -1,0 +1,135 @@
+/* ===========================
+   ESTILOS GENERALES
+=========================== */
+.student-gallery-section {
+  padding: 3rem 0;
+  background-color: #ffffff;
+  font-family: "Inter", sans-serif;
+}
+
+.gallery-header-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1b396a;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+/* ===========================
+   CONTENEDOR DE REJILLA (BROKEN GRID)
+=========================== */
+.broken-grid-container {
+  display: grid;
+  /* Define 4 columnas flexibles */
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 250px; /* Altura base para las filas */
+  gap: 15px; /* Espacio entre las fotos */
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* ===========================
+   TARJETA DE FOTO
+=========================== */
+.photo-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.photo-card:hover {
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: brightness(0.95); /* Imagen un poco más clara inicialmente */
+}
+
+.photo-card:hover .photo-image {
+  transform: scale(1.03); /* Zoom sutil al hacer hover */
+  filter: brightness(1.1); /* Ligeramente más brillante al hacer hover */
+}
+
+/* ===========================
+   PIE DE FOTO FLOTANTE (CAPTION OVERLAY)
+=========================== */
+.photo-caption-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem;
+  color: #fff;
+
+  /* Degradado oscuro para que el texto sea legible */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+
+  /* Efecto de revelado: Título y año inicialmente fuera de vista */
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+
+.photo-card:hover .photo-caption-overlay {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.caption-year {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.7;
+  margin: 0 0 0.2rem 0;
+}
+
+.caption-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  /* Usa el color de acento de tu proyecto */
+  color: #fe9e10;
+}
+
+/* ===========================
+   RESPONSIVO
+=========================== */
+@media (max-width: 992px) {
+  .broken-grid-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas en tablets */
+    grid-auto-rows: 200px;
+  }
+
+  /* Desactivar el efecto "Broken Grid" en tablets para un flujo más simple */
+  .photo-card {
+    grid-area: span 1 / span 1 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .broken-grid-container {
+    grid-template-columns: 1fr; /* Una sola columna en móvil */
+    grid-auto-rows: 250px;
+    gap: 10px;
+    padding: 0 10px;
+  }
+  .gallery-header-title {
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
+  }
+}

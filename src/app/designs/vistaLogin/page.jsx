@@ -7,7 +7,6 @@ import { useAuth } from "@/app/components/hooks/authHandlers";
 import "./login.css";
 
 // Importar formularios
-
 import TeacherForm from "@/app/components/TeacherForm";
 import AdminForm from "@/app/components/AdminForm";
 import RegisterForm from "@/app/components/RegisterForm";
@@ -16,6 +15,7 @@ import AskEmailForm from "@/app/components/AskEmailForm";
 import VerifyCodeForm from "@/app/components/hooks/VerifyCodeForm";
 import UpdatePasswordForm from "@/app/components/UpdatePasswordForm";
 import SchoolRainEffect from "@/app/components/SchoolRainEffect";
+import MascotCarousel from "@/app/components/ MascotCarousel";
 
 const LoginPage = () => {
   const router = useRouter();
@@ -114,13 +114,11 @@ const LoginPage = () => {
   // ----------------------
   // Componente interno de redirección
   // ----------------------
-
   const RedirectAfterLogin = ({ fullName, studentData }) => {
     const router = useRouter();
 
     useEffect(() => {
       if (studentData) {
-        // 🧩 Aseguramos que los nombres de campo sean los correctos
         const cleanedData = {
           nombreCompleto: studentData.nombreCompleto || "",
           numeroControl: studentData.numeroControl || "",
@@ -132,19 +130,17 @@ const LoginPage = () => {
           telefono: studentData.telefono || "",
           email: studentData.email || "",
           sexo: studentData.sexo || "",
-          alunac: studentData.alunac || "Sin carrera asignada", // 👈 nombre carrera
-          cve: studentData.cve || "N/A", // 👈 clave carrera
+          alunac: studentData.alunac || "Sin carrera asignada",
+          cve: studentData.cve || "N/A",
           inscripciones: studentData.inscripciones || [],
         };
 
-        // 🗂️ Guardar datos limpios en localStorage
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
         console.log(
           "✅ Datos del estudiante guardados en localStorage:",
           cleanedData
         );
 
-        // 🔁 Redirigir al menú del estudiante
         router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
       }
     }, [router, fullName, studentData]);
@@ -274,20 +270,25 @@ const LoginPage = () => {
         </div>
       </div>
 
+      <div className="wave-divider">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1b396a"
+            fillOpacity="1"
+            d="M0,160L17.1,176C34.3,192,69,224,103,234.7C137.1,245,171,235,206,218.7C240,203,274,181,309,170.7C342.9,160,377,160,411,181.3C445.7,203,480,245,514,245.3C548.6,245,583,203,617,170.7C651.4,139,686,117,720,128C754.3,139,789,181,823,181.3C857.1,181,891,139,926,138.7C960,139,994,181,1029,202.7C1062.9,224,1097,224,1131,213.3C1165.7,203,1200,181,1234,186.7C1268.6,192,1303,224,1337,240C1371.4,256,1406,256,1423,256L1440,256L1440,320L1422.9,320C1405.7,320,1371,320,1337,320C1302.9,320,1269,320,1234,320C1200,320,1166,320,1131,320C1097.1,320,1063,320,1029,320C994.3,320,960,320,926,320C891.4,320,857,320,823,320C788.6,320,754,320,720,320C685.7,320,651,320,617,320C582.9,320,549,320,514,320C480,320,446,320,411,320C377.1,320,343,320,309,320C274.3,320,240,320,206,320C171.4,320,137,320,103,320C68.6,320,34,320,17,320L0,320Z"
+          ></path>
+        </svg>
+      </div>
+
       <div className="logo-section">
         <SchoolRainEffect />
-        <div className="divider-enhancer"></div>
         <div className="mascot-container">
-          <img
-            src="/imagenes/foondoo.gif"
-            alt="Logo del sistema Albatros corriendo"
-            className="mascot-image"
-          />
-          <div className="mascot-shadow"></div>
+          <MascotCarousel />
         </div>
-        <div className="wave"></div>
-        <div className="wave second"></div>
-        <div className="wave third"></div>
       </div>
     </div>
   );

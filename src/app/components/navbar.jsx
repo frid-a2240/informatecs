@@ -63,7 +63,10 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/vistaExtraescolares" className="navbar__link active">
+            <Link
+              href="/designs/vistaExtracurriculares"
+              className="navbar__link active"
+            >
               EXTRAESCOLARES
             </Link>
           </li>
@@ -75,6 +78,11 @@ const Navbar = () => {
           <li>
             <Link href="/designs/vistaHorarios" className="navbar__link active">
               HORARIOS
+            </Link>
+          </li>
+          <li>
+            <Link href="/designs/vistaGaleria" className="navbar__link active">
+              GALERIA
             </Link>
           </li>
           <li>
