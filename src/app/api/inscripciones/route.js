@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request) {
   try {
@@ -13,6 +12,7 @@ export async function GET(request) {
       include: {
         actividad: true,
         estudiante: {
+          // ✅ CAMBIO: Usar select en lugar de include
           select: {
             aluctr: true,
             alunom: true,
@@ -22,20 +22,93 @@ export async function GET(request) {
             alusex: true,
             alumai: true,
             alutsa: true,
-            inscripciones: true,
+            inscripciones: true, // ✅ Traer todas y filtrar en JS
           },
         },
       },
+      orderBy: { fechaInscripcion: 'desc' },
     });
 
-    return new Response(JSON.stringify(inscripciones), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    // ✅ TRANSFORMAR para incluir formularioData parseado
+    const inscripcionesTransformadas = inscripciones.map((inscripcion) => {
+      let formularioData = null;
+      
+      if (inscripcion.formularioData) {
+        try {
+          formularioData = typeof inscripcion.formularioData === 'string' 
+            ? JSON.parse(inscripcion.formularioData) 
+            : inscripcion.formularioData;
+        } catch (error) {
+          console.error("Error parseando formularioData:", error);
+          formularioData = inscripcion.formularioData;
+        }
+      }
+
+      // ✅ Filtrar y ordenar inscripciones en JavaScript
+      let inscripcionMasReciente = null;
+      if (Array.isArray(inscripcion.estudiante.inscripciones)) {
+        inscripcionMasReciente = inscripcion.estudiante.inscripciones
+          .filter(i => i.calnpe !== null && i.calnpe !== undefined)
+          .sort((a, b) => b.calnpe - a.calnpe)[0] || null;
+      }
+
+      return {
+        // ✅ INCLUIR TODOS LOS CAMPOS DE INSCRIPACT
+        id: inscripcion.id,
+        estudianteId: inscripcion.estudianteId,
+        actividadId: inscripcion.actividadId,
+        ofertaId: inscripcion.ofertaId,
+        fechaInscripcion: inscripcion.fechaInscripcion,
+        calificacion: inscripcion.calificacion,
+        liberado: inscripcion.liberado,
+        
+        // ✅ CAMPOS DE TIPO DE SANGRE
+        tipoSangreSolicitado: inscripcion.tipoSangreSolicitado,
+        comprobanteSangrePDF: inscripcion.comprobanteSangrePDF,
+        nombreArchivoSangre: inscripcion.nombreArchivoSangre,
+        sangreValidada: inscripcion.sangreValidada,
+        
+        // Formulario parseado
+        formularioData,
+        
+        // Relaciones
+        actividad: inscripcion.actividad,
+        estudiante: {
+          aluctr: inscripcion.estudiante.aluctr,
+          alunom: inscripcion.estudiante.alunom,
+          aluapp: inscripcion.estudiante.aluapp,
+          aluapm: inscripcion.estudiante.aluapm,
+          alusme: inscripcion.estudiante.alusme,
+          alusex: inscripcion.estudiante.alusex,
+          alumai: inscripcion.estudiante.alumai,
+          alutsa: inscripcion.estudiante.alutsa,
+          inscripciones: inscripcionMasReciente, // ✅ Solo la más reciente
+        },
+      };
     });
-  } catch (error) {
+
     return new Response(
-      JSON.stringify({ error: "Error interno", message: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify(inscripcionesTransformadas),
+      {
+        status: 200,
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, max-age=0",
+        },
+      }
+    );
+  } catch (error) {
+    console.error("❌ Error en GET /api/inscripciones:", error);
+    
+    return new Response(
+      JSON.stringify([]),
+      { 
+        status: 500, 
+        headers: { 
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store, max-age=0",
+        } 
+      }
     );
   }
 }
@@ -95,6 +168,8 @@ export async function POST(request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("❌ Error en POST /api/inscripciones:", error);
+    
     return new Response(
       JSON.stringify({ error: "Error interno", message: error.message }),
       { status: 500, headers: { "Content-Type": "application/json" } }

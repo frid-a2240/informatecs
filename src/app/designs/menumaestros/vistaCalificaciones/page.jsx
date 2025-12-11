@@ -75,7 +75,8 @@ export default function VistaCalificacionesPage() {
       console.log("📥 Cargando calificaciones de la materia:", materia.id);
       
       const response = await fetch(
-        `/api/calificaciones?actividadId=${materia.id}&maestroId=${maestroData.percve}`
+        `/api/calificaciones?actividadId=${materia.id}&maestroId=${maestroData.percve}`,
+        { cache: 'no-store' }
       );
 
       if (!response.ok) {
@@ -83,6 +84,10 @@ export default function VistaCalificacionesPage() {
       }
 
       const inscripciones = await response.json();
+      if (!Array.isArray(inscripciones)) {
+      console.error("❌ inscripciones no es array:", inscripciones);
+      throw new Error("Formato de respuesta inválido");
+    }
       console.log("✅ Inscripciones cargadas:", inscripciones);
 
       // Inicializar calificaciones con datos de la BD
@@ -102,13 +107,21 @@ export default function VistaCalificacionesPage() {
 
       // Si falla, inicializar con datos del objeto materia
       const calificacionesVacias = {};
-      materia.inscripact?.forEach((inscripcion) => {
-        calificacionesVacias[inscripcion.estudiante.aluctr] = {
-          calificacion: inscripcion.calificacion || "",
-          observaciones: inscripcion.formularioData?.observaciones || "",
-          liberado: inscripcion.liberado || false,
-        };
+      
+    // ✅ Validar que materia.inscripact sea un array
+    if (Array.isArray(materia.inscripact)) {
+      materia.inscripact.forEach((inscripcion) => {
+        const aluctr = inscripcion?.estudiante?.aluctr;
+        
+        if (aluctr) {
+          calificacionesVacias[aluctr] = {
+            calificacion: inscripcion.calificacion || "",
+            observaciones: inscripcion.observaciones || "",
+            liberado: inscripcion.liberado || false,
+          };
+        }
       });
+    }
       setCalificaciones(calificacionesVacias);
     }
   };
@@ -151,15 +164,23 @@ export default function VistaCalificacionesPage() {
           maestroId: maestroData.percve,
           calificaciones: calificaciones,
         }),
+        cache: 'no-store',
       });
+      // ✅ DEBUGGING: Ver qué devuelve la API
+    console.log("📡 Status de respuesta:", response.status);
+    console.log("📡 Headers:", response.headers);
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Error al guardar");
+        throw new Error(errorData.error || "Error al guardar");
       }
 
       const resultado = await response.json();
       console.log("✅ Resultado:", resultado);
+      // ✅ Validar que resultado tenga la estructura esperada
+    const guardadas = resultado.guardadas || 
+                      resultado.resultados?.exitosos || 
+                      0;
 
       alert(`✅ Se guardaron ${resultado.guardadas} calificaciones correctamente`);
       setModoEdicion(false);

@@ -1,12 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Droplets, Upload, Check, AlertCircle } from "lucide-react";
+import { Droplets, Upload, Check, AlertCircle, Clock, RefreshCw } from "lucide-react";
 
 const BloodTypeValidator = ({ numeroControl }) => {
   const [bloodType, setBloodType] = useState("");
   const [bloodTypeFile, setBloodTypeFile] = useState(null);
   const [bloodTypeFileName, setBloodTypeFileName] = useState("");
-  const [currentBloodType, setCurrentBloodType] = useState(null);
+  const [currentBloodType, setCurrentBloodType] = useState(null); // ✅ Validado
+  const [pendingRequest, setPendingRequest] = useState(null); // ⏳ Pendiente
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -20,11 +21,22 @@ const BloodTypeValidator = ({ numeroControl }) => {
     try {
       const response = await fetch(`/api/sangre?aluctr=${numeroControl}`);
       const data = await response.json();
-      if (data?.alutsa) {
-        setCurrentBloodType(data.alutsa);
+      
+      console.log("📊 Datos recibidos de /api/sangre:", data);
+      
+      // ✅ Tipo de sangre validado (en estudiantes.alutsa)
+      if (data?.estudiante?.alutsa) {
+        setCurrentBloodType(data.estudiante.alutsa);
+      }
+      
+      // ⏳ Solicitud pendiente (en inscripact)
+      if (data?.tieneSolicitudPendiente && data?.solicitudPendiente) {
+        setPendingRequest(data.solicitudPendiente);
+      } else {
+        setPendingRequest(null);
       }
     } catch (error) {
-      // Error silencioso
+      console.error("❌ Error al cargar tipo de sangre:", error);
     }
   };
 
@@ -86,19 +98,147 @@ const BloodTypeValidator = ({ numeroControl }) => {
         throw new Error(data.error || "Error al guardar");
       }
 
-      alert("✅ Tipo de sangre validado correctamente");
-      setCurrentBloodType(bloodType);
+      alert("✅ Documento enviado. Esperando validación del administrador.");
+      
+      // Recargar datos
+      await cargarTipoSangre();
+      
       setShowModal(false);
       setBloodType("");
       setBloodTypeFile(null);
       setBloodTypeFileName("");
     } catch (error) {
-      alert(error.message || "Error al validar tipo de sangre");
+      alert(error.message || "Error al enviar documento");
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ CASO 1: Ya está validado por el admin
+  if (currentBloodType && !pendingRequest) {
+    return (
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg shadow-md p-6 border-2 border-green-200 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Droplets className="text-green-600" size={32} />
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">
+                Tipo de Sangre Validado
+              </h3>
+              <p className="text-sm text-green-600 font-semibold">
+                ✅ Verificado por el administrador
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-lg">
+              <Check className="text-green-600" size={20} />
+              <span className="font-bold text-green-800 text-lg">
+                {currentBloodType}
+              </span>
+            </div>
+            
+            {/* Botón de actualizar en caso de error */}
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 text-sm"
+              title="Actualizar en caso de error"
+            >
+              <RefreshCw size={16} />
+              Actualizar
+            </button>
+          </div>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-3">
+          💡 Si tu tipo de sangre es incorrecto, haz clic en "Actualizar" para enviar una nueva solicitud.
+        </p>
+      </div>
+    );
+  }
+
+  // ⏳ CASO 2: Tiene validado PERO también tiene solicitud pendiente
+  if (currentBloodType && pendingRequest) {
+    return (
+      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-md p-6 border-2 border-yellow-300 mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <Clock className="text-yellow-600 animate-pulse" size={32} />
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">
+                Actualización Pendiente
+              </h3>
+              <p className="text-sm text-yellow-700 font-semibold">
+                ⏳ Nueva solicitud esperando revisión
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Tipo actual */}
+          <div className="bg-white p-3 rounded-lg border border-gray-200">
+            <p className="text-xs text-gray-600 mb-1">Tipo actual validado:</p>
+            <div className="flex items-center gap-2">
+              <Check className="text-green-600" size={16} />
+              <span className="font-bold text-green-800 text-lg">
+                {currentBloodType}
+              </span>
+            </div>
+          </div>
+
+          {/* Tipo solicitado */}
+          <div className="bg-yellow-100 p-3 rounded-lg border border-yellow-300">
+            <p className="text-xs text-yellow-800 mb-1">Nuevo tipo solicitado:</p>
+            <div className="flex items-center gap-2">
+              <Clock className="text-yellow-600" size={16} />
+              <span className="font-bold text-yellow-800 text-lg">
+                {pendingRequest.tipoSangreSolicitado}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-sm text-gray-600 mt-3">
+          📝 El administrador revisará tu solicitud de cambio pronto.
+        </p>
+      </div>
+    );
+  }
+
+  // ⏳ CASO 3: No tiene validado pero tiene solicitud pendiente
+  if (!currentBloodType && pendingRequest) {
+    return (
+      <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-md p-6 border-2 border-yellow-300 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Clock className="text-yellow-600 animate-pulse" size={32} />
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">
+                Validación Pendiente
+              </h3>
+              <p className="text-sm text-yellow-700 font-semibold">
+                ⏳ Esperando revisión del administrador
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-lg">
+            <span className="font-bold text-yellow-800 text-lg">
+              {pendingRequest.tipoSangreSolicitado}
+            </span>
+          </div>
+        </div>
+        
+        <p className="text-sm text-gray-600 mt-3">
+          📄 Tu documento ha sido enviado. El administrador lo revisará pronto.
+        </p>
+      </div>
+    );
+  }
+
+  // ❌ CASO 4: No ha subido nada
   return (
     <>
       <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-lg shadow-md p-6 border-2 border-red-200 mb-6">
@@ -110,44 +250,26 @@ const BloodTypeValidator = ({ numeroControl }) => {
                 Tipo de Sangre
               </h3>
               <p className="text-sm text-gray-600">
-                Valida tu tipo de sangre una sola vez
+                Valida tu tipo de sangre subiendo un comprobante
               </p>
             </div>
           </div>
 
-          {currentBloodType ? (
-            <div className="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-lg">
-              <Check className="text-green-600" size={20} />
-              <span className="font-bold text-green-800 text-lg">
-                {currentBloodType}
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-lg">
-              <AlertCircle className="text-yellow-600" size={20} />
-              <span className="font-semibold text-yellow-800 text-sm">
-                No validado
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 bg-yellow-100 px-4 py-2 rounded-lg">
+            <AlertCircle className="text-yellow-600" size={20} />
+            <span className="font-semibold text-yellow-800 text-sm">
+              No validado
+            </span>
+          </div>
         </div>
 
-        {!currentBloodType ? (
-          <button
-            onClick={() => setShowModal(true)}
-            className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
-          >
-            <Upload size={20} />
-            Validar Tipo de Sangre
-          </button>
-        ) : (
-          <button
-            onClick={() => setShowModal(true)}
-            className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
-          >
-            Actualizar Tipo de Sangre
-          </button>
-        )}
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+        >
+          <Upload size={20} />
+          Subir Comprobante
+        </button>
       </div>
 
       {/* Modal */}
@@ -191,7 +313,7 @@ const BloodTypeValidator = ({ numeroControl }) => {
                   color: "#1f2937",
                 }}
               >
-                Validar Tipo de Sangre
+                {currentBloodType ? "Actualizar Tipo de Sangre" : "Validar Tipo de Sangre"}
               </h3>
               <button
                 onClick={() => setShowModal(false)}
@@ -212,6 +334,20 @@ const BloodTypeValidator = ({ numeroControl }) => {
             </div>
 
             <div style={{ padding: "1.5rem" }}>
+              {currentBloodType && (
+                <div style={{
+                  marginBottom: "1rem",
+                  padding: "0.75rem",
+                  backgroundColor: "#dbeafe",
+                  border: "1px solid #3b82f6",
+                  borderRadius: "0.5rem",
+                }}>
+                  <p style={{ fontSize: "0.875rem", color: "#1e40af" }}>
+                    ℹ️ <strong>Tipo actual:</strong> {currentBloodType}
+                  </p>
+                </div>
+              )}
+
               <label
                 style={{
                   display: "block",
@@ -280,6 +416,18 @@ const BloodTypeValidator = ({ numeroControl }) => {
               <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
                 Formatos: PDF, JPG, PNG (máx. 5MB)
               </p>
+              
+              <div style={{
+                marginTop: "1rem",
+                padding: "0.75rem",
+                backgroundColor: "#fef3c7",
+                border: "1px solid #fbbf24",
+                borderRadius: "0.5rem",
+              }}>
+                <p style={{ fontSize: "0.875rem", color: "#92400e" }}>
+                  ⚠️ <strong>Importante:</strong> Tu documento será revisado por el administrador antes de validarse.
+                </p>
+              </div>
             </div>
 
             <div
@@ -319,7 +467,7 @@ const BloodTypeValidator = ({ numeroControl }) => {
                   opacity: loading || !bloodType || !bloodTypeFile ? 0.5 : 1,
                 }}
               >
-                {loading ? "Guardando..." : "Validar"}
+                {loading ? "Enviando..." : currentBloodType ? "Enviar Actualización" : "Enviar para Validación"}
               </button>
             </div>
           </div>

@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
-
+import { prisma } from '@/lib/prisma';
 // POST - Calificar estudiante individual
 export async function POST(request) {
   try {

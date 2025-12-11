@@ -99,21 +99,89 @@ const AdminDashboard = () => {
       setLoading(true);
 
       // Cargar actividades ofertadas
-      const resOfertas = await fetch("/api/act-disponibles");
+      const resOfertas = await fetch("/api/act-disponibles", {
+        cache: "no-store",
+      });
+
+      // ✅ Verificar respuesta HTTP
+      if (!resOfertas.ok) {
+        console.error("❌ Error HTTP en ofertas:", resOfertas.status);
+        throw new Error(`Error HTTP: ${resOfertas.status}`);
+      }
+
       const ofertas = await resOfertas.json();
 
+      // ✅ VALIDACIÓN: Verificar que ofertas sea un array
+      if (!Array.isArray(ofertas)) {
+        console.error("❌ ofertas no es array:", ofertas);
+        // Establecer valores por defecto
+        setStats({
+          totalActividades: 0,
+          totalEstudiantes: 0,
+          totalHombres: 0,
+          totalMujeres: 0,
+          primerSemestre: 0,
+          segundoSemestreEnAdelante: 0,
+        });
+        setDataPorTipo([]);
+        setDataPorSexo([]);
+        setDataPorSemestre([]);
+        setDataSemestreAgrupado([]);
+        return;
+      }
+
       // Cargar inscripciones
-      const resInscripciones = await fetch("/api/inscripciones");
+      const resInscripciones = await fetch("/api/inscripciones", {
+        cache: "no-store",
+      });
+
+      // ✅ Verificar respuesta HTTP
+      if (!resInscripciones.ok) {
+        console.error("❌ Error HTTP en inscripciones:", resInscripciones.status);
+        throw new Error(`Error HTTP: ${resInscripciones.status}`);
+      }
+
       const todasInscripciones = await resInscripciones.json();
+
+      // ✅ VALIDACIÓN: Verificar que inscripciones sea un array
+      if (!Array.isArray(todasInscripciones)) {
+        console.error("❌ todasInscripciones no es array:", todasInscripciones);
+        // Establecer estadísticas solo con ofertas (sin inscripciones)
+        setStats({
+          totalActividades: ofertas.length,
+          totalEstudiantes: 0,
+          totalHombres: 0,
+          totalMujeres: 0,
+          primerSemestre: 0,
+          segundoSemestreEnAdelante: 0,
+        });
+        setDataPorTipo([
+          { tipo: "Cívicas", cantidad: 0, color: "#3b82f6" },
+          { tipo: "Culturales", cantidad: 0, color: "#8b5cf6" },
+          { tipo: "Deportivas", cantidad: 0, color: "#f59e0b" },
+          { tipo: "Otras", cantidad: 0, color: "#6b7280" },
+        ]);
+        setDataPorSexo([
+          { sexo: "Hombres", cantidad: 0, color: "#3b82f6" },
+          { sexo: "Mujeres", cantidad: 0, color: "#ec4899" },
+        ]);
+        setDataPorSemestre([]);
+        setDataSemestreAgrupado([]);
+        return;
+      }
+
+      console.log(`✅ Cargadas ${ofertas.length} ofertas y ${todasInscripciones.length} inscripciones`);
 
       // Agrupar inscripciones por actividad
       const inscripcionesPorActividad = {};
       todasInscripciones.forEach((inscripcion) => {
-        const actId = inscripcion.actividadId;
-        if (!inscripcionesPorActividad[actId]) {
-          inscripcionesPorActividad[actId] = [];
+        const actId = inscripcion?.actividadId;
+        if (actId) {
+          if (!inscripcionesPorActividad[actId]) {
+            inscripcionesPorActividad[actId] = [];
+          }
+          inscripcionesPorActividad[actId].push(inscripcion);
         }
-        inscripcionesPorActividad[actId].push(inscripcion);
       });
 
       // Calcular estadísticas
@@ -130,6 +198,7 @@ const AdminDashboard = () => {
       let contadorPrimerSemestre = 0;
       let contadorSegundoEnAdelante = 0;
 
+      // ✅ Ahora es seguro usar forEach porque validamos que es array
       ofertas.forEach((oferta) => {
         const inscritos = inscripcionesPorActividad[oferta.actividadId] || [];
         const tipoActividad = obtenerTipoActividad(
@@ -216,10 +285,32 @@ const AdminDashboard = () => {
 
     } catch (error) {
       console.error("❌ Error al cargar estadísticas:", error);
+      // ✅ Establecer valores seguros en caso de error
+      setStats({
+        totalActividades: 0,
+        totalEstudiantes: 0,
+        totalHombres: 0,
+        totalMujeres: 0,
+        primerSemestre: 0,
+        segundoSemestreEnAdelante: 0,
+      });
+      setDataPorTipo([
+        { tipo: "Cívicas", cantidad: 0, color: "#3b82f6" },
+        { tipo: "Culturales", cantidad: 0, color: "#8b5cf6" },
+        { tipo: "Deportivas", cantidad: 0, color: "#f59e0b" },
+        { tipo: "Otras", cantidad: 0, color: "#6b7280" },
+      ]);
+      setDataPorSexo([
+        { sexo: "Hombres", cantidad: 0, color: "#3b82f6" },
+        { sexo: "Mujeres", cantidad: 0, color: "#ec4899" },
+      ]);
+      setDataPorSemestre([]);
+      setDataSemestreAgrupado([]);
     } finally {
       setLoading(false);
     }
   };
+
 
   if (loading) {
     return (

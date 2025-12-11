@@ -180,6 +180,11 @@ const LoginPage = () => {
           cve: studentData.cve || "N/A",
           inscripciones: studentData.inscripciones || [],
         };
+        // ✅ AGREGAR: Guardar número de control por separado para fácil acceso
+      if (cleanedData.numeroControl) {
+        localStorage.setItem("numeroControl", cleanedData.numeroControl);
+        console.log("✅ Número de control guardado:", cleanedData.numeroControl);
+      }
 
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
         console.log("✅ Datos del estudiante guardados:", cleanedData);

@@ -101,6 +101,8 @@ model estudiantes {
   merida                   Int?
   inscripciones            estudicarr?
   inscripcionesActividades inscripact[]
+  constancias          constancias[]
+  
 }
 
 model authStudents {
@@ -187,7 +189,7 @@ model actividades {
   maestro    maestros? @relation(fields: [maestroId], references: [percve])
   inscripact inscripact[]
   ofertas    ofertaSemestre[]
-
+constancias          constancias[]
 }
 
 model ofertaSemestre {
@@ -220,6 +222,10 @@ model inscripact {
   actividad        actividades    @relation(fields: [actividadId], references: [id])
   estudiante       estudiantes    @relation(fields: [estudianteId], references: [aluctr])
   oferta           ofertaSemestre @relation(fields: [ofertaId], references: [id])
+  tipoSangreSolicitado  String?   // El tipo que seleccionó el estudiante
+  comprobanteSangrePDF  String?   @db.Text // PDF en Base64
+  nombreArchivoSangre   String?
+  sangreValidada        Boolean   @default(false) // false = pendiente, true = validado
 
   @@unique([estudianteId, actividadId])
   @@map("inscripciones_actividades")
@@ -307,3 +313,44 @@ model authMaestros {
   
   @@map("auth_maestros")
 }
+// ✅ AGREGAR ESTE MODELO AL FINAL DE TU schema.prisma
+
+model constancias {
+  id                   Int      @id @default(autoincrement())
+  folio                String   @unique @db.VarChar(50) // ITE-2025-001234
+  codigoVerificacion   String   @unique @db.VarChar(20) // Hash corto
+  
+  // Datos del estudiante
+  numeroControl        String   @db.VarChar(50)
+  nombreCompleto       String   @db.VarChar(200)
+  correoEstudiante     String?  @db.VarChar(100)
+  
+  // Datos de la actividad
+  actividadCodigo      String   @db.VarChar(50)
+  actividadNombre      String   @db.VarChar(200)
+  actividadCreditos    Int?
+  actividadHoras       Int?
+  
+  // Datos editables de la constancia
+  periodo              String   @db.VarChar(100)
+  acreditacion         String   @db.VarChar(100)
+  
+  // Metadata
+  fechaEmision         DateTime @default(now())
+  asesor               String   @default("Juan Carlos Leal Nodal") @db.VarChar(200)
+  
+  // Relaciones
+  estudianteId         String   @db.VarChar(50)
+  actividadId          Int
+  
+  estudiante           estudiantes @relation(fields: [estudianteId], references: [aluctr])
+  actividad            actividades @relation(fields: [actividadId], references: [id])
+  
+  @@index([numeroControl])
+  @@index([folio])
+  @@map("constancias")
+}
+
+
+
+

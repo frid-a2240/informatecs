@@ -8,7 +8,9 @@ import {
   Search,
   Sparkles,
   Clock,
-  User, // ✅ AGREGAR ESTE IMPORT
+  User,
+  Plus,
+  X,
 } from "lucide-react";
 import "./adminpanel.css";
 
@@ -19,16 +21,22 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
-  const [modalHorario, setModalHorario] = useState(null);
-  const [modalMaestro, setModalMaestro] = useState(null);
+  
+  // ✅ UN SOLO MODAL PARA TODO
+  const [modalAgregar, setModalAgregar] = useState(null);
   const [busquedaMaestro, setBusquedaMaestro] = useState("");
   const [maestrosEncontrados, setMaestrosEncontrados] = useState([]);
   const [buscandoMaestro, setBuscandoMaestro] = useState(false);
-  const [horarioForm, setHorarioForm] = useState({
+  const [guardando, setGuardando] = useState(false);
+  
+  // ✅ FORMULARIO UNIFICADO
+  const [formulario, setFormulario] = useState({
     dias: [],
     horaInicio: "",
     horaFin: "",
     salon: "",
+    maestroId: null,
+    maestroNombre: "",
   });
 
   const diasSemana = [
@@ -39,81 +47,6 @@ const AdminPanel = () => {
     "Viernes",
     "Sábado",
   ];
-
-  // Buscar maestros
-  const buscarMaestros = async (query) => {
-    if (query.length < 2) {
-      setMaestrosEncontrados([]);
-      return;
-    }
-
-    try {
-      setBuscandoMaestro(true);
-      const response = await fetch(
-        `/api/maestros-buscar?q=${encodeURIComponent(query)}`
-      );
-      const maestros = await response.json();
-      setMaestrosEncontrados(maestros);
-    } catch (error) {
-      console.error("Error al buscar maestros:", error);
-    } finally {
-      setBuscandoMaestro(false);
-    }
-  };
-
-  // Asignar maestro a actividad
-const asignarMaestro = async (maestro) => {
-   
-  try {
-    const response = await fetch("/api/asignar-maestros", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        actividadId: modalMaestro.id, // ✅ Esto envía el código correcto
-        maestroId: maestro.id,
-      }),
-    });
-
-    if (!response.ok) throw new Error("Error al asignar maestro");
-
-    alert(`Maestro ${maestro.nombreCompleto} asignado correctamente`);
-
-    // Actualizar actividades en memoria
-    setTodasActividades((prev) =>
-      prev.map((act) =>
-        act.id === modalMaestro.id // ✅ COMPARAR POR ID NUMÉRICO
-          ? { ...act, maestroId: maestro.id, maestro: {
-              percve: maestro.id,
-              pernom: maestro.nombreCompleto.split(' ')[0],
-              perapp: maestro.nombreCompleto.split(' ')[1] || '',
-              perapm: maestro.nombreCompleto.split(' ')[2] || ''
-            }}
-          : act
-      )
-    );
-    setActividadesOfertadas((prev) =>
-      prev.map((act) =>
-        act.id === modalMaestro.id // ✅ COMPARAR POR ID NUMÉRICO
-          ? { ...act, maestroId: maestro.id, maestro: {
-              percve: maestro.id,
-              pernom: maestro.nombreCompleto.split(' ')[0],
-              perapp: maestro.nombreCompleto.split(' ')[1] || '',
-              perapm: maestro.nombreCompleto.split(' ')[2] || ''
-            }}
-          : act
-      )
-    );
-
-    setModalMaestro(null);
-    setBusquedaMaestro("");
-    setMaestrosEncontrados([]);
-    cargarActividades(); // ✅ Recargar para obtener datos actualizados
-  } catch (error) {
-    console.error("Error al asignar maestro:", error);
-    alert("Error al asignar maestro");
-  }
-};
-
 
   useEffect(() => {
     cargarActividades();
@@ -134,9 +67,173 @@ const asignarMaestro = async (maestro) => {
     }
   };
 
-  const agregarAOferta = (actividad) => {
-    if (!actividadesOfertadas.find((act) => act.id === actividad.id)) {
-      setActividadesOfertadas([...actividadesOfertadas, actividad]);
+  // ✅ ABRIR MODAL CON DATOS PRECARGADOS
+  const abrirModalAgregar = (actividad) => {
+    setModalAgregar(actividad);
+    
+    // Precargar datos si ya existen
+    setFormulario({
+      dias: actividad.horario?.dias || [],
+      horaInicio: actividad.horario?.horaInicio || "",
+      horaFin: actividad.horario?.horaFin || "",
+      salon: actividad.horario?.salon || "",
+      maestroId: actividad.maestroId || null,
+      maestroNombre: actividad.maestro 
+        ? `${actividad.maestro.pernom} ${actividad.maestro.perapp} ${actividad.maestro.perapm}`.trim()
+        : "",
+    });
+    
+    setBusquedaMaestro("");
+    setMaestrosEncontrados([]);
+  };
+
+  const toggleDia = (dia) => {
+    setFormulario((prev) => ({
+      ...prev,
+      dias: prev.dias.includes(dia)
+        ? prev.dias.filter((d) => d !== dia)
+        : [...prev.dias, dia],
+    }));
+  };
+
+  // ✅ BUSCAR MAESTROS
+  const buscarMaestros = async (query) => {
+    if (query.length < 2) {
+      setMaestrosEncontrados([]);
+      return;
+    }
+
+    try {
+      setBuscandoMaestro(true);
+      const response = await fetch(
+        `/api/maestros-buscar?q=${encodeURIComponent(query)}`
+      );
+      const maestros = await response.json();
+      setMaestrosEncontrados(maestros);
+    } catch (error) {
+      console.error("Error al buscar maestros:", error);
+    } finally {
+      setBuscandoMaestro(false);
+    }
+  };
+
+  // ✅ SELECCIONAR MAESTRO
+  const seleccionarMaestro = (maestro) => {
+    setFormulario((prev) => ({
+      ...prev,
+      maestroId: maestro.id,
+      maestroNombre: maestro.nombreCompleto,
+    }));
+    setBusquedaMaestro("");
+    setMaestrosEncontrados([]);
+  };
+
+  // ✅ REMOVER MAESTRO SELECCIONADO
+  const removerMaestro = () => {
+    setFormulario((prev) => ({
+      ...prev,
+      maestroId: null,
+      maestroNombre: "",
+    }));
+  };
+
+  // ✅ GUARDAR TODO Y AGREGAR A OFERTA
+  const guardarYAgregar = async () => {
+    // Validaciones básicas
+    if (formulario.dias.length === 0) {
+      alert("⚠️ Selecciona al menos un día");
+      return;
+    }
+    if (!formulario.horaInicio || !formulario.horaFin) {
+      alert("⚠️ Completa los horarios de inicio y fin");
+      return;
+    }
+    if (!formulario.maestroId) {
+      if (!confirm("⚠️ No has asignado un maestro. ¿Deseas continuar?")) {
+        return;
+      }
+    }
+
+    try {
+      setGuardando(true);
+
+      // 1. Guardar horario
+      console.log("💾 Guardando horario...");
+      const horarioResponse = await fetch(`/api/horario`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: modalAgregar.id,
+          horario: {
+            dias: formulario.dias,
+            horaInicio: formulario.horaInicio,
+            horaFin: formulario.horaFin,
+            salon: formulario.salon,
+          },
+        }),
+      });
+
+      if (!horarioResponse.ok) {
+        throw new Error("Error al guardar horario");
+      }
+
+      // 2. Asignar maestro (si fue seleccionado)
+      if (formulario.maestroId) {
+        console.log("👨‍🏫 Asignando maestro...");
+        const maestroResponse = await fetch("/api/asignar-maestros", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            actividadId: modalAgregar.id,
+            maestroId: formulario.maestroId,
+          }),
+        });
+
+        if (!maestroResponse.ok) {
+          throw new Error("Error al asignar maestro");
+        }
+      }
+
+      // 3. Actualizar actividad en memoria con los nuevos datos
+      const actividadActualizada = {
+        ...modalAgregar,
+        horario: {
+          dias: formulario.dias,
+          horaInicio: formulario.horaInicio,
+          horaFin: formulario.horaFin,
+          salon: formulario.salon,
+        },
+        maestroId: formulario.maestroId,
+        maestro: formulario.maestroId ? {
+          percve: formulario.maestroId,
+          pernom: formulario.maestroNombre.split(' ')[0] || '',
+          perapp: formulario.maestroNombre.split(' ')[1] || '',
+          perapm: formulario.maestroNombre.split(' ')[2] || '',
+        } : null,
+      };
+
+      // 4. Actualizar en el catálogo
+      setTodasActividades((prev) =>
+        prev.map((act) =>
+          act.id === modalAgregar.id ? actividadActualizada : act
+        )
+      );
+
+      // 5. Agregar a oferta si no está ya
+      if (!actividadesOfertadas.find((act) => act.id === modalAgregar.id)) {
+        setActividadesOfertadas((prev) => [...prev, actividadActualizada]);
+      }
+
+      alert("✅ Actividad configurada y agregada a la oferta");
+      setModalAgregar(null);
+      
+      // Recargar para asegurar datos actualizados
+      await cargarActividades();
+    } catch (error) {
+      console.error("❌ Error:", error);
+      alert(`❌ Error: ${error.message}`);
+    } finally {
+      setGuardando(false);
     }
   };
 
@@ -146,93 +243,10 @@ const asignarMaestro = async (maestro) => {
     );
   };
 
-  const abrirModalHorario = (actividad) => {
-    setModalHorario(actividad);
-    setHorarioForm(
-      actividad.horario || { dias: [], horaInicio: "", horaFin: "", salon: "" }
-    );
-  };
-
-  const toggleDia = (dia) => {
-    setHorarioForm((prev) => ({
-      ...prev,
-      dias: prev.dias.includes(dia)
-        ? prev.dias.filter((d) => d !== dia)
-        : [...prev.dias, dia],
-    }));
-  };
-
-  const guardarHorario = async () => {
-    if (
-      horarioForm.dias.length === 0 ||
-      !horarioForm.horaInicio ||
-      !horarioForm.horaFin
-    ) {
-      alert("Completa todos los campos del horario");
-      return;
-    }
-
-    try {
-      console.log("🕐 Guardando horario...");
-      console.log("Actividad ID:", modalHorario?.id);
-      console.log("Datos de horario:", horarioForm);
-
-      const response = await fetch(`/api/horario`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: modalHorario.id,
-          horario: horarioForm,
-        }),
-      });
-
-      console.log("Respuesta del servidor:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Error del servidor:", errorText);
-        throw new Error("Error al guardar horario");
-      }
-
-      const data = await response.json();
-      console.log("✅ Horario guardado correctamente:", data);
-
-      alert("Horario guardado exitosamente");
-
-      // Actualizar actividades en memoria
-      setTodasActividades((prev) =>
-        prev.map((act) =>
-          act.id === modalHorario.id ? { ...act, horario: horarioForm } : act
-        )
-      );
-      setActividadesOfertadas((prev) =>
-        prev.map((act) =>
-          act.id === modalHorario.id ? { ...act, horario: horarioForm } : act
-        )
-      );
-
-      setModalHorario(null);
-    } catch (error) {
-      console.error("⚠️ Error al intentar guardar horario:", error);
-      alert("Error de conexión al guardar horario");
-    }
-  };
-
   const publicarActividades = async () => {
     if (actividadesOfertadas.length === 0) {
       alert("Selecciona al menos una actividad para ofertar.");
       return;
-    }
-
-    const sinHorario = actividadesOfertadas.filter((act) => !act.horario);
-    if (sinHorario.length > 0) {
-      if (
-        !window.confirm(
-          `Hay ${sinHorario.length} actividad(es) sin horario asignado. ¿Deseas continuar?`
-        )
-      ) {
-        return;
-      }
     }
 
     if (!confirm(`¿Publicar ${actividadesOfertadas.length} actividades?`))
@@ -284,166 +298,200 @@ const asignarMaestro = async (maestro) => {
 
   return (
     <div className="admin-panel">
-      {/* Modal Horario */}
-      {modalHorario && (
+      {/* ✅ MODAL UNIFICADO: AGREGAR ACTIVIDAD CON TODO */}
+      {modalAgregar && (
         <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>🕐 Configurar horario</h3>
-            <p>
-              {modalHorario.aconco || modalHorario.aticve} — Código:{" "}
-              {modalHorario.aticve}
-            </p>
+          <div className="modal-content modal-agregar">
+            <div className="modal-header">
+              <div>
+                <h3>➕ Configurar y Agregar Actividad</h3>
+                <p className="modal-subtitle">
+                  {modalAgregar.aconco || modalAgregar.aticve} — Código: {modalAgregar.aticve}
+                </p>
+              </div>
+              <button 
+                className="btn-close"
+                onClick={() => setModalAgregar(null)}
+              >
+                <X size={24} />
+              </button>
+            </div>
 
-            <div className="modal-section">
-              <label>Días:</label>
-              <div className="dias-grid">
-                {diasSemana.map((dia) => (
-                  <button
-                    key={dia}
-                    className={
-                      horarioForm.dias.includes(dia) ? "dia activo" : "dia"
-                    }
-                    onClick={() => toggleDia(dia)}
-                  >
-                    {dia}
-                  </button>
-                ))}
+            <div className="modal-body">
+              {/* SECCIÓN HORARIO */}
+              <div className="seccion-form">
+                <h4><Clock size={20} /> Horario</h4>
+                
+                <label>Días de la semana:</label>
+                <div className="dias-grid">
+                  {diasSemana.map((dia) => (
+                    <button
+                      key={dia}
+                      type="button"
+                      className={formulario.dias.includes(dia) ? "dia activo" : "dia"}
+                      onClick={() => toggleDia(dia)}
+                    >
+                      {dia}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid-2-campos">
+                  <div>
+                    <label>Hora inicio:</label>
+                    <input
+                      type="time"
+                      value={formulario.horaInicio}
+                      onChange={(e) =>
+                        setFormulario({ ...formulario, horaInicio: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label>Hora fin:</label>
+                    <input
+                      type="time"
+                      value={formulario.horaFin}
+                      onChange={(e) =>
+                        setFormulario({ ...formulario, horaFin: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+
+                <label>Salón o ubicación:</label>
+                <input
+                  type="text"
+                  value={formulario.salon}
+                  onChange={(e) =>
+                    setFormulario({ ...formulario, salon: e.target.value })
+                  }
+                  placeholder="Ej: Aula 301, Cancha 2"
+                />
+              </div>
+
+              {/* SECCIÓN MAESTRO */}
+              <div className="seccion-form">
+                <h4><User size={20} /> Maestro</h4>
+
+                {formulario.maestroId ? (
+                  <div className="maestro-seleccionado">
+                    <div className="maestro-info">
+                      <User size={24} />
+                      <div>
+                        <strong>{formulario.maestroNombre}</strong>
+                        <p>ID: {formulario.maestroId}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn-remover-maestro"
+                      onClick={removerMaestro}
+                    >
+                      <X size={16} /> Cambiar
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <label>Buscar por ID o Nombre:</label>
+                    <input
+                      type="text"
+                      value={busquedaMaestro}
+                      onChange={(e) => {
+                        setBusquedaMaestro(e.target.value);
+                        buscarMaestros(e.target.value);
+                      }}
+                      placeholder="Ej: 88 o César Noel"
+                    />
+
+                    {buscandoMaestro && <p className="texto-cargando">Buscando...</p>}
+
+                    {maestrosEncontrados.length > 0 && (
+                      <div className="lista-maestros">
+                        {maestrosEncontrados.map((maestro) => (
+                          <div key={maestro.id} className="maestro-item">
+                            <div>
+                              <strong>{maestro.nombreCompleto}</strong>
+                              <p>ID: {maestro.id}</p>
+                              <p className="texto-secundario">
+                                {maestro.departamento || "Sin departamento"}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              className="btn-seleccionar"
+                              onClick={() => seleccionarMaestro(maestro)}
+                            >
+                              Seleccionar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="modal-section">
-              <label>Hora inicio:</label>
-              <input
-                type="time"
-                value={horarioForm.horaInicio}
-                onChange={(e) =>
-                  setHorarioForm({ ...horarioForm, horaInicio: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="modal-section">
-              <label>Hora fin:</label>
-              <input
-                type="time"
-                value={horarioForm.horaFin}
-                onChange={(e) =>
-                  setHorarioForm({ ...horarioForm, horaFin: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="modal-section">
-              <label>Salón o ubicación:</label>
-              <input
-                type="text"
-                value={horarioForm.salon}
-                onChange={(e) =>
-                  setHorarioForm({ ...horarioForm, salon: e.target.value })
-                }
-                placeholder="Ej: Aula 301, Cancha 2"
-              />
-            </div>
-
-            <div className="modal-buttons">
+            <div className="modal-footer">
               <button
-                className="cancelar"
-                onClick={() => setModalHorario(null)}
+                type="button"
+                className="btn-cancelar"
+                onClick={() => setModalAgregar(null)}
               >
                 Cancelar
               </button>
-              <button className="guardar" onClick={guardarHorario}>
-                Guardar horario
+              <button
+                type="button"
+                className="btn-guardar"
+                onClick={guardarYAgregar}
+                disabled={guardando}
+              >
+                {guardando ? "Guardando..." : "Guardar y Agregar a Oferta"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ✅ Modal Asignar Maestro */}
-      {modalMaestro && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>👨‍🏫 Asignar Maestro</h3>
-            <p>
-              {modalMaestro.aconco || modalMaestro.aticve} — Código:{" "}
-              {modalMaestro.aticve}
+      {/* ✅ MODAL VER MAESTRO (Para el badge clickeable) */}
+      {modalVerMaestro && (
+        <div className="modal-overlay" onClick={() => setModalVerMaestro(null)}>
+          <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
+            <h3>👨‍🏫 Maestro Asignado</h3>
+            <p className="materia-modal-title">
+              {modalVerMaestro.aconco || modalVerMaestro.aticve}
             </p>
-
-            {modalMaestro.maestro && (
-              <div className="maestro-actual">
-                <p>
-                  <strong>Maestro actual:</strong>{" "}
-                  {modalMaestro.maestro.nombreCompleto}
-                </p>
-                <button
-                  className="btn-remover"
-                  onClick={async () => {
-                    if (confirm("¿Remover maestro asignado?")) {
-                      try {
-                        await fetch(
-                          `/api/asignar-maestros?actividadId=${modalMaestro.aticve}`,
-                          {
-                            method: "DELETE",
-                          }
-                        );
-                        alert("Maestro removido");
-                        setModalMaestro(null);
-                        cargarActividades();
-                      } catch (error) {
-                        alert("Error al remover maestro");
-                      }
-                    }
-                  }}
-                >
-                  Remover Maestro
-                </button>
+            <p className="codigo-modal">Código: {modalVerMaestro.aticve}</p>
+            
+            {modalVerMaestro.maestro ? (
+              <div className="maestro-info-box">
+                <div className="maestro-avatar">
+                  <User size={48} />
+                </div>
+                <div className="maestro-detalles">
+                  <h4>
+                    {modalVerMaestro.maestro.pernom} {modalVerMaestro.maestro.perapp}{" "}
+                    {modalVerMaestro.maestro.perapm}
+                  </h4>
+                  <p><strong>ID:</strong> {modalVerMaestro.maestro.percve}</p>
+                  {modalVerMaestro.maestro.perdce && (
+                    <p><strong>Email:</strong> {modalVerMaestro.maestro.perdce}</p>
+                  )}
+                  {modalVerMaestro.maestro.perdep && (
+                    <p><strong>Departamento:</strong> {modalVerMaestro.maestro.perdep}</p>
+                  )}
+                </div>
               </div>
-            )}
-
-            <div className="modal-section">
-              <label>Buscar por ID o Nombre:</label>
-              <input
-                type="text"
-                value={busquedaMaestro}
-                onChange={(e) => {
-                  setBusquedaMaestro(e.target.value);
-                  buscarMaestros(e.target.value);
-                }}
-                placeholder="Ej: 88 o César Noel"
-              />
-            </div>
-
-            {buscandoMaestro && <p>Buscando...</p>}
-
-            {maestrosEncontrados.length > 0 && (
-              <div className="lista-maestros">
-                {maestrosEncontrados.map((maestro) => (
-                  <div key={maestro.id} className="maestro-item">
-                    <div>
-                      <strong>{maestro.nombreCompleto}</strong>
-                      <p>ID: {maestro.id}</p>
-                      <p>{maestro.departamento || "Sin departamento"}</p>
-                    </div>
-                    <button
-                      className="btn-asignar"
-                      onClick={() => asignarMaestro(maestro)}
-                    >
-                      Asignar
-                    </button>
-                  </div>
-                ))}
-              </div>
+            ) : (
+              <p>No hay maestro asignado</p>
             )}
 
             <div className="modal-buttons">
               <button
-                className="cancelar"
-                onClick={() => {
-                  setModalMaestro(null);
-                  setBusquedaMaestro("");
-                  setMaestrosEncontrados([]);
-                }}
+                className="btn-primary"
+                onClick={() => setModalVerMaestro(null)}
               >
                 Cerrar
               </button>
@@ -452,12 +500,14 @@ const asignarMaestro = async (maestro) => {
         </div>
       )}
 
+      {/* HEADER */}
       <div className="card header-card">
         <h2>Gestionar Actividades</h2>
-        <p>Selecciona las actividades que deseas ofertar este semestre</p>
+        <p>Configura y selecciona las actividades que deseas ofertar este semestre</p>
       </div>
 
       <div className="grid-2">
+        {/* CATÁLOGO */}
         <div className="card catalogo">
           <h3>Catálogo ({todasActividades.length})</h3>
 
@@ -472,111 +522,66 @@ const asignarMaestro = async (maestro) => {
           </div>
 
           <div className="lista-actividades">
-  {actividadesFiltradas.length === 0 ? (
-    <p>No se encontraron actividades</p>
-  ) : (
-    actividadesFiltradas.map((actividad) => {
-      const agregada = actividadesOfertadas.find(
-        (act) => act.id === actividad.id
-      );
-      return (
-        <div key={actividad.id} className="actividad-item">
-          <div>
-            <h4>{actividad.aconco || actividad.aticve}</h4>
-            <p>Código: {actividad.aticve}</p>
-            
-            <div className="meta">
-              <span>{actividad.acocre} créditos</span>
-              <span>{actividad.acohrs} hrs</span>
-              {actividad.horario && (
-                <span className="con-horario">✓ Con horario</span>
-              )}
-              {/* ✅ BADGE CLICKEABLE DE MAESTRO */}
-              {actividad.maestroId && (
-                <span 
-                  className="con-maestro clickeable"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setModalVerMaestro(actividad);
-                  }}
-                  title="Click para ver maestro"
-                >
-                  ✓ Con maestro
-                </span>
-              )}
-            </div>
-          </div>
-          <div className="botones">
-            <button
-              className="btn-horario"
-              onClick={() => abrirModalHorario(actividad)}
-            >
-              <Clock size={16} /> Horario
-            </button>
-            {/* ✅ BOTÓN MAESTRO */}
-            <button
-              className="btn-maestro"
-              onClick={() => setModalMaestro(actividad)}
-            >
-              <User size={16} /> Maestro
-            </button>
-            <button
-              className={agregada ? "agregado" : "agregar"}
-              onClick={() => agregarAOferta(actividad)}
-              disabled={!!agregada}
-            >
-              {agregada ? "Agregada" : "+ Agregar"}
-            </button>
-          </div>
-        </div>
-      );
-    })
-  )}
-</div>
-{/* ✅ NUEVO: Modal Ver Maestro Asignado */}
-{modalVerMaestro && (
-  <div className="modal-overlay" onClick={() => setModalVerMaestro(null)}>
-    <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
-      <h3>👨‍🏫 Maestro Asignado</h3>
-      <p className="materia-modal-title">
-        {modalVerMaestro.aconco || modalVerMaestro.aticve}
-      </p>
-      <p className="codigo-modal">Código: {modalVerMaestro.aticve}</p>
-      
-      {modalVerMaestro.maestro ? (
-        <div className="maestro-info-box">
-          <div className="maestro-avatar">
-            <User size={48} />
-          </div>
-          <div className="maestro-detalles">
-            <h4>{modalVerMaestro.maestro.pernom} {modalVerMaestro.maestro.perapp} {modalVerMaestro.maestro.perapm}</h4>
-            <p><strong>ID:</strong> {modalVerMaestro.maestro.percve}</p>
-            {modalVerMaestro.maestro.perdce && (
-              <p><strong>Email:</strong> {modalVerMaestro.maestro.perdce}</p>
-            )}
-            {modalVerMaestro.maestro.perdep && (
-              <p><strong>Departamento:</strong> {modalVerMaestro.maestro.perdep}</p>
+            {actividadesFiltradas.length === 0 ? (
+              <p>No se encontraron actividades</p>
+            ) : (
+              actividadesFiltradas.map((actividad) => {
+                const agregada = actividadesOfertadas.find(
+                  (act) => act.id === actividad.id
+                );
+                return (
+                  <div key={actividad.id} className="actividad-item">
+                    <div className="actividad-info">
+                      <h4>{actividad.aconco || actividad.aticve}</h4>
+                      <p>Código: {actividad.aticve}</p>
+                      
+                      <div className="meta">
+                        <span>{actividad.acocre} créditos</span>
+                        <span>{actividad.acohrs} hrs</span>
+                        {actividad.horario && (
+                          <span className="con-horario">✓ Horario</span>
+                        )}
+                        {actividad.maestroId && (
+                          <span 
+                            className="con-maestro clickeable"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setModalVerMaestro(actividad);
+                            }}
+                            title="Click para ver maestro"
+                          >
+                            ✓ Maestro
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* ✅ UN SOLO BOTÓN */}
+                    <button
+                      className={agregada ? "btn-agregado" : "btn-configurar"}
+                      onClick={() => {
+                        if (!agregada) {
+                          abrirModalAgregar(actividad);
+                        }
+                      }}
+                      disabled={!!agregada}
+                    >
+                      {agregada ? (
+                        <>✓ Agregada</>
+                      ) : (
+                        <>
+                          <Plus size={16} /> Configurar y Agregar
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>
-      ) : (
-        <p>No hay maestro asignado</p>
-      )}
 
-      <div className="modal-buttons">
-        <button
-          className="btn-primary"
-          onClick={() => setModalVerMaestro(null)}
-        >
-          Cerrar
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-        </div>
-
+        {/* OFERTA */}
         <div className="card oferta">
           <div className="flex-between">
             <h3>Oferta ({actividadesOfertadas.length})</h3>
@@ -606,13 +611,21 @@ const asignarMaestro = async (maestro) => {
                   <h4>{actividad.aconco || actividad.aticve}</h4>
                   {actividad.horario && (
                     <p className="detalle-horario">
-                      {actividad.horario.dias.join(", ")} •{" "}
-                      {actividad.horario.horaInicio} -{" "}
-                      {actividad.horario.horaFin} • {actividad.horario.salon}
+                      <Clock size={14} /> {actividad.horario.dias.join(", ")} •{" "}
+                      {actividad.horario.horaInicio} - {actividad.horario.horaFin}
+                      {actividad.horario.salon && ` • ${actividad.horario.salon}`}
+                    </p>
+                  )}
+                  {actividad.maestro && (
+                    <p className="detalle-maestro">
+                      <User size={14} /> {actividad.maestro.pernom} {actividad.maestro.perapp}
                     </p>
                   )}
                 </div>
-                <button onClick={() => quitarDeOferta(actividad.id)}>
+                <button 
+                  className="btn-eliminar"
+                  onClick={() => quitarDeOferta(actividad.id)}
+                >
                   <Trash2 size={20} />
                 </button>
               </div>

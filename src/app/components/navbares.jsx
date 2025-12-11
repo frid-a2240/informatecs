@@ -106,16 +106,17 @@ export default function Sidebar() {
           </Link>
         </li>
 
-        <li
-          className={`menu-item ${
-            pathname === "/configuracion" ? "active" : ""
-          }`}
-        >
-          <Link href="/configuracion" className="menu-link">
-            <FiAward className="icon" />
-            {open && <span className="title">Constancias</span>}
-          </Link>
-        </li>
+          <li
+           className={`menu-item ${
+            pathname === "/designs/menuestu/misConstancias" ? "active" : ""  // ✅ CORRECTO
+            }`}
+>
+  <Link href="/designs/menuestu/misConstancias" className="menu-link">
+    <FiAward className="icon" />
+    {open && <span className="title">Constancias</span>}
+  </Link>
+</li>
+
 
         <li className="menu-item" onClick={handleLogout}>
           <div className="menu-link">
