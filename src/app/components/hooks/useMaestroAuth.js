@@ -11,7 +11,7 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ percve, password }),
       });
-      
+
       const data = await res.json();
       console.log("📥 Respuesta del servidor:", data);
 
@@ -32,7 +32,6 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
 
       // ❌ Cualquier otro error
       setError(data.message || "Error en el inicio de sesión");
-
     } catch (error) {
       console.error("❌ Error de red:", error);
       setError("Error al conectar con el servidor");
@@ -48,7 +47,7 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
         body: JSON.stringify({ percve, correo: email }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Código enviado");
         setStep("verifyMaestro");
@@ -70,7 +69,7 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
         body: JSON.stringify({ percve, code }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Código verificado");
         setStep("updateMaestro");
@@ -92,7 +91,7 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
         body: JSON.stringify({ percve, newPassword }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Contraseña actualizada");
         // Ahora hacer login automáticamente con la nueva contraseña
@@ -101,15 +100,17 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ percve, password: newPassword }),
         });
-        
+
         const loginData = await loginRes.json();
-        
+
         if (loginRes.ok) {
           setFullName(loginData.nombre || "Maestro");
           setMaestroData(loginData.maestro);
           setStep("successMaestro");
         } else {
-          setError("Contraseña actualizada. Por favor inicia sesión nuevamente.");
+          setError(
+            "Contraseña actualizada. Por favor inicia sesión nuevamente."
+          );
           setStep("teacher");
         }
       } else {
@@ -135,7 +136,9 @@ export function useMaestroAuth(setStep, setFullName, setError, setMaestroData) {
       if (res.status === 403 && data.requiresVerification) {
         setStep("askEmailMaestro");
       } else if (res.ok) {
-        setError("Esta cuenta ya está verificada. Inicia sesión con tu contraseña personalizada.");
+        setError(
+          "Esta cuenta ya está verificada. Inicia sesión con tu contraseña personalizada."
+        );
       } else {
         setError(data.message || "Error en el registro");
       }

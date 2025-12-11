@@ -3,24 +3,27 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FaUser, FaLock, FaChalkboardTeacher } from "react-icons/fa";
+// Importación de Hooks y estilos
 import { useAuth } from "@/app/components/hooks/authHandlers";
 import { useMaestroAuth } from "@/app/components/hooks/useMaestroAuth";
 import "./login.css";
 
-// Importar formularios
+// Importar formularios (NOTA: Corregir importación de MascotCarousel)
 import TeacherForm from "@/app/components/TeacherForm";
 import AdminForm from "@/app/components/AdminForm";
 import RegisterForm from "@/app/components/RegisterForm";
 import LoginForm from "@/app/components/loginform";
 import AskEmailForm from "@/app/components/AskEmailForm";
+// NOTA: Si VerifyCodeForm es un componente, generalmente no va en /hooks/
 import VerifyCodeForm from "@/app/components/hooks/VerifyCodeForm";
 import UpdatePasswordForm from "@/app/components/UpdatePasswordForm";
 import SchoolRainEffect from "@/app/components/SchoolRainEffect";
+import MascotCarousel from "@/app/components/ MascotCarousel";
 
 const LoginPage = () => {
   const router = useRouter();
 
-  // Estados generales
+  // --- Estados generales ---
   const [step, setStep] = useState("login");
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
@@ -37,22 +40,22 @@ const LoginPage = () => {
   const [adminPassword, setAdminPassword] = useState("");
   const [particles, setParticles] = useState([]);
 
-  // Hooks de autenticación
+  // --- Hooks de autenticación ---
   const {
     handleLogin,
     handleRegister,
     handleSendCode,
     handleVerifyCode,
     handleUpdatePassword,
-  } = useAuth(setStep, setFullName, setError, setStudentData);
+  } = useAuth(setStep, setFullName, setError, setStudentData); // CORRECCIÓN 1: Se agrega setFullName
 
   const {
     handleMaestroLogin,
+    handleMaestroRegister,
     handleMaestroSendCode,
     handleMaestroVerifyCode,
     handleMaestroUpdatePassword,
-    handleMaestroRegister,
-  } = useMaestroAuth(setStep, setFullName, setError, setMaestroData);
+  } = useMaestroAuth(setStep, setFullName, setError, setMaestroData); // CORRECCIÓN 1: Se agrega setFullName
 
   useEffect(() => {
     const generatedParticles = [...Array(20)].map((_, i) => ({
@@ -78,7 +81,7 @@ const LoginPage = () => {
   };
 
   // ----------------------
-  // Funciones de envío ESTUDIANTES
+  // Funciones de envío ESTUDIANTES (se mantiene)
   // ----------------------
   const onLoginSubmit = (e) => {
     e.preventDefault();
@@ -112,7 +115,7 @@ const LoginPage = () => {
   };
 
   // ----------------------
-  // Funciones de envío MAESTROS
+  // Funciones de envío MAESTROS (se mantiene)
   // ----------------------
   const onTeacherSubmit = (e) => {
     e.preventDefault();
@@ -123,8 +126,7 @@ const LoginPage = () => {
 
   const onTeacherRegisterSubmit = (e) => {
     e.preventDefault();
-    if (!teacherId || !password)
-      return setError("Escribe ID de maestro");
+    if (!teacherId || !password) return setError("Escribe ID de maestro");
     if (password !== "profe123")
       return setError('La contraseña para registro debe ser "profe123"');
     handleMaestroRegister(e, teacherId);
@@ -145,9 +147,6 @@ const LoginPage = () => {
     handleMaestroUpdatePassword(e, teacherId, newPassword);
   };
 
-  // ----------------------
-  // ADMIN
-  // ----------------------
   const onAdminSubmit = (e) => {
     e.preventDefault();
     if (!adminUser || !adminPassword)
@@ -158,10 +157,10 @@ const LoginPage = () => {
   };
 
   // ----------------------
-  // Componentes de redirección
+  // Componente interno de redirección para estudiantes
   // ----------------------
   const RedirectAfterLogin = ({ fullName, studentData }) => {
-    const router = useRouter();
+    const internalRouter = useRouter(); // Usar internalRouter para evitar confusión
 
     useEffect(() => {
       if (studentData) {
@@ -180,37 +179,40 @@ const LoginPage = () => {
           cve: studentData.cve || "N/A",
           inscripciones: studentData.inscripciones || [],
         };
-        // ✅ AGREGAR: Guardar número de control por separado para fácil acceso
-      if (cleanedData.numeroControl) {
-        localStorage.setItem("numeroControl", cleanedData.numeroControl);
-        console.log("✅ Número de control guardado:", cleanedData.numeroControl);
-      }
 
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
-        console.log("✅ Datos del estudiante guardados:", cleanedData);
-        router.push(`/designs/menuestu?name=${encodeURIComponent(fullName)}`);
+        console.log(
+          "✅ Datos del estudiante guardados en localStorage:",
+          cleanedData
+        );
+
+        internalRouter.push(
+          `/designs/menuestu?name=${encodeURIComponent(fullName)}`
+        );
       }
-    }, [router, fullName, studentData]);
+    }, [internalRouter, fullName, studentData]);
 
     return null;
   };
 
   const RedirectAfterMaestroLogin = ({ fullName, maestroData }) => {
-    const router = useRouter();
+    const internalRouter = useRouter(); // Usar internalRouter para evitar confusión
 
     useEffect(() => {
       if (maestroData) {
         localStorage.setItem("maestroData", JSON.stringify(maestroData));
         console.log("✅ Datos del maestro guardados:", maestroData);
-        router.push(`/designs/menumaestros?name=${encodeURIComponent(fullName)}`);
+        internalRouter.push(
+          `/designs/menumaestros?name=${encodeURIComponent(fullName)}`
+        );
       }
-    }, [router, fullName, maestroData]);
+    }, [internalRouter, fullName, maestroData]);
 
     return null;
   };
 
   // ----------------------
-  // Form Steps
+  // Definición de Pasos (FormSteps)
   // ----------------------
   const formSteps = {
     // ESTUDIANTES
@@ -286,8 +288,12 @@ const LoginPage = () => {
         onSubmit={onMaestroUpdatePassword}
       />
     ),
+    // CORRECCIÓN 2: Se usa 'fullName'
     successMaestro: (
-      <RedirectAfterMaestroLogin fullName={fullName} maestroData={maestroData} />
+      <RedirectAfterMaestroLogin
+        fullName={fullName}
+        maestroData={maestroData}
+      />
     ),
 
     // ADMIN
@@ -302,6 +308,9 @@ const LoginPage = () => {
         onSubmit={onAdminSubmit}
       />
     ),
+
+    // CORRECCIÓN 3: Se elimina el paso 'maestroSuccess' duplicado
+    // maestroSuccess: <RedirectAfterMaestroLogin maestroData={maestroData} />,
   };
 
   const tabs = [
@@ -313,6 +322,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
+      {/* ... (Contenido del componente se mantiene igual) ... */}
       <div className="particles">
         {particles.map((particle) => (
           <div
@@ -363,20 +373,25 @@ const LoginPage = () => {
         </div>
       </div>
 
+      <div className="wave-divider">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1440 320"
+          preserveAspectRatio="none"
+        >
+          <path
+            fill="#1b396a"
+            fillOpacity="1"
+            d="M0,160L17.1,176C34.3,192,69,224,103,234.7C137.1,245,171,235,206,218.7C240,203,274,181,309,170.7C342.9,160,377,160,411,181.3C445.7,203,480,245,514,245.3C548.6,245,583,203,617,170.7C651.4,139,686,117,720,128C754.3,139,789,181,823,181.3C857.1,181,891,139,926,138.7C960,139,994,181,1029,202.7C1062.9,224,1097,224,1131,213.3C1165.7,203,1200,181,1234,186.7C1268.6,192,1303,224,1337,240C1371.4,256,1406,256,1423,256L1440,256L1440,320L1422.9,320C1405.7,320,1371,320,1337,320C1302.9,320,1269,320,1234,320C1200,320,1166,320,1131,320C1097.1,320,1063,320,1029,320C994.3,320,960,320,926,320C891.4,320,857,320,823,320C788.6,320,754,320,720,320C685.7,320,651,320,617,320C582.9,320,549,320,514,320C480,320,446,320,411,320C377.1,320,343,320,309,320C274.3,320,240,320,206,320C171.4,320,137,320,103,320C68.6,320,34,320,17,320L0,320Z"
+          ></path>
+        </svg>
+      </div>
+
       <div className="logo-section">
         <SchoolRainEffect />
-        <div className="divider-enhancer"></div>
         <div className="mascot-container">
-          <img
-            src="/imagenes/foondoo.gif"
-            alt="Logo del sistema Albatros corriendo"
-            className="mascot-image"
-          />
-          <div className="mascot-shadow"></div>
+          <MascotCarousel />
         </div>
-        <div className="wave"></div>
-        <div className="wave second"></div>
-        <div className="wave third"></div>
       </div>
     </div>
   );
