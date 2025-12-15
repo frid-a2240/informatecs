@@ -1,33 +1,32 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Calendar, List, User } from "lucide-react";
+import { Calendar, List, User, Trophy } from "lucide-react"; // Importamos Trophy
 // Importamos el archivo CSS personalizado
-// NOTA: Asegúrate de que este archivo CSS contenga todas las clases como .tab-button, .section-content-box, etc.
 import "./intramuros.css";
 
 // Componentes importados (asegúrate que las rutas sean correctas)
-
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import IntramurosCalendar from "./IntramurosCalendar";
 import IntramurosList from "./intramuroslist";
+import IntramurosResults from "./IntramurosResul";
+// Corregida la capitalización si es necesario
+// 🟢 CORRECCIÓN DE LA RUTA DE IMPORTACIÓN
 
 const IntramurosPage = () => {
-  // Estado para la sección activa: 'calendario', 'actividades', 'contacto'
+  // Estado para la sección activa: 'calendario', 'actividades', 'contacto', 'resultados'
   const [seccionActiva, setSeccionActiva] = useState("calendario");
 
   const cambiarSeccion = (seccion) => {
     setSeccionActiva(seccion);
   };
 
-  // Memoización del contenido para evitar re-renderizados innecesarios.
+  // Memoización del contenido.
   const contenidoActivo = useMemo(() => {
-    // Hemos eliminado el div 'section-header-group' vacío en las secciones que lo tenían.
     switch (seccionActiva) {
       case "calendario":
         return (
           <section id="calendario" className="intramuros-section">
-            {/* El componente IntramurosCalendar ya incluye el encabezado */}
             <div className="section-content-box blue-border">
               <IntramurosCalendar />
             </div>
@@ -41,10 +40,10 @@ const IntramurosPage = () => {
               <IntramurosList />
             </div>
 
+            {/* Nota de Inscripción Mantenida */}
             <div className="registration-note note-yellow-accent">
               <div className="note-content-group">
                 <div className="note-icon-container">
-                  {/* Reemplazar SVG inline con un componente Lucide o un SVG bien definido */}
                   <svg
                     className="note-icon"
                     fill="none"
@@ -72,6 +71,29 @@ const IntramurosPage = () => {
           </section>
         );
 
+      // 🟢 NUEVA SECCIÓN: RESULTADOS
+      case "resultados":
+        return (
+          <section id="resultados" className="intramuros-section">
+            <div className="section-header-group">
+              <div className="header-icon-wrapper">
+                <div className="icon-circle icon-blue">
+                  <Trophy size={24} />
+                </div>
+                <h2 className="section-title">Resultados y Rankings</h2>
+              </div>
+              <p className="section-subtitle">
+                Consulta los resultados finales, rankings y estadísticas de las
+                actividades concluidas.
+              </p>
+            </div>
+            <div className="section-content-box green-border">
+              {/* COMPONENTE DE RESULTADOS UBICADO CORRECTAMENTE */}
+              <IntramurosResults />
+            </div>
+          </section>
+        );
+
       case "contacto":
         return (
           <section id="contacto" className="intramuros-section">
@@ -91,9 +113,9 @@ const IntramurosPage = () => {
             <div className="section-content-box blue-border">
               <div className="contact-grid">
                 <div className="contact-card blue-border-light">
+                  {/* ... Contenido de contacto 1 ... */}
                   <div className="contact-card-header">
                     <div className="icon-circle icon-blue icon-small">
-                      {/* Se mantiene el SVG para este ejemplo */}
                       <svg
                         className="contact-svg-icon"
                         fill="none"
@@ -132,6 +154,7 @@ const IntramurosPage = () => {
                 </div>
 
                 <div className="contact-card yellow-border-light">
+                  {/* ... Contenido de contacto 2 ... */}
                   <div className="contact-card-header">
                     <div className="icon-circle icon-yellow icon-small">
                       <svg
@@ -167,6 +190,7 @@ const IntramurosPage = () => {
                     <p>
                       <strong>Ubicación:</strong> Oficina de Control Escolar
                     </p>
+                    {/* 🛑 ELIMINADO: Estaba aquí incorrectamente: <IntramurosResults /> */}
                   </div>
                 </div>
               </div>
@@ -184,7 +208,6 @@ const IntramurosPage = () => {
       <Navbar />
       <div className="header-section">
         <div className="header-content-wrapper">
-          {/* Se recomienda usar un componente Lucide en lugar de un span vacío para el ícono */}
           <h1 className="main-title">
             <span className="trophy-icon">🏆</span>
             Actividades Extracurriculares Intramuros ITE
@@ -225,12 +248,25 @@ const IntramurosPage = () => {
               Actividades
             </button>
 
-            {/* 3. 🟢 CORRECCIÓN: Botón de Contacto Añadido 🟢 */}
+            {/* 🟢 3. Botón de Resultados Añadido 🟢 */}
+            <button
+              onClick={() => cambiarSeccion("resultados")}
+              className={`tab-button ${
+                seccionActiva === "resultados"
+                  ? "tab-active-purple" // Necesitarás definir este estilo en tu CSS
+                  : "tab-inactive"
+              }`}
+            >
+              <Trophy size={20} />
+              Resultados
+            </button>
+
+            {/* 4. Botón de Contacto */}
             <button
               onClick={() => cambiarSeccion("contacto")}
               className={`tab-button ${
                 seccionActiva === "contacto"
-                  ? "tab-active-green" // Asumiendo un estilo para el contacto
+                  ? "tab-active-green"
                   : "tab-inactive"
               }`}
             >
