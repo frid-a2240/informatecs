@@ -63,15 +63,14 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href="/vistaExtraescolares" className="navbar__link active">
-              EXTRAESCOLARES
+            <Link
+              href="/designs/vistaintramuros"
+              className="navbar__link active"
+            >
+              INTRAMUROS
             </Link>
           </li>
-          <li>
-            <Link href="/vistaClub" className="navbar__link active">
-              CLUBS
-            </Link>
-          </li>
+
           <li>
             <Link href="/designs/vistaHorarios" className="navbar__link active">
               HORARIOS

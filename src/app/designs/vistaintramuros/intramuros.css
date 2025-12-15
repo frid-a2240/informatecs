@@ -1,0 +1,945 @@
+/* ================================= */
+/* 1. Variables y Font Family */
+/* ================================= */
+:root {
+  --blue-primary: #1b396a; /* Azul Oscuro Principal */
+  --yellow-accent: #fe9e10; /* Acento Naranja/Amarillo */
+  --blue-hover: #8eafef; /* Azul Claro/Hover/Borde claro */
+  --text-dark: #333333; /* Texto Oscuro */
+  --act-primary: #1b396a; /* Azul Oscuro (Duplicado) */
+  --act-primary-dark: #142a50; /* Azul Extra Oscuro */
+  --act-primary-light: #8eafef; /* Azul Claro (Duplicado) */
+  --bg-light: linear-gradient(
+    to left,
+    rgba(8, 94, 222, 0.7),
+    rgba(8, 94, 222, 0)
+  ); /* Gradiente (No usado en BG de página) */
+  --white: #ffffff;
+  --font-family-base: "Montserrat", sans-serif;
+
+  /* Variables de Sombra/Borde adaptadas al nuevo tema */
+  --color-page-bg: #f9f9f9; /* Un gris muy claro para el fondo de la página */
+}
+
+/* Aplicar la fuente al body */
+body {
+  font-family: var(--font-family-base);
+}
+
+/* --------------------------------- */
+/* 2. Layout y Contenedores Principales */
+/* --------------------------------- */
+
+.intramuros-page-container {
+  min-height: 100vh;
+  background-color: var(--color-page-bg);
+}
+
+.header-section {
+  background-color: var(--white);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  padding: 2rem 1rem;
+}
+
+.header-content-wrapper {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.main-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--blue-primary); /* Azul oscuro */
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.main-subtitle {
+  color: var(--text-dark);
+}
+
+.content-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem 1rem;
+  min-height: 500px;
+}
+
+/* --------------------------------- */
+/* 3. Navegación (Tabs) */
+/* --------------------------------- */
+
+.navigation-tabs-container {
+  background-color: var(--white);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--blue-hover);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.tabs-wrapper-outer {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+}
+
+.tabs-wrapper-inner {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-inactive {
+  background-color: var(--white);
+  color: var(--text-dark);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.tab-inactive:hover {
+  background-color: var(--blue-hover);
+  color: var(--blue-primary);
+}
+
+/* Estilos de Pestaña Activa */
+.tab-active-blue,
+.tab-active-yellow {
+  color: var(--white);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2),
+    0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+/* CALENDARIO & CONTACTO (Azul Primario) */
+.tab-active-blue {
+  background-color: var(--blue-primary);
+}
+
+/* ACTIVIDADES (Amarillo Acento) */
+.tab-active-yellow {
+  background-color: var(--yellow-accent);
+}
+
+/* --------------------------------- */
+/* 4. Estilos de Sección y Contenido */
+/* --------------------------------- */
+
+.intramuros-section {
+  margin-bottom: 4rem;
+}
+
+.section-header-group {
+  margin-bottom: 2rem;
+}
+
+.header-icon-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.section-subtitle {
+  color: var(--text-dark);
+  font-size: 1.125rem;
+  margin-left: 3.75rem;
+}
+
+/* Círculos de Icono */
+.icon-circle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Iconos Azules (Calendario/Contacto) */
+.icon-blue {
+  background-color: var(--blue-primary);
+}
+/* Iconos Amarillos (Actividades) */
+.icon-yellow {
+  background-color: var(--yellow-accent);
+}
+
+/* Contenedores de Listas/Calendario */
+.section-content-box {
+  background-color: var(--white);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  border-width: 2px;
+  border-style: solid;
+}
+
+/* BORDES - Usamos los colores claros del tema */
+.blue-border {
+  border-color: var(--blue-hover);
+}
+.yellow-border {
+  border-color: var(--blue-hover);
+}
+
+/* --------------------------------- */
+/* 5. Notas de Registro (Amarillo) */
+/* --------------------------------- */
+
+.registration-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border-width: 2px;
+  border-style: solid;
+}
+
+.note-yellow-accent {
+  /* Fondo con opacidad para ser más sutil */
+  background-color: rgba(254, 158, 16, 0.1);
+  border-color: var(--yellow-accent);
+}
+
+.note-content-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.note-icon-container {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.note-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--yellow-accent);
+}
+
+.note-text {
+  font-size: 0.875rem;
+  color: var(--text-dark);
+}
+
+/* --------------------------------- */
+/* 6. Tarjetas de Contacto */
+/* --------------------------------- */
+
+.contact-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.contact-card {
+  background-color: var(--white);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 2rem;
+  border-width: 2px;
+  border-style: solid;
+}
+
+/* Bordes para tarjetas de contacto */
+.blue-border-light {
+  border-color: var(--blue-hover);
+}
+.yellow-border-light {
+  border-color: var(--yellow-accent);
+}
+
+.contact-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.icon-small {
+  width: 2.5rem;
+  height: 2.5rem;
+  box-shadow: none;
+}
+
+.contact-svg-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.card-subtitle-contact {
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.contact-details {
+  line-height: 1.5;
+  color: var(--text-dark);
+  font-size: 0.875rem;
+}
+
+.contact-details p {
+  margin-bottom: 0.5rem;
+}
+.contact-details p:last-child {
+  margin-bottom: 0;
+}
+
+.section-content-box {
+  background-color: var(--white);
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  padding: 1.5rem;
+  border-width: 2px;
+  border-style: solid;
+
+  /* === CAMBIOS CLAVE PARA EL CALENDARIO === */
+  overflow-x: auto; /* Habilita el scroll horizontal si el contenido es muy ancho */
+  -webkit-overflow-scrolling: touch; /* Mejora el scroll en dispositivos táctiles */
+}
+/* ====================================================================
+   ESTILOS PRINCIPALES - LISTA DE ACTIVIDADES INTRAMUROS
+   ==================================================================== */
+
+.intramuros-list-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.intramuros-list-wrapper h2 {
+  font-size: 2.5rem;
+  color: #1a365d;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ====================================================================
+   BARRA DE BÚSQUEDA
+   ==================================================================== */
+
+.search-input {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 50px;
+  display: block;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+/* ====================================================================
+   TABLA DE ACTIVIDADES
+   ==================================================================== */
+
+.intramuros-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.intramuros-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.intramuros-table th {
+  padding: 1.2rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.intramuros-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.intramuros-table tbody tr:hover {
+  background-color: #f7fafc;
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.intramuros-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.intramuros-table td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #2d3748;
+  vertical-align: middle;
+}
+
+/* ====================================================================
+   BADGES DE ESTADO
+   ==================================================================== */
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-open {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.status-inprogress {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.status-closed {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.status-default {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+/* ====================================================================
+   BOTONES DE ACCIÓN
+   ==================================================================== */
+
+.btn-inscribirse {
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-inscribirse:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-inscribirse:active {
+  transform: translateY(0);
+}
+
+.btn-disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ====================================================================
+   MENSAJES DE ESTADO
+   ==================================================================== */
+
+.loading-message,
+.error-message,
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 2rem 0;
+}
+
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+}
+
+/* ====================================================================
+   ALERTAS
+   ==================================================================== */
+
+.alert {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.alert strong {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.alert-success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 2px solid #10b981;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 2px solid #dc2626;
+}
+
+.principal-alert {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ====================================================================
+   MODAL DE INSCRIPCIÓN
+   ==================================================================== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+/* CSS para marcar los días con eventos en react-calendar */
+.react-calendar__tile.day-with-event {
+  /* Ejemplo de color de fondo */
+  background: #e6f7ff;
+  /* Ejemplo de borde */
+  border: 1px solid #007bff;
+  /* Asegura que el texto siga siendo legible */
+  color: #1a1a1a;
+  font-weight: bold;
+}
+.react-calendar__tile.day-with-event:hover {
+  background-color: #cceeff;
+}
+/* CSS para marcar los días con eventos en react-calendar */
+.react-calendar__tile.day-with-event {
+  background: #e6f7ff !important;
+  border: 1px solid #007bff !important;
+  color: #1a1a1a !important;
+  font-weight: bold !important;
+}
+
+/* Estilo para asegurar que el contenido del día (número) se vea bien */
+.react-calendar__tile.day-with-event abbr {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.react-calendar__tile.day-with-event:hover {
+  background-color: #cceeff !important;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ====================================================================
+   INFORMACIÓN DE ACTIVIDAD EN MODAL
+   ==================================================================== */
+
+.modal-actividad-info {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.modal-actividad-info h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #1e3a8a;
+  font-weight: 700;
+}
+
+.modal-actividad-info p {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.modal-actividad-info svg {
+  color: #667eea;
+}
+
+.modal-actividad-description {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #cbd5e0;
+  font-style: italic;
+  color: #64748b;
+}
+
+/* ====================================================================
+   FORMULARIO DE INSCRIPCIÓN
+   ==================================================================== */
+
+.inscription-form {
+  padding: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ====================================================================
+   ACCIONES DEL MODAL
+   ==================================================================== */
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #cbd5e0;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ====================================================================
+   RESPONSIVE DESIGN
+   ==================================================================== */
+
+@media (max-width: 1200px) {
+  .intramuros-table {
+    font-size: 0.9rem;
+  }
+
+  .intramuros-table th,
+  .intramuros-table td {
+    padding: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .intramuros-list-wrapper {
+    padding: 1rem;
+  }
+
+  .intramuros-list-wrapper h2 {
+    font-size: 1.8rem;
+  }
+
+  /* Tabla responsive - scroll horizontal */
+  .intramuros-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+
+  .modal-header,
+  .modal-actividad-info,
+  .inscription-form {
+    padding: 1.5rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .intramuros-table th,
+  .intramuros-table td {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .status-badge {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .btn-inscribirse {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ====================================================================
+   ICONOS (React Icons)
+   ==================================================================== */
+
+.intramuros-table svg {
+  vertical-align: middle;
+  margin-right: 0.3rem;
+  color: #667eea;
+}
+
+/* ====================================================================
+   ANIMACIONES ADICIONALES
+   ==================================================================== */
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.loading-message {
+  animation: pulse 1.5s ease-in-out infinite;
+}
