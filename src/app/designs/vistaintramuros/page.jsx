@@ -88,8 +88,6 @@ const IntramurosPage = () => {
       case "contacto":
         return (
           <section id="contacto" className="intramuros-section">
-            <div className="section-header-group"></div>
-
             <div className="section-content-box blue-border">
               <div className="contact-grid">
                 <div className="contact-card blue-border-light">

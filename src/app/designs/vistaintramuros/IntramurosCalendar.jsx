@@ -24,21 +24,23 @@ const IntramurosCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  // Parseo de fechas
+  // ====================================================================
+  // === CORRECCIÓN 1: PARSEO DE FECHAS A OBJETOS UTC ESTRICTO ===
+  // ====================================================================
   const parseDateString = (dateString) => {
     if (!dateString) return null;
 
-    // Intentar parsear diferentes formatos
-    const formats = [
-      // ISO 8601
-      /^\d{4}-\d{2}-\d{2}/,
-      // DD/MM/YYYY
-      /^\d{2}\/\d{2}\/\d{4}/,
-      // MM/DD/YYYY
-      /^\d{2}\/\d{2}\/\d{4}/,
-    ];
+    let date;
 
-    const date = new Date(dateString);
+    // Si la API devuelve 'YYYY-MM-DD', la forzamos a medianoche UTC
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      // Al añadir 'T00:00:00Z', se crea un objeto Date que está fijado a UTC.
+      date = new Date(dateString + "T00:00:00Z");
+    } else {
+      // Si hay un timestamp completo, usarlo directamente
+      date = new Date(dateString);
+    }
+
     return isNaN(date.getTime()) ? null : date;
   };
 
@@ -51,7 +53,7 @@ const IntramurosCalendar = () => {
     return { class: "st-closed", label: "Finalizada / Cerrada" };
   };
 
-  // Cargar eventos desde API
+  // Cargar eventos desde API (Ajustamos las claves a camelCase/minúsculas si vienen así de GAS)
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -60,12 +62,15 @@ const IntramurosCalendar = () => {
         const rawData = await response.json();
         const dataArray = rawData.data || rawData.eventos || rawData;
 
+        // NOTA: Asumimos que la API de GAS devuelve las claves en minúsculas/camelCase
+        // Si tu GAS devuelve las claves exactas (ej. 'Fecha_Inicio', 'Hora_Inicio'),
+        // debes usar ev.Fecha_Inicio y ev.Hora_Inicio aquí. Mantenemos el último formato que enviaste:
         const formatted = dataArray
           .map((ev) => ({
             title: ev.Actividad,
             start: parseDateString(ev.Fecha_Inicio),
             end: parseDateString(ev.Fecha_Fin),
-            time: ev.Hora_Inicio,
+            time: ev.Hora_Inicio, // Hora ya ajustada como string desde GAS
             lugar: ev.Lugar_Sede,
             status: ev.Estado,
             area: ev.Deporte_o_Área,
@@ -84,31 +89,36 @@ const IntramurosCalendar = () => {
     fetchEvents();
   }, []);
 
-  // Verificar si una fecha tiene eventos
+  // ====================================================================
+  // === CORRECCIÓN 2: COMPARACIÓN DE FECHAS USANDO MÉTODOS UTC ===
+  // ====================================================================
+  // Verificar si una fecha local (date) tiene eventos
   const hasEvents = (date) => {
     return events.some((event) => {
-      const eventDate = new Date(event.start);
+      const eventDate = event.start; // Objeto Date/UTC del evento
       return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
+        // CRÍTICO: Usar los métodos getUTC* del evento para ignorar la zona horaria del cliente
+        eventDate.getUTCFullYear() === date.getFullYear() &&
+        eventDate.getUTCMonth() === date.getMonth() &&
+        eventDate.getUTCDate() === date.getDate()
       );
     });
   };
 
-  // Obtener eventos del día seleccionado
+  // Obtener eventos del día seleccionado local (selectedDate)
   const selectedDayEvents = useMemo(() => {
     return events.filter((event) => {
-      const eventDate = new Date(event.start);
+      const eventDate = event.start; // Objeto Date/UTC del evento
       return (
-        eventDate.getDate() === selectedDate.getDate() &&
-        eventDate.getMonth() === selectedDate.getMonth() &&
-        eventDate.getFullYear() === selectedDate.getFullYear()
+        // CRÍTICO: Usar los métodos getUTC* del evento para ignorar la zona horaria del cliente
+        eventDate.getUTCFullYear() === selectedDate.getFullYear() &&
+        eventDate.getUTCMonth() === selectedDate.getMonth() &&
+        eventDate.getUTCDate() === selectedDate.getDate()
       );
     });
   }, [events, selectedDate]);
 
-  // Componente de Calendario personalizado
+  // Componente de Calendario personalizado (sin cambios)
   const CustomCalendar = () => {
     const monthNames = [
       "Enero",
@@ -247,10 +257,14 @@ const IntramurosCalendar = () => {
     }`;
   };
 
+  // ====================================================================
+  // === CORRECCIÓN 3: FORMATEO DE FECHAS DE EVENTOS USANDO UTC ===
+  // ====================================================================
   const formatDateShort = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
+    // Usamos getUTC* para mostrar el día que se fijó en la API
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const year = date.getUTCFullYear();
     return `${day}/${month}/${year}`;
   };
 
@@ -341,7 +355,21 @@ const IntramurosCalendar = () => {
                         </div>
                         <div className="detail">
                           <Clock3 size={14} />
-                          <span>{ev.time || "Hora por definir"}</span>
+                          <span>
+                            {ev.time || "Hora por definir"}
+                            {/* Mostrar la zona horaria ya que la hora fue ajustada por GAS */}
+                            {ev.time && (
+                              <span
+                                style={{
+                                  fontSize: "0.8em",
+                                  opacity: 0.6,
+                                  marginLeft: "4px",
+                                }}
+                              >
+                                (PST/GMT-8)
+                              </span>
+                            )}
+                          </span>
                         </div>
                         <div className="detail">
                           <MapPin size={14} />

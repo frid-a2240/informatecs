@@ -13,7 +13,7 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
-    // 🟢 Inicializar campos nuevos (Sexo y Carrera)
+
     sexo: "",
     carrera: "",
     telefono: "",
@@ -34,9 +34,7 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
 
-    // 🛑 VALIDACIÓN CRÍTICA: Asegurar que Sexo y Carrera no estén vacíos
     if (
       !formData.nombre ||
       !formData.email ||
@@ -117,12 +115,11 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
               />
             </div>
 
-            {/* 🟢 CAMPO SEXO */}
             <div className="form-group">
               <label htmlFor="sexo">Sexo *</label>
               <select
                 id="sexo"
-                name="sexo" // 🛑 CLAVE CRÍTICA: Debe ser 'sexo'
+                name="sexo"
                 value={formData.sexo}
                 onChange={handleChange}
                 required
@@ -134,13 +131,12 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
               </select>
             </div>
 
-            {/* 🟢 CAMPO CARRERA */}
             <div className="form-group">
               <label htmlFor="carrera">Carrera *</label>
               <input
                 type="text"
                 id="carrera"
-                name="carrera" // 🛑 CLAVE CRÍTICA: Debe ser 'carrera'
+                name="carrera"
                 value={formData.carrera}
                 onChange={handleChange}
                 required
