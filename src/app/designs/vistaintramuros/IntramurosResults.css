@@ -1,0 +1,171 @@
+/* Contenedor principal */
+.intramuros-container {
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e5e7eb;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.intramuros-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.intramuros-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.intramuros-title svg {
+  color: #f59e0b;
+}
+
+/* Filtro */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-icon {
+  color: #6b7280;
+}
+
+.activity-select {
+  padding: 0.625rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background-color: #ffffff;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.938rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 220px;
+}
+
+.activity-select:hover {
+  border-color: #3b82f6;
+}
+
+.activity-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Subtítulo de actividad */
+.activity-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2563eb;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #dbeafe;
+}
+
+/* Estados de carga y error */
+.loading-state,
+.error-state,
+.empty-state,
+.no-data-state {
+  padding: 3rem;
+  text-align: center;
+}
+
+.loading-state {
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.error-state {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.error-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.empty-state,
+.no-data-state {
+  color: #6b7280;
+}
+
+.empty-icon,
+.no-data-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  color: #d1d5db;
+}
+
+.empty-title,
+.no-data-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+/* Contenedor del gráfico */
+.chart-wrapper {
+  margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (min-width: 640px) {
+  .intramuros-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .activity-select {
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 639px) {
+  .intramuros-container {
+    padding: 1.25rem;
+  }
+
+  .intramuros-title {
+    font-size: 1.5rem;
+  }
+
+  .activity-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .activity-select {
+    width: 100%;
+  }
+}

@@ -1,430 +1,374 @@
 "use client";
-
 import React, { useState, useEffect, useMemo } from "react";
 import {
-  Calendar as CalendarIcon,
+  Calendar,
   Clock,
   MapPin,
   Info,
-  CheckCircle2,
   List,
-  Tag,
   Eye,
   Clock3,
-  Calendar1Icon,
+  CalendarDays,
   User,
+  Mail,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
-import moment from "moment";
-import "moment/locale/es";
 
-// Importaciones de React-Calendar
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-
-// -----------------------------------------------------------
-// --- CONFIGURACIÓN DE CONEXIÓN Y PARSEO ---
-const API_URL = "/api/intramuros";
-
-// Función de parseo de fecha flexible (CRUCIAL)
-const parseDateString = (dateString) => {
-  if (!dateString) return null;
-
-  const formats = [
-    moment.ISO_8601,
-    "YYYY-MM-DD HH:mm:ss",
-    "YYYY-MM-DD",
-    "DD/MM/YYYY HH:mm:ss",
-    "MM/DD/YYYY HH:mm:ss",
-    "DD/MM/YYYY",
-    "MM/DD/YYYY",
-  ];
-
-  const parsedMoment = moment(dateString, formats, true);
-  return parsedMoment.isValid() ? parsedMoment.toDate() : null;
-};
-// -----------------------------------------------------------
+const API_URL = "/api/intramuros"; // Tu endpoint de API
 
 const IntramurosCalendar = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const [calendarDate, setCalendarDate] = useState(new Date());
+  // Parseo de fechas
+  const parseDateString = (dateString) => {
+    if (!dateString) return null;
 
-  // --- FUNCIÓN PARA OBTENER DATOS DE LA API (SIN CAMBIOS) ---
+    // Intentar parsear diferentes formatos
+    const formats = [
+      // ISO 8601
+      /^\d{4}-\d{2}-\d{2}/,
+      // DD/MM/YYYY
+      /^\d{2}\/\d{2}\/\d{4}/,
+      // MM/DD/YYYY
+      /^\d{2}\/\d{2}\/\d{4}/,
+    ];
+
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? null : date;
+  };
+
+  // Obtener configuración de estatus
+  const getStatusConfig = (status) => {
+    const s = status?.toLowerCase().trim();
+    if (s === "abierto" || s === "abierta")
+      return { class: "st-open", label: "Abierta (Inscripciones)" };
+    if (s === "en curso") return { class: "st-progress", label: "En Curso" };
+    return { class: "st-closed", label: "Finalizada / Cerrada" };
+  };
+
+  // Cargar eventos desde API
   useEffect(() => {
-    // ... (Mantenemos toda la lógica de fetch y parseo. Es correcta.)
     const fetchEvents = async () => {
       try {
+        setLoading(true);
         const response = await fetch(API_URL);
-        if (!response.ok) {
-          throw new Error(
-            `Error HTTP: ${response.status}. Verifique la Implementación de Google Apps Script.`
-          );
-        }
         const rawData = await response.json();
         const dataArray = rawData.data || rawData.eventos || rawData;
 
-        if (!Array.isArray(dataArray)) {
-          throw new Error(
-            "Formato de datos incorrecto. La API no devolvió una lista de eventos."
-          );
-        }
+        const formatted = dataArray
+          .map((ev) => ({
+            title: ev.Actividad,
+            start: parseDateString(ev.Fecha_Inicio),
+            end: parseDateString(ev.Fecha_Fin),
+            time: ev.Hora_Inicio,
+            lugar: ev.Lugar_Sede,
+            status: ev.Estado,
+            area: ev.Deporte_o_Área,
+            coord: ev.Coordinador,
+            contact: ev.Contacto,
+          }))
+          .filter((ev) => ev.start !== null);
 
-        const formattedEvents = dataArray
-          .map((event) => {
-            const startDateTime = parseDateString(event.Fecha_Inicio);
-            let endDateTime = event.Fecha_Fin
-              ? parseDateString(event.Fecha_Fin)
-              : startDateTime
-              ? moment(startDateTime).add(1, "hours").toDate()
-              : null;
-
-            if (
-              !startDateTime ||
-              !endDateTime ||
-              isNaN(startDateTime.getTime())
-            ) {
-              return null;
-            }
-
-            return {
-              title: event.Actividad,
-              start: startDateTime,
-              end: endDateTime,
-              lugar: event.Lugar_Sede,
-              descripcion: event.Descripcion_Detalles,
-              categoria: event.Categoria,
-            };
-          })
-          .filter((event) => event !== null);
-
-        setEvents(formattedEvents);
+        setEvents(formatted);
         setLoading(false);
-      } catch (e) {
-        console.error("Error al obtener los eventos:", e);
-        setError(`No se pudieron cargar los datos. ${e.message}`);
+      } catch (err) {
+        setError(err.message);
         setLoading(false);
       }
     };
-
     fetchEvents();
   }, []);
 
-  // FILTRADO DE EVENTOS PARA EL DÍA SELECCIONADO
-  const eventsForSelectedDay = useMemo(() => {
-    return events.filter((event) =>
-      moment(event.start).isSame(calendarDate, "day")
-    );
-  }, [events, calendarDate]);
-
-  // Lógica para marcar días con eventos
-  const tileClassName = ({ date, view }) => {
-    if (view === "month") {
-      const dayHasEvent = events.some((event) =>
-        moment(event.start).startOf("day").isSame(moment(date).startOf("day"))
+  // Verificar si una fecha tiene eventos
+  const hasEvents = (date) => {
+    return events.some((event) => {
+      const eventDate = new Date(event.start);
+      return (
+        eventDate.getDate() === date.getDate() &&
+        eventDate.getMonth() === date.getMonth() &&
+        eventDate.getFullYear() === date.getFullYear()
       );
-      // 'day-with-event' es la clase que marca el día en el calendario
-      return dayHasEvent ? "day-with-event" : null;
-    }
+    });
   };
 
-  // --- FUNCIÓN PARA CAMBIAR LA FECHA Y MOSTRAR EVENTOS ---
-  const handleCalendarChange = (date) => {
-    setCalendarDate(date);
-  };
+  // Obtener eventos del día seleccionado
+  const selectedDayEvents = useMemo(() => {
+    return events.filter((event) => {
+      const eventDate = new Date(event.start);
+      return (
+        eventDate.getDate() === selectedDate.getDate() &&
+        eventDate.getMonth() === selectedDate.getMonth() &&
+        eventDate.getFullYear() === selectedDate.getFullYear()
+      );
+    });
+  }, [events, selectedDate]);
 
-  // --- LÓGICA DE VISUALIZACIÓN ---
-  return (
-    <div className="min-h-screen bg-gray-50 pb-12">
-      {/* SECCIÓN: Encabezado Principal (Hero) - Mantenido */}
-      <div className="bg-gradient-to-r from-blue-700 to-indigo-800 text-white py-12 px-6 shadow-md">
-        <div className="max-w-7xl mx-auto">
-          {/* ... Contenido del Encabezado ... */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30">
-                  <CalendarIcon size={32} className="text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
-                    Calendario Intramuros
-                  </h1>
-                  <p className="text-blue-100 font-medium">
-                    Instituto Tecnológico de Ensenada
-                  </p>
-                </div>
-              </div>
-              <p className="max-w-2xl text-blue-50 text-lg opacity-90">
-                Consulta las fechas oficiales de torneos, cierres de inscripción
-                y eventos deportivos del campus.
-              </p>
-            </div>
+  // Componente de Calendario personalizado
+  const CustomCalendar = () => {
+    const monthNames = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+    const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 w-fit">
-                <div
-                  className={`w-2 h-2 rounded-full animate-pulse ${
-                    loading
-                      ? "bg-yellow-400"
-                      : error
-                      ? "bg-red-500"
-                      : "bg-green-400"
-                  }`}
-                ></div>
-                <span className="text-sm font-semibold">
-                  {loading
-                    ? "Cargando datos..."
-                    : error
-                    ? "Error de conexión"
-                    : "Sincronizado desde Google Sheets"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-blue-100 text-sm ml-2">
-                <Clock size={16} />
-                <span>Zona Horaria: Tijuana (GMT-08:00)</span>
-              </div>
-            </div>
-          </div>
+    const getDaysInMonth = (date) => {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDayOfWeek = firstDay.getDay();
+
+      const days = [];
+      for (let i = 0; i < startingDayOfWeek; i++) {
+        days.push(null);
+      }
+      for (let i = 1; i <= daysInMonth; i++) {
+        days.push(new Date(year, month, i));
+      }
+      return days;
+    };
+
+    const days = getDaysInMonth(currentMonth);
+
+    const prevMonth = () => {
+      setCurrentMonth(
+        new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1)
+      );
+    };
+
+    const nextMonth = () => {
+      setCurrentMonth(
+        new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1)
+      );
+    };
+
+    const isToday = (date) => {
+      if (!date) return false;
+      const today = new Date();
+      return (
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+      );
+    };
+
+    const isSelected = (date) => {
+      if (!date) return false;
+      return (
+        date.getDate() === selectedDate.getDate() &&
+        date.getMonth() === selectedDate.getMonth() &&
+        date.getFullYear() === selectedDate.getFullYear()
+      );
+    };
+
+    return (
+      <div className="custom-calendar">
+        <div className="calendar-header">
+          <button onClick={prevMonth} className="nav-btn">
+            ‹
+          </button>
+          <h3>
+            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          </h3>
+          <button onClick={nextMonth} className="nav-btn">
+            ›
+          </button>
         </div>
-      </div>
-      {/* ... Fin de Encabezado ... */}
 
-      <div className="max-w-7xl mx-auto px-4 -mt-8">
-        {/* SECCIÓN: Tarjetas de Información Rápida - Mantenido */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {[
-            {
-              icon: <CalendarIcon className="text-blue-600" />,
-              label: "Eventos Cargados",
-              val: events.length.toString(),
-              bg: "bg-blue-100",
-            },
-            {
-              icon: <CheckCircle2 className="text-green-600" />,
-              label: "Conexión API",
-              val: loading ? "Conectando..." : error ? "Fallida" : "Exitosa",
-              bg: "bg-green-100",
-            },
-            {
-              icon: <MapPin className="text-purple-600" />,
-              label: "Ubicación",
-              val: "Campus ITE",
-              bg: "bg-purple-100",
-            },
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100 flex items-center gap-4 transition-transform hover:scale-[1.02]"
-            >
-              <div
-                className={`w-12 h-12 ${item.bg} rounded-xl flex items-center justify-center`}
-              >
-                {item.icon}
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">
-                  {item.label}
-                </p>
-                <p className="text-lg font-bold text-gray-800">{item.val}</p>
-              </div>
+        <div className="calendar-grid">
+          {dayNames.map((day) => (
+            <div key={day} className="day-name">
+              {day}
             </div>
           ))}
-        </div>
 
-        {/* SECCIÓN: Contenedor Principal */}
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-          <div className="p-4 md:p-8">
-            <div className="bg-blue-50 rounded-2xl p-4 mb-8 border border-blue-100 flex items-start gap-4">
-              <Info className="text-blue-600 mt-1 shrink-0" size={20} />
-              <p className="text-sm text-blue-900 leading-relaxed">
-                Selecciona una fecha en el calendario para ver la lista de
-                eventos. Los días marcados en azul tienen actividades
-                programadas.
-              </p>
-            </div>
-
-            {/* 🟢 CORRECCIÓN: Grid para expandir el calendario (col-span-3 vs col-span-2) */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-              {/* Columna 1: CALENDARIO INTERACTIVO (3/5 del ancho) */}
-              <div className="lg:col-span-3 relative rounded-2xl p-4 shadow-inner bg-gray-50 flex justify-center">
-                {loading && (
-                  <div className="text-center p-12 text-blue-600 font-bold">
-                    Cargando eventos...
-                  </div>
-                )}
-                {error && (
-                  <div className="text-center p-12 text-red-600 font-bold">
-                    Error: {error}
-                  </div>
-                )}
-                {!loading && !error && (
-                  <Calendar
-                    onChange={handleCalendarChange}
-                    value={calendarDate}
-                    locale="es-ES"
-                    tileClassName={tileClassName}
-                    next2Label={null}
-                    prev2Label={null}
-                    className="w-full shadow-lg border-0"
-                  />
-                )}
-              </div>
-
-              {/* Columna 2: DETALLES DE EVENTOS (2/5 del ancho) */}
-              <div className="lg:col-span-2 relative p-4 bg-white rounded-2xl shadow-lg border border-gray-100">
-                <h3 className="text-xl font-extrabold text-blue-700 border-b pb-3 mb-4 flex items-center gap-2">
-                  <List size={22} />
-                  Eventos del {moment(calendarDate).format("dddd, D [de] MMMM")}
-                </h3>
-
-                {eventsForSelectedDay.length > 0 ? (
-                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
-                    {eventsForSelectedDay.map((event, index) => (
-                      <div
-                        key={index}
-                        className="event-card p-4 border border-gray-200 rounded-xl hover:shadow-md transition duration-200"
-                      >
-                        <h4 className="text-lg font-bold text-gray-800 mb-2">
-                          {event.title}
-                        </h4>
-                        <div className="mt-1 space-y-1 text-sm text-gray-700">
-                          <p className="flex items-center gap-2">
-                            <Clock3
-                              size={14}
-                              className="text-blue-500 shrink-0"
-                            />
-                            <span className="font-semibold">Horario:</span>{" "}
-                            {moment(event.start).format("h:mm A")} -{" "}
-                            {moment(event.end).format("h:mm A")}
-                          </p>
-
-                          {event.lugar && (
-                            <p className="flex items-center gap-2">
-                              <MapPin
-                                size={14}
-                                className="text-purple-500 shrink-0"
-                              />
-                              <span className="font-semibold">Lugar:</span>{" "}
-                              {event.lugar}
-                            </p>
-                          )}
-                          {event.categoria && (
-                            <p className="flex items-center gap-2">
-                              <Tag
-                                size={14}
-                                className="text-green-500 shrink-0"
-                              />
-                              <span className="font-semibold">Categoría:</span>{" "}
-                              {event.categoria}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="mt-3 border-t pt-3">
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            <span className="font-bold flex items-center gap-1 mb-1 text-gray-700">
-                              <Eye size={14} /> Detalles:
-                            </span>
-                            {event.descripcion || "Sin detalles adicionales."}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    <Calendar1Icon
-                      size={48}
-                      className="mx-auto text-gray-300 mb-3"
-                    />
-                    <p className="font-semibold">
-                      No hay eventos programados para este día.
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      Selecciona otra fecha o verifica los días marcados.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* 🟢 CORRECCIÓN: Leyenda Detallada Abajo */}
-          <div className="px-8 pb-8 pt-6 border-t border-gray-100 bg-gray-50/50">
-            <h3 className="text-lg font-black text-gray-700 mb-5 flex items-center gap-2">
-              <Info size={20} className="text-blue-600" />
-              Leyenda y Referencia de Actividades
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {/* 1. Indicador del Calendario (Marcador de Día) */}
-              <div className="bg-white p-4 rounded-xl border border-blue-200 shadow-sm flex items-center gap-3">
-                <div className="w-6 h-6 rounded-full bg-blue-500/70 day-with-event-legend flex items-center justify-center text-xs font-bold text-white">
-                  15
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-blue-800">Día Marcado</p>
-                  <p className="text-xs text-gray-500">
-                    Indica que hay uno o más eventos programados para esta
-                    fecha.
-                  </p>
-                </div>
-              </div>
-
-              {/* 2. Categorías de Eventos */}
-              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <p className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-                  <Tag size={14} /> Categoría
-                </p>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <p>
-                    Los eventos pueden clasificarse como: **Torneo**, **Liga**,
-                    **Registro**.
-                  </p>
-                  <p>Ayuda a identificar el tipo de actividad rápidamente.</p>
-                </div>
-              </div>
-
-              {/* 3. Status/Estado */}
-              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <p className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-                  <CheckCircle2 size={14} /> Status
-                </p>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <p>
-                    Define si la actividad está: **Abierta** (Inscripciones),
-                    **En Curso**, o **Finalizada**.
-                  </p>
-                  <p>
-                    Este color (en la tarjeta de la actividad) te indica si
-                    puedes participar.
-                  </p>
-                </div>
-              </div>
-
-              {/* 4. Contacto */}
-              <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <p className="text-sm font-bold text-gray-700 mb-2 flex items-center gap-1">
-                  <User size={14} /> Información Adicional
-                </p>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <p>
-                    Para detalles de inscripción, bases o dudas, visita la
-                    sección de **Contacto**.
-                  </p>
-                  <p>
-                    La **Descripción** del evento puede contener enlaces de
-                    registro.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Fin de Leyenda Detallada */}
+          {days.map((day, index) => (
+            <button
+              key={index}
+              className={`calendar-day ${!day ? "empty" : ""} ${
+                isToday(day) ? "today" : ""
+              } ${isSelected(day) ? "selected" : ""} ${
+                day && hasEvents(day) ? "has-event" : ""
+              }`}
+              onClick={() => day && setSelectedDate(day)}
+              disabled={!day}
+            >
+              {day ? day.getDate() : ""}
+            </button>
+          ))}
         </div>
       </div>
+    );
+  };
+
+  const formatDate = (date) => {
+    const days = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    const months = [
+      "enero",
+      "febrero",
+      "marzo",
+      "abril",
+      "mayo",
+      "junio",
+      "julio",
+      "agosto",
+      "septiembre",
+      "octubre",
+      "noviembre",
+      "diciembre",
+    ];
+
+    return `${days[date.getDay()]}, ${date.getDate()} de ${
+      months[date.getMonth()]
+    }`;
+  };
+
+  const formatDateShort = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  return (
+    <div className="intra-wrapper">
+      {/* HEADER */}
+      <header className="intra-header">
+        <div className="header-inner">
+          <div className="title-group">
+            <div className="icon-circle">
+              <Calendar size={28} />
+            </div>
+            <div>
+              <h1>Calendario Intramuros</h1>
+              <p>Instituto Tecnológico de Ensenada</p>
+            </div>
+          </div>
+          <div className="sync-status">
+            <div className={`dot ${loading ? "pulse" : "active"}`}></div>
+            <span>{loading ? "Sincronizando..." : "Datos en Tiempo Real"}</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="intra-content">
+        {error && (
+          <div className="error-banner">
+            <AlertCircle size={20} />
+            <span>Error al cargar eventos: {error}</span>
+          </div>
+        )}
+
+        <div className="grid-layout">
+          {/* CALENDARIO */}
+          <section className="cal-section">
+            <div className="card">
+              {loading ? (
+                <div className="loading-state">
+                  <Loader2 size={32} className="spinner" />
+                  <p>Cargando calendario...</p>
+                </div>
+              ) : (
+                <>
+                  <CustomCalendar />
+                  <div className="cal-footer">
+                    <Info size={16} />
+                    <span>Días con punto indican actividades programadas.</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* EVENTOS */}
+          <section className="events-section">
+            <h2 className="section-subtitle">
+              <List size={20} />
+              Eventos del {formatDate(selectedDate)}
+            </h2>
+
+            {loading ? (
+              <div className="loading-events">
+                <Loader2 size={40} className="spinner" />
+                <p>Cargando eventos...</p>
+              </div>
+            ) : selectedDayEvents.length > 0 ? (
+              <div className="event-stack">
+                {selectedDayEvents.map((ev, i) => {
+                  const conf = getStatusConfig(ev.status);
+                  return (
+                    <div key={i} className="ev-card">
+                      <div className="ev-header">
+                        <span className="ev-tag">{ev.area}</span>
+                        <span className={`ev-status ${conf.class}`}>
+                          {conf.label}
+                        </span>
+                      </div>
+
+                      <h3 className="ev-title">{ev.title}</h3>
+
+                      <div className="ev-grid-details">
+                        <div className="detail">
+                          <CalendarDays size={14} />
+                          <span>
+                            {formatDateShort(ev.start)} al{" "}
+                            {formatDateShort(ev.end)}
+                          </span>
+                        </div>
+                        <div className="detail">
+                          <Clock3 size={14} />
+                          <span>{ev.time || "Hora por definir"}</span>
+                        </div>
+                        <div className="detail">
+                          <MapPin size={14} />
+                          <span>{ev.lugar}</span>
+                        </div>
+                        <div className="detail">
+                          <User size={14} />
+                          <span>{ev.coord}</span>
+                        </div>
+                        <div className="detail">
+                          <Mail size={14} />
+                          <span>{ev.contact}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <CalendarDays size={48} opacity={0.3} />
+                <p>No hay actividades programadas para esta fecha.</p>
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
     </div>
   );
 };

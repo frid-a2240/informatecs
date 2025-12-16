@@ -3,7 +3,8 @@ import React, { useState, useMemo } from "react";
 import { Calendar, List, User, Trophy } from "lucide-react"; // Importamos Trophy
 // Importamos el archivo CSS personalizado
 import "./intramuros.css";
-
+import "./intramurocalendario.css";
+import "./form.css";
 // Componentes importados (asegúrate que las rutas sean correctas)
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
@@ -76,19 +77,9 @@ const IntramurosPage = () => {
         return (
           <section id="resultados" className="intramuros-section">
             <div className="section-header-group">
-              <div className="header-icon-wrapper">
-                <div className="icon-circle icon-blue">
-                  <Trophy size={24} />
-                </div>
-                <h2 className="section-title">Resultados y Rankings</h2>
-              </div>
-              <p className="section-subtitle">
-                Consulta los resultados finales, rankings y estadísticas de las
-                actividades concluidas.
-              </p>
+              <div className="header-icon-wrapper"></div>
             </div>
             <div className="section-content-box green-border">
-              {/* COMPONENTE DE RESULTADOS UBICADO CORRECTAMENTE */}
               <IntramurosResults />
             </div>
           </section>
@@ -97,18 +88,7 @@ const IntramurosPage = () => {
       case "contacto":
         return (
           <section id="contacto" className="intramuros-section">
-            <div className="section-header-group">
-              <div className="header-icon-wrapper">
-                <div className="icon-circle icon-blue">
-                  <User size={24} />
-                </div>
-                <h2 className="section-title">Información de Contacto</h2>
-              </div>
-              <p className="section-subtitle">
-                Comunícate con los coordinadores para dudas, inscripciones y
-                soporte.
-              </p>
-            </div>
+            <div className="section-header-group"></div>
 
             <div className="section-content-box blue-border">
               <div className="contact-grid">
@@ -190,7 +170,6 @@ const IntramurosPage = () => {
                     <p>
                       <strong>Ubicación:</strong> Oficina de Control Escolar
                     </p>
-                    {/* 🛑 ELIMINADO: Estaba aquí incorrectamente: <IntramurosResults /> */}
                   </div>
                 </div>
               </div>
@@ -209,7 +188,7 @@ const IntramurosPage = () => {
       <div className="header-section">
         <div className="header-content-wrapper">
           <h1 className="main-title">
-            <span className="trophy-icon">🏆</span>
+            <span className="trophy-icon"></span>
             Actividades Extracurriculares Intramuros ITE
           </h1>
           <p className="main-subtitle">
@@ -248,7 +227,6 @@ const IntramurosPage = () => {
               Actividades
             </button>
 
-            {/* 🟢 3. Botón de Resultados Añadido 🟢 */}
             <button
               onClick={() => cambiarSeccion("resultados")}
               className={`tab-button ${
@@ -261,7 +239,6 @@ const IntramurosPage = () => {
               Resultados
             </button>
 
-            {/* 4. Botón de Contacto */}
             <button
               onClick={() => cambiarSeccion("contacto")}
               className={`tab-button ${
