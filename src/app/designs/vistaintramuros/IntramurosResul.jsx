@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   BarChart,
   Bar,
@@ -14,6 +14,7 @@ import {
 import { Trophy, TrendingUp, Filter } from "lucide-react";
 import "./IntramurosResults.css";
 
+// ¡URL DE LA API MANTENIDA SIN CAMBIOS!
 const RESULTS_API_URL =
   "https://script.google.com/macros/s/AKfycbzWV3wcc8CST1SNaZQoj1zHcOvbHriuLZzEcbrV9IZ1oS9X67Ndf_ekkiWeSuOF4uMa6Q/exec";
 
@@ -25,8 +26,11 @@ const IntramurosResults = () => {
   const [selectedActivityID, setSelectedActivityID] = useState(null);
   const [activityList, setActivityList] = useState([]);
 
+  // Lógica para cargar resultados y lista de actividades
   useEffect(() => {
     const fetchResults = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const response = await fetch(RESULTS_API_URL);
 
@@ -39,13 +43,17 @@ const IntramurosResults = () => {
         const rawData = await response.json();
 
         if (rawData.error) {
-          throw new Error(`Error de GAS: ${rawData.error}`);
+          throw new Error(`Error de Google Apps Script: ${rawData.error}`);
         }
 
         const dataArray = rawData.data || [];
 
         const uniqueActivitiesMap = dataArray.reduce((acc, current) => {
-          if (!acc[current.ID_Actividad]) {
+          if (
+            current.ID_Actividad &&
+            current.Actividad &&
+            !acc[current.ID_Actividad]
+          ) {
             acc[current.ID_Actividad] = current.Actividad;
           }
           return acc;
@@ -61,11 +69,12 @@ const IntramurosResults = () => {
 
         if (activities.length > 0) {
           setSelectedActivityID(activities[0].ID);
+        } else {
+          setSelectedActivityID(null);
         }
-
-        setLoading(false);
       } catch (e) {
-        setError(`Error: ${e.message}`);
+        setError(`Error al obtener datos: ${e.message || "Error desconocido"}`);
+      } finally {
         setLoading(false);
       }
     };
@@ -73,90 +82,120 @@ const IntramurosResults = () => {
     fetchResults();
   }, []);
 
-  const chartData = useMemo(() => {
-    if (!selectedActivityID) return [];
+  // Lógica para transformar los datos para el gráfico
+  const chartDetails = useMemo(() => {
+    if (!selectedActivityID || results.length === 0) {
+      return { chartData: [], dataKey: null, yAxisLabel: null };
+    }
 
-    return results
-      .filter((r) => r.ID_Actividad == selectedActivityID)
-      .sort((a, b) => a.Posicion - b.Posicion)
-      .map((r) => {
-        const unit = r.Unidad ? String(r.Unidad).toLowerCase() : "puntos";
-        const valueKey =
-          unit.includes("minuto") || unit.includes("segundo")
-            ? "Tiempo_minutos"
-            : "Puntos_totales";
+    const filteredResults = results
+      .filter((r) => String(r.ID_Actividad) === String(selectedActivityID))
+      .sort((a, b) => a.Posicion - b.Posicion);
 
-        const numericValue = r.Puntaje_Final || 0;
+    if (filteredResults.length === 0) {
+      return { chartData: [], dataKey: null, yAxisLabel: null };
+    }
 
-        return {
-          name: `${r.Posicion}° ${r.Nombre_Participante}`,
-          [valueKey]: Number(numericValue),
-          unidad: r.Unidad,
-        };
-      });
+    const firstResult = filteredResults[0];
+    const unit = firstResult.Unidad
+      ? String(firstResult.Unidad).toLowerCase()
+      : "puntos";
+
+    const valueKey =
+      unit.includes("minuto") || unit.includes("segundo")
+        ? "Tiempo_minutos"
+        : "Puntos_totales";
+
+    const chartData = filteredResults.map((r) => {
+      const numericValue = r.Puntaje_Final || 0;
+      return {
+        name: `${r.Posicion}° ${r.Nombre_Participante}`,
+        [valueKey]: Number(numericValue),
+        unidad: r.Unidad,
+      };
+    });
+
+    const yAxisLabel =
+      firstResult?.Unidad ||
+      (valueKey === "Tiempo_minutos" ? "Tiempo (minutos)" : "Puntos");
+
+    return { chartData, dataKey: valueKey, yAxisLabel };
   }, [results, selectedActivityID]);
 
-  const chartKeys = useMemo(() => {
-    if (chartData.length === 0) return { dataKey: null, yAxisLabel: null };
+  const { chartData, dataKey, yAxisLabel } = chartDetails;
 
-    const dataKey = Object.keys(chartData[0]).find(
-      (key) => key.includes("Tiempo") || key.includes("Puntos")
+  const chartTitle = useMemo(() => {
+    return (
+      activityList.find((a) => String(a.ID) === String(selectedActivityID))
+        ?.Nombre || "Actividad Desconocida"
     );
-    const yAxisLabel =
-      chartData[0]?.unidad ||
-      (dataKey === "Tiempo_minutos" ? "Tiempo (minutos)" : "Puntos");
+  }, [activityList, selectedActivityID]);
 
-    return { dataKey, yAxisLabel };
-  }, [chartData]);
+  const handleActivityChange = useCallback((e) => {
+    setSelectedActivityID(e.target.value);
+  }, []);
 
-  const { dataKey, yAxisLabel } = chartKeys;
-
-  const chartTitle =
-    activityList.find((a) => a.ID == selectedActivityID)?.Nombre ||
-    "Actividad Desconocida";
-
+  // Renderizado de estados de carga y error
   if (loading) {
     return (
-      <div className="loading-state">Cargando resultados y estadísticas...</div>
+      <div className="intramuros-container">
+        <div className="loading-state">
+          Cargando resultados y estadísticas...
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div className="error-state">
-        <p className="error-title">Error al cargar datos:</p>
-        <p className="error-message">{error}</p>
+      <div className="intramuros-container">
+        <div className="error-state">
+          <p className="error-title">Error al cargar datos:</p>
+          <p className="error-message">{error}</p>
+        </div>
       </div>
     );
   }
 
   if (!results.length) {
     return (
-      <div className="empty-state">
-        <TrendingUp size={48} className="empty-icon" />
-        <p className="empty-title">
-          No hay resultados finales disponibles para graficar.
-        </p>
-        <p className="empty-description">
-          Verifique la pestaña "RESULTADOS" en su Google Sheet.
-        </p>
+      <div className="intramuros-container">
+        <div className="empty-state">
+          <TrendingUp size={48} className="empty-icon" />
+          <p className="empty-title">
+            No hay resultados finales cargados en la base de datos.
+          </p>
+          <p className="empty-description">
+            Verifique la conexión de la API o la fuente de datos.
+          </p>
+        </div>
       </div>
     );
   }
 
+  // RENDERIZADO PRINCIPAL
   return (
     <div className="intramuros-container">
-      <div className="intramuros-header">
-        <h2 className="intramuros-title">
-          <Trophy size={28} />
-          Ranking y Estadísticas Intramuros
-        </h2>
+      {/* ============================== */}
+      {/* HEADER (Encabezado Oscuro con Filtro Integrado) */}
+      {/* ============================== */}
+      <header className="intramuros-header">
+        <div className="header-info">
+          <div className="header-icon">
+            <Trophy size={28} />
+          </div>
+          <div className="intramuros-title">
+            <h1>Ranking y Estadísticas Intramuros</h1>
+            <p>Instituto Tecnológico de Ensenada</p>
+          </div>
+        </div>
 
+        {/* FILTRO DENTRO DEL HEADER */}
         <div className="filter-container">
           <Filter size={18} className="filter-icon" />
           <select
             value={selectedActivityID || ""}
-            onChange={(e) => setSelectedActivityID(e.target.value)}
+            onChange={handleActivityChange}
             className="activity-select"
           >
             <option value="" disabled>
@@ -169,57 +208,63 @@ const IntramurosResults = () => {
             ))}
           </select>
         </div>
+      </header>
+
+      {/* ============================== */}
+      {/* CONTENIDO (Subtítulo y Gráfico) */}
+      {/* ============================== */}
+      <div className="content-area">
+        <h3 className="activity-subtitle">{chartTitle} - Top Resultados</h3>
+
+        {/* GRÁFICO O ESTADO SIN DATOS PARA LA ACTIVIDAD */}
+        {chartData.length > 0 && dataKey ? (
+          <div className="chart-wrapper">
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis
+                  dataKey="name"
+                  interval={0}
+                  angle={-30}
+                  textAnchor="end"
+                  height={70}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis
+                  label={{
+                    value: yAxisLabel,
+                    angle: -90,
+                    position: "insideLeft",
+                  }}
+                />
+                <Tooltip
+                  formatter={(value, name, props) => [
+                    `${value} ${props.payload.unidad}`,
+                    name,
+                  ]}
+                />
+                <Legend />
+                <Bar
+                  dataKey={dataKey}
+                  name={yAxisLabel}
+                  fill="#2563eb"
+                  radius={[5, 5, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="no-data-state">
+            <TrendingUp size={48} className="no-data-icon" />
+            <p className="no-data-title">
+              No hay datos de ranking para esta actividad.
+            </p>
+          </div>
+        )}
       </div>
-
-      <h3 className="activity-subtitle">{chartTitle} - Top Resultados</h3>
-
-      {chartData.length > 0 && dataKey ? (
-        <div className="chart-wrapper">
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart
-              data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis
-                dataKey="name"
-                interval={0}
-                angle={-30}
-                textAnchor="end"
-                height={70}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                label={{
-                  value: yAxisLabel,
-                  angle: -90,
-                  position: "insideLeft",
-                }}
-              />
-              <Tooltip
-                formatter={(value, name, props) => [
-                  `${value} ${props.payload.unidad}`,
-                  name,
-                ]}
-              />
-              <Legend />
-              <Bar
-                dataKey={dataKey}
-                name={yAxisLabel}
-                fill="#007bff"
-                radius={[5, 5, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      ) : (
-        <div className="no-data-state">
-          <TrendingUp size={48} className="no-data-icon" />
-          <p className="no-data-title">
-            No hay datos de ranking para esta actividad.
-          </p>
-        </div>
-      )}
     </div>
   );
 };

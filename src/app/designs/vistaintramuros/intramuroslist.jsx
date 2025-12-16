@@ -161,7 +161,6 @@ const IntramurosList = () => {
       )}
 
       <div className="search-container">
-        <FaSearch className="search-icon" aria-hidden />
         <input
           className="search-input"
           type="text"

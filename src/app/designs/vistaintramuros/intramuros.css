@@ -104,41 +104,18 @@ body {
   cursor: pointer;
   font-size: 0.9rem; /* Tamaño de fuente ajustado para móvil */
 }
-
-/* Estilos de Pestaña Inactiva */
+/* ===== PESTAÑA INACTIVA ===== */
 .tab-inactive {
   background-color: var(--white);
   color: var(--text-dark);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.tab-inactive:hover {
+.tab-inactive:hover,
+.tab-inactive:focus {
   background-color: var(--blue-hover);
   color: var(--blue-primary);
-}
-
-/* Estilos de Pestaña Activa */
-.tab-active-blue,
-.tab-active-yellow,
-.tab-active-purple,
-.tab-active-green {
-  color: var(--white);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-  transform: scale(1.05);
-}
-
-/* Definición de colores de pestañas activas */
-.tab-active-blue {
-  background-color: var(--blue-primary); /* Calendario */
-}
-.tab-active-yellow {
-  background-color: var(--yellow-accent); /* Actividades */
-}
-.tab-active-purple {
-  background-color: var(--purple-accent);
-}
-.tab-active-green {
-  background-color: var(--green-accent); /* Contacto (NUEVO) */
 }
 
 /* Ajuste de Navegación para Escritorio */
