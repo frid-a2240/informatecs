@@ -127,7 +127,7 @@ const IntramurosList = () => {
   if (loading) {
     return (
       <div className="intramuros-list-wrapper">
-        <div className="alert">⏳ Cargando actividades…</div>
+        <div className="alert">Cargando actividades…</div>
       </div>
     );
   }
@@ -135,7 +135,7 @@ const IntramurosList = () => {
   if (error) {
     return (
       <div className="intramuros-list-wrapper">
-        <div className="alert alert-error">⚠️ {error}</div>
+        <div className="alert alert-error"> {error}</div>
         <button className="btn btn-primary" onClick={fetchActividades}>
           Reintentar
         </button>
@@ -146,11 +146,11 @@ const IntramurosList = () => {
   return (
     <div className="intramuros-list-wrapper">
       <header className="list-header">
-        <div className="list-header">
-          <div className="header-left">
-            <div className="icon">
-              <FaCalendarAlt />
-            </div>
+        <div className="titulo-banner">
+          <div className="titulo-icon">
+            <FaCalendarAlt />
+          </div>
+          <div className="titulo-content">
             <h2>Registro de Actividades Intramuros</h2>
           </div>
         </div>

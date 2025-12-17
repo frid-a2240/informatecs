@@ -41,7 +41,6 @@ const IntramurosPage = () => {
               <IntramurosList />
             </div>
 
-            {/* Nota de Inscripción Mantenida */}
             <div className="registration-note note-yellow-accent">
               <div className="note-content-group">
                 <div className="note-icon-container">
@@ -72,7 +71,6 @@ const IntramurosPage = () => {
           </section>
         );
 
-      // 🟢 NUEVA SECCIÓN: RESULTADOS
       case "resultados":
         return (
           <section id="resultados" className="intramuros-section">
@@ -91,7 +89,6 @@ const IntramurosPage = () => {
             <div className="section-content-box blue-border">
               <div className="contact-grid">
                 <div className="contact-card blue-border-light">
-                  {/* ... Contenido de contacto 1 ... */}
                   <div className="contact-card-header">
                     <div className="icon-circle icon-blue icon-small">
                       <svg
@@ -187,7 +184,7 @@ const IntramurosPage = () => {
         <div className="header-content-wrapper">
           <h1 className="main-title">
             <span className="trophy-icon"></span>
-            Actividades Extracurriculares Intramuros ITE
+            Actividades Intramuros ITE
           </h1>
           <p className="main-subtitle">
             Información centralizada sobre torneos, ligas y eventos deportivos

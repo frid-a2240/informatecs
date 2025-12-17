@@ -550,7 +550,7 @@ body.modal-open {
 
 .form-input:focus {
   border-color: var(--primary);
-  ring: 2px solid var(--primary); /* Conceptual */
+  grid: 2px solid var(--primary); /* Conceptual */
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
   outline: none;
 }

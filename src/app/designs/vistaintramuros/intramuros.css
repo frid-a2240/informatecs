@@ -88,7 +88,6 @@ body {
   gap: 0.75rem; /* Espacio reducido en móvil */
   padding: 1rem 0;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 .tab-button {
@@ -292,4 +291,52 @@ body {
 .card-subtitle-contact {
   color: var(--text-dark);
   margin-bottom: 1rem;
+}
+/* Ajuste para escritorio */
+@media (min-width: 1024px) {
+  .tabs-wrapper-inner {
+    justify-content: center; /* Centra los botones si hay espacio de sobra */
+    overflow-x: hidden;
+  }
+}
+
+/* ================================= */
+/* 4. CONTENIDO Y SECCIONES */
+/* ================================= */
+.content-container {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.section-content-box {
+  background-color: var(--white);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
+}
+
+/* Grid de Contacto Responsivo */
+.contact-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .contact-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Ajustes de fuente y espaciado en Móvil extremo */
+@media (max-width: 480px) {
+  .section-content-box {
+    padding: 1rem;
+  }
+
+  .tab-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
 }

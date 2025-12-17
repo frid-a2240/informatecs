@@ -3,233 +3,133 @@
 /* ========================================================================= */
 
 .intramuros-container {
-  padding: 2rem;
+  padding: 1rem; /* Reducido para móviles */
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
   border: 1px solid #e5e7eb;
   max-width: 1200px;
   margin: 0 auto;
+  box-sizing: border-box; /* Crucial para evitar desbordes */
 }
 
 /* ========================================================================= */
-/* HEADER (Oscuro, con Título, Subtítulo y Filtro) */
+/* HEADER RESPONSIVO */
 /* ========================================================================= */
 
 .intramuros-header {
-  /* Fondo azul oscuro de la imagen */
   background-color: #1f305c;
   color: #ffffff;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 8px 8px 0 0;
+  flex-direction: column; /* Por defecto en móvil: uno sobre otro */
+  gap: 1.5rem;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 /* Contenedor del Título y Subtítulo */
 .header-info {
   display: flex;
+  flex-direction: column; /* Icono arriba en móviles pequeños */
   align-items: center;
-  gap: 1.5rem;
-  /* Permite que el bloque de info se comprima si es necesario en móvil */
-  min-width: 0;
+  gap: 1rem;
+  width: 100%;
+  text-align: center;
 }
 
-/* Ícono de Copa/Trofeo */
+/* Ícono ajustable */
 .header-icon {
-  width: 55px;
-  height: 55px;
+  width: 50px;
+  height: 50px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
 }
 
-/* Estilo del Contenedor de Textos (Título y Subtítulo) */
+/* Contenedor de Textos */
 .intramuros-title {
   display: flex;
   flex-direction: column;
   margin: 0;
-  /* Asegura que el texto largo se maneje bien */
-  white-space: nowrap;
+  width: 100%;
 }
 
-/* Título Principal */
+/* Título Principal - ELIMINADO white-space: nowrap */
 .intramuros-title h1 {
-  font-size: 2rem;
+  font-size: clamp(1.25rem, 5vw, 2rem); /* Tamaño fluido */
   font-weight: 700;
   color: #ffffff;
-  line-height: 1.1;
+  line-height: 1.2;
   margin: 0;
+  white-space: normal; /* Permite que el texto salte de línea si es largo */
 }
 
-/* Subtítulo */
 .intramuros-title p {
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 0.9rem;
   color: #c0c0c0;
-  margin: 0;
+  margin-top: 0.25rem;
 }
 
-/* === ESTILOS DEL FILTRO DENTRO DEL HEADER === */
+/* === FILTRO RESPONSIVO === */
 .filter-container {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-.filter-icon {
-  color: #ffffff; /* Ícono blanco para el fondo oscuro */
+  flex-direction: column; /* Stack en móvil */
+  width: 100%;
+  gap: 0.5rem;
 }
 
 .activity-select {
-  padding: 0.625rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  background-color: #314472; /* Fondo más oscuro para el select */
+  background-color: #314472;
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.938rem;
+  font-size: 16px; /* Evita zoom automático en iOS */
+  width: 100%; /* Ocupa todo el ancho */
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-width: 220px;
-}
-
-.activity-select:hover {
-  border-color: #3b82f6;
-}
-
-.activity-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  box-sizing: border-box;
 }
 
 /* ========================================================================= */
-/* ESTILOS DE CONTENIDO (Debajo del Header) */
+/* MEDIA QUERIES (Ajustes para Tablet y Desktop) */
 /* ========================================================================= */
 
-.content-area {
-  padding: 1.5rem 2rem;
-}
-
-.activity-subtitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2563eb;
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #dbeafe;
-}
-
-/* Estados de carga y error */
-.loading-state,
-.error-state,
-.empty-state,
-.no-data-state {
-  padding: 3rem;
-  text-align: center;
-}
-
-.loading-state {
-  color: #2563eb;
-  font-weight: 600;
-  font-size: 1.125rem;
-}
-
-.error-state {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 8px;
-  color: #991b1b;
-}
-
-.error-title {
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  font-size: 1.125rem;
-}
-
-.error-message {
-  font-size: 0.875rem;
-  color: #dc2626;
-}
-
-.empty-state,
-.no-data-state {
-  color: #6b7280;
-}
-
-.empty-icon,
-.no-data-icon {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 1rem;
-  color: #d1d5db;
-}
-
-.empty-title,
-.no-data-title {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.empty-description {
-  font-size: 0.875rem;
-  color: #9ca3af;
-}
-
-.chart-wrapper {
-  margin-top: 1.5rem;
-}
-
-/* ========================================================================= */
-/* RESPONSIVE */
-/* ========================================================================= */
-
-@media (min-width: 640px) {
-  .intramuros-header {
-    flex-direction: row;
-  }
-}
-
-@media (max-width: 639px) {
+@media (min-width: 768px) {
   .intramuros-container {
-    padding: 0;
-    box-shadow: none;
-    border: none;
-  }
-
-  .content-area {
-    padding: 1.25rem;
+    padding: 2rem;
   }
 
   .intramuros-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.25rem;
+    flex-direction: row; /* Alineación horizontal */
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
   }
 
-  .intramuros-title h1 {
-    font-size: 1.5rem;
+  .header-info {
+    flex-direction: row; /* Icono al lado del texto */
+    text-align: left;
+    width: auto;
   }
 
-  /* Hacemos que el filtro ocupe todo el ancho en móvil */
   .filter-container {
-    width: 100%;
-    /* Separamos el ícono del select en móvil */
-    gap: 1.5rem;
+    flex-direction: row; /* Filtro al lado del ícono */
+    width: auto;
   }
 
   .activity-select {
-    width: 100%;
+    min-width: 250px;
+    width: auto;
   }
+}
+
+/* Ajuste de Contenido */
+.content-area {
+  padding: 1.5rem 0;
 }

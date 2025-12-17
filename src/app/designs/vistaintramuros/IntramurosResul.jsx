@@ -185,7 +185,7 @@ const IntramurosResults = () => {
             <Trophy size={28} />
           </div>
           <div className="intramuros-title">
-            <h1>Ranking y Estadísticas Intramuros</h1>
+            <h1>Ranking y Estadísticas</h1>
             <p>Instituto Tecnológico de Ensenada</p>
           </div>
         </div>
