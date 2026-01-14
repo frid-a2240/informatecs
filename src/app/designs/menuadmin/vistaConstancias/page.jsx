@@ -14,7 +14,7 @@ export default function VistaConstancias() {
   const [inscripcionesEstudiante, setInscripcionesEstudiante] = useState([]);
   const [inscripcionSeleccionada, setInscripcionSeleccionada] = useState(null);
 
-  // ✅ CAMBIO: Solo cantidad editable, unidad automática
+  //  CAMBIO: Solo cantidad editable, unidad automática
   const [datosConstancia, setDatosConstancia] = useState({
     periodo: "",
     cantidadAcreditacion: "", // Solo el número
@@ -33,7 +33,7 @@ export default function VistaConstancias() {
       });
       
       if (!response.ok) {
-        console.error("❌ Error HTTP:", response.status);
+        console.error(" Error HTTP:", response.status);
         setEstudiantes([]);
         return;
       }
@@ -41,7 +41,7 @@ export default function VistaConstancias() {
       const inscripciones = await response.json();
       
       if (!Array.isArray(inscripciones)) {
-        console.error("❌ Respuesta no es array:", inscripciones);
+        console.error(" Respuesta no es array:", inscripciones);
         setEstudiantes([]);
         return;
       }
@@ -74,7 +74,7 @@ export default function VistaConstancias() {
 
       setEstudiantes(listaEstudiantes);
     } catch (error) {
-      console.error("❌ Error al cargar estudiantes:", error);
+      console.error(" Error al cargar estudiantes:", error);
       setEstudiantes([]);
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function VistaConstancias() {
       });
       
       if (!response.ok) {
-        console.error("❌ Error HTTP:", response.status);
+        console.error(" Error HTTP:", response.status);
         setInscripcionesEstudiante([]);
         return;
       }
@@ -109,7 +109,7 @@ export default function VistaConstancias() {
       const todasInscripciones = await response.json();
 
       if (!Array.isArray(todasInscripciones)) {
-        console.error("❌ Respuesta no es array");
+        console.error(" Respuesta no es array");
         setInscripcionesEstudiante([]);
         return;
       }
@@ -128,7 +128,7 @@ export default function VistaConstancias() {
         }
       }
     } catch (error) {
-      console.error("❌ Error al cargar inscripciones del estudiante:", error);
+      console.error(" Error al cargar inscripciones del estudiante:", error);
       setInscripcionesEstudiante([]);
     }
   };
@@ -146,7 +146,7 @@ export default function VistaConstancias() {
     await cargarInscripcionesEstudiante(estudiante.aluctr);
   };
 
-  // ✅ FUNCIÓN PARA OBTENER UNIDAD SEGÚN PROPÓSITO
+  //  FUNCIÓN PARA OBTENER UNIDAD SEGÚN PROPÓSITO
   const obtenerUnidadAcreditacion = (proposito) => {
     if (proposito === "servicio_social") {
       return "Horas";
@@ -156,7 +156,7 @@ export default function VistaConstancias() {
     return "";
   };
 
-  // ✅ FUNCIÓN PARA TÍTULO DEL DOCUMENTO
+  //  FUNCIÓN PARA TÍTULO DEL DOCUMENTO
   const obtenerTituloConstancia = (proposito) => {
     if (proposito === "servicio_social") {
       return "Liberación de horas";
@@ -180,12 +180,12 @@ export default function VistaConstancias() {
                              inscripcionSeleccionada.actividad?.aticve || 
                              "Actividad no especificada";
 
-      // ✅ OBTENER PROPÓSITO Y ACREDITACIÓN DINÁMICA
+      //  OBTENER PROPÓSITO Y ACREDITACIÓN DINÁMICA
       const proposito = inscripcionSeleccionada.formularioData?.purpose;
       const unidad = obtenerUnidadAcreditacion(proposito);
       const acreditacionCompleta = `${datosConstancia.cantidadAcreditacion} ${unidad}`;
 
-      // 1️⃣ GUARDAR CONSTANCIA EN BASE DE DATOS
+      //  GUARDAR CONSTANCIA EN BASE DE DATOS
       const responseConstancia = await fetch("/api/constancias", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -214,7 +214,7 @@ export default function VistaConstancias() {
       const urlVerificacion = `${window.location.origin}/verificar/${folio}`;
       const qrCodeDataURL = await generarQRCode(urlVerificacion);
 
-      // 3️⃣ GENERAR PDF CON FOLIO Y QR
+      //  GENERAR PDF CON FOLIO Y QR
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -239,7 +239,7 @@ export default function VistaConstancias() {
         align: "right",
       });
 
-      // ✅ TÍTULO DINÁMICO
+      //  TÍTULO DINÁMICO
       const tituloConstancia = obtenerTituloConstancia(proposito);
       
       doc.setFontSize(14);
@@ -249,11 +249,11 @@ export default function VistaConstancias() {
       });
       doc.text("COMPLEMENTARIA", pageWidth - 30, 57, { align: "right" });
       
-      // ✅ SUBTÍTULO: "Liberación de horas" o "Liberación de créditos"
+      //  SUBTÍTULO: "Liberación de horas" o "Liberación de créditos"
       doc.setFontSize(12);
       doc.text(tituloConstancia, pageWidth - 30, 64, { align: "right" });
 
-      // ✅ FOLIO Y CÓDIGO DE VERIFICACIÓN
+      //  FOLIO Y CÓDIGO DE VERIFICACIÓN
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
       doc.text(`Folio: ${folio}`, 20, 50);
@@ -333,7 +333,7 @@ export default function VistaConstancias() {
       y += 5;
       doc.text("Departamento de Actividades Complementarias", margenIzq, y);
 
-      // ✅ AGREGAR CÓDIGO QR
+      // AGREGAR CÓDIGO QR
       if (qrCodeDataURL) {
         const qrSize = 35;
         const qrX = pageWidth - qrSize - 20;
@@ -368,10 +368,10 @@ export default function VistaConstancias() {
         `Constancia_${folio}_${nombreCompleto}.pdf`
       );
 
-      alert(`✅ Constancia generada exitosamente\n\nFolio: ${folio}\nCódigo: ${codigoVerificacion}\nTipo: ${tituloConstancia}`);
+      alert(` Constancia generada exitosamente\n\nFolio: ${folio}\nCódigo: ${codigoVerificacion}\nTipo: ${tituloConstancia}`);
       setMostrarModal(false);
     } catch (error) {
-      console.error("❌ Error al generar constancia:", error);
+      console.error(" Error al generar constancia:", error);
       alert("Error al generar constancia. Inténtalo de nuevo.");
     } finally {
       setGenerandoPDF(false);
@@ -588,13 +588,13 @@ export default function VistaConstancias() {
                       const calificacion = inscripcion.calificacion || 0;
                       const estaAprobado = calificacion >= 70;
                       const estadoTexto = calificacion > 0 
-                        ? (estaAprobado ? "✅ Aprobado" : "❌ Reprobado") 
+                        ? (estaAprobado ? " Aprobado" : " Reprobado") 
                         : "⏳ Sin calificar";
                       const estadoColor = calificacion > 0
                         ? (estaAprobado ? "text-green-600" : "text-red-600")
                         : "text-yellow-600";
 
-                      // ✅ Mapeo visual del propósito
+                      //  Mapeo visual del propósito
                       const propositoTexto = proposito === "creditos" 
                         ? "Créditos" 
                         : proposito === "servicio_social" 

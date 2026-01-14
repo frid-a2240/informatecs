@@ -62,7 +62,7 @@ export default function AdminSidebar() {
     {
       href: "/designs/menuadmin/vistaReportes",
       icon: <FiBarChart2 />,
-      label: "Reportes",
+      label: "Lista Aprobados",
     },
     {
       href: "/designs/menuadmin/vistaConstancias",

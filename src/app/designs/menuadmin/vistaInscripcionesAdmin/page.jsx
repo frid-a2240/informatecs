@@ -221,7 +221,7 @@ const InscripcionesPanel = () => {
       const inscritos = inscripciones[oferta.actividadId] || [];
       const tieneInscripcionesValidas = inscritos.some((inscripcion) => {
         const semestreEstudiante =
-          inscripcion.estudiante?.inscripciones?.calnpe?.toString();
+          inscripcion.estudiante?.calnpe?.toString();
         const sexoEstudiante = inscripcion.estudiante?.alusex;
         const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -271,7 +271,7 @@ const InscripcionesPanel = () => {
 
       const inscritosFiltrados = inscritos.filter((inscripcion) => {
         const semestreEstudiante =
-          inscripcion.estudiante?.inscripciones?.calnpe?.toString();
+          inscripcion.estudiante?.calnpe?.toString();
         const sexoEstudiante = inscripcion.estudiante?.alusex;
         const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -294,7 +294,7 @@ const InscripcionesPanel = () => {
         const numeroControl = inscripcion.estudiante?.aluctr;
         const sexo = inscripcion.estudiante?.alusex;
         const semestre =
-          inscripcion.estudiante?.inscripciones?.calnpe?.toString() || "N/A";
+          inscripcion.estudiante?.calnpe?.toString() || "N/A";
         const proposito = inscripcion.formularioData?.purpose;
 
         if (numeroControl) {
@@ -346,7 +346,7 @@ const InscripcionesPanel = () => {
     ...new Set(
       Object.values(inscripciones)
         .flat()
-        .map((i) => i.estudiante?.inscripciones?.calnpe)
+        .map((i) => i.estudiante?.calnpe)
         .filter((sem) => sem !== null && sem !== undefined)
     ),
   ].sort((a, b) => Number(a) - Number(b));
@@ -599,7 +599,7 @@ const InscripcionesPanel = () => {
               const inscritos = inscripciones[oferta.actividadId] || [];
               const inscritosFiltrados = inscritos.filter((inscripcion) => {
                 const semestreEstudiante =
-                  inscripcion.estudiante?.inscripciones?.calnpe?.toString();
+                  inscripcion.estudiante?.calnpe?.toString(); 
                 const sexoEstudiante = inscripcion.estudiante?.alusex;
                 const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -736,7 +736,7 @@ const InscripcionesPanel = () => {
                                     </td>
                                     
                                     <td className="px-4 py-3 text-sm text-gray-600">
-                                      {inscripcion.estudiante?.inscripciones?.calnpe || "N/A"}
+                                      {inscripcion.estudiante?.calnpe|| "N/A"}
                                     </td>
                                     
                                     <td className="px-4 py-3 text-sm text-gray-600">

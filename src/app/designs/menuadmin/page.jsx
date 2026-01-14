@@ -135,7 +135,7 @@ const AdminDashboard = () => {
         cache: "no-store",
       });
 
-      // ✅ Verificar respuesta HTTP
+      //  Verificar respuesta HTTP
       if (!resInscripciones.ok) {
         console.error("❌ Error HTTP en inscripciones:", resInscripciones.status);
         throw new Error(`Error HTTP: ${resInscripciones.status}`);
@@ -143,7 +143,7 @@ const AdminDashboard = () => {
 
       const todasInscripciones = await resInscripciones.json();
 
-      // ✅ VALIDACIÓN: Verificar que inscripciones sea un array
+      //  VALIDACIÓN: Verificar que inscripciones sea un array
       if (!Array.isArray(todasInscripciones)) {
         console.error("❌ todasInscripciones no es array:", todasInscripciones);
         // Establecer estadísticas solo con ofertas (sin inscripciones)
@@ -170,7 +170,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      console.log(`✅ Cargadas ${ofertas.length} ofertas y ${todasInscripciones.length} inscripciones`);
+      console.log(` Cargadas ${ofertas.length} ofertas y ${todasInscripciones.length} inscripciones`);
 
       // Agrupar inscripciones por actividad
       const inscripcionesPorActividad = {};
@@ -195,10 +195,11 @@ const AdminDashboard = () => {
       };
 
       let porSemestre = {};
+      let estudiantesContados = new Set(); //  Para evitar contar el mismo estudiante dos veces
       let contadorPrimerSemestre = 0;
       let contadorSegundoEnAdelante = 0;
 
-      // ✅ Ahora es seguro usar forEach porque validamos que es array
+      //  Ahora es seguro usar forEach porque validamos que es array
       ofertas.forEach((oferta) => {
         const inscritos = inscripcionesPorActividad[oferta.actividadId] || [];
         const tipoActividad = obtenerTipoActividad(
@@ -225,15 +226,17 @@ const AdminDashboard = () => {
               estudiantesUnicosPorSexo.F.add(numeroControl);
             }
 
-            // Contar por semestre (solo una vez por estudiante)
-            if (!porSemestre[`${numeroControl}-${semestre}`]) {
+            //  Contar por semestre (solo una vez por estudiante)
+            const claveEstudiante = `${numeroControl}-${semestre}`;
+            if (!estudiantesContados.has(claveEstudiante)) {
+              estudiantesContados.add(claveEstudiante);
               porSemestre[semestre] = (porSemestre[semestre] || 0) + 1;
-              porSemestre[`${numeroControl}-${semestre}`] = true;
 
               // Contar 1er semestre vs 2do en adelante
-              if (semestre === "1") {
+              const semestreNum = parseInt(semestre);
+              if (semestre === "1" || semestreNum === 1) {
                 contadorPrimerSemestre++;
-              } else if (parseInt(semestre) >= 2 && !isNaN(parseInt(semestre))) {
+              } else if (semestreNum >= 2 && !isNaN(semestreNum)) {
                 contadorSegundoEnAdelante++;
               }
             }

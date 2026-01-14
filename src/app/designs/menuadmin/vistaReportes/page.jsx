@@ -1,364 +1,387 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Download, Users, FileText, TrendingUp } from "lucide-react";
-import * as XLSX from "xlsx";
-import "./reportes.css";
+import { useState, useEffect } from "react";
+import { Search, FileText, CheckCircle, Clock, Filter, Download } from "lucide-react";
 
-const VistaReportesPage = () => {
-  const [inscripciones, setInscripciones] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function VistaReportes() {
+  const [inscripcionesAprobadas, setInscripcionesAprobadas] = useState([]);
+  const [busqueda, setBusqueda] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [filtroActividad, setFiltroActividad] = useState("todas");
+  const [actividadesDisponibles, setActividadesDisponibles] = useState([]);
 
   useEffect(() => {
-    cargarInscripciones();
+    cargarInscripcionesAprobadas();
   }, []);
 
-  const cargarInscripciones = async () => {
+  const cargarInscripcionesAprobadas = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/inscripciones");
-      const data = await response.json();
-      console.log("📊 Inscripciones cargadas:", data);
-      setInscripciones(data);
+      
+      const response = await fetch("/api/inscripciones", {
+        cache: 'no-store'
+      });
+      
+      if (!response.ok) {
+        console.error("❌ Error HTTP:", response.status);
+        setInscripcionesAprobadas([]);
+        return;
+      }
+      
+      const inscripciones = await response.json();
+      
+      if (!Array.isArray(inscripciones)) {
+        console.error("❌ Respuesta no es array:", inscripciones);
+        setInscripcionesAprobadas([]);
+        return;
+      }
+
+      // Filtrar solo las inscripciones aprobadas (calificación >= 70)
+      const aprobadas = inscripciones.filter((inscripcion) => {
+        const calificacion = inscripcion.calificacion || 0;
+        return calificacion >= 70 && inscripcion.estudiante && inscripcion.actividad;
+      });
+
+      // Ordenar por número de control y luego por actividad
+      aprobadas.sort((a, b) => {
+        const controlA = a.estudiante?.aluctr || "";
+        const controlB = b.estudiante?.aluctr || "";
+        return controlA.localeCompare(controlB);
+      });
+
+      setInscripcionesAprobadas(aprobadas);
+
+      // Extraer actividades únicas para el filtro
+      const actividadesUnicas = [...new Set(
+        aprobadas.map(i => i.actividad?.aconco || i.actividad?.aticve || "Sin nombre")
+      )].sort();
+      
+      setActividadesDisponibles(actividadesUnicas);
+
     } catch (error) {
-      console.error("❌ Error al cargar inscripciones:", error);
+      console.error("❌ Error al cargar inscripciones aprobadas:", error);
+      setInscripcionesAprobadas([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Agrupar estudiantes por propósito (sin duplicados)
-  const agruparPorProposito = () => {
-    const grupos = {
-      creditos: new Map(),
-      servicio_social: new Map(),
-      por_gusto: new Map(),
-    };
+  // Filtrar inscripciones según búsqueda y filtro de actividad
+  const inscripcionesFiltradas = inscripcionesAprobadas.filter((inscripcion) => {
+    const estudiante = inscripcion.estudiante;
+    const actividad = inscripcion.actividad;
+    
+    const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.toLowerCase();
+    const numeroControl = (estudiante.aluctr || "").toLowerCase();
+    const nombreActividad = (actividad.aconco || actividad.aticve || "").toLowerCase();
+    const terminoBusqueda = busqueda.toLowerCase();
 
-    inscripciones.forEach((inscripcion) => {
-      const proposito = inscripcion.formularioData?.purpose;
-      const aluctr = inscripcion.estudiante?.aluctr;
+    const cumpleBusqueda = 
+      nombreCompleto.includes(terminoBusqueda) ||
+      numeroControl.includes(terminoBusqueda) ||
+      nombreActividad.includes(terminoBusqueda);
 
-      if (!proposito || !aluctr) return;
+    const cumpleFiltroActividad = 
+      filtroActividad === "todas" || 
+      (actividad.aconco || actividad.aticve || "Sin nombre") === filtroActividad;
 
-      // Solo agregar si el grupo existe y el estudiante no está duplicado
-      if (grupos[proposito] && !grupos[proposito].has(aluctr)) {
-        grupos[proposito].set(aluctr, {
-          aluctr: inscripcion.estudiante.aluctr,
-          nombreCompleto: `${inscripcion.estudiante.alunom || ""} ${
-            inscripcion.estudiante.aluapp || ""
-          } ${inscripcion.estudiante.aluapm || ""}`.trim(),
-          semestre: inscripcion.estudiante?.inscripciones?.calnpe || "N/A",
-          sexo:
-            inscripcion.estudiante?.alusex === 1
-              ? "Masculino"
-              : inscripcion.estudiante?.alusex === 2
-              ? "Femenino"
-              : "N/A",
-          email: inscripcion.estudiante?.alumai || "N/A",
-          actividad:
-            inscripcion.actividad?.aconco ||
-            inscripcion.actividad?.aticve ||
-            "N/A",
-          fechaInscripcion: new Date(
-            inscripcion.fechaInscripcion
-          ).toLocaleDateString("es-MX"),
-        });
-      }
+    return cumpleBusqueda && cumpleFiltroActividad;
+  });
+
+  // Función para exportar a CSV
+  const exportarCSV = () => {
+    const headers = ["No. Control", "Nombre Completo", "Correo", "Actividad", "Código", "Créditos", "Horas", "Calificación", "Propósito"];
+    
+    const rows = inscripcionesFiltradas.map(inscripcion => {
+      const estudiante = inscripcion.estudiante;
+      const actividad = inscripcion.actividad;
+      const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
+      const nombreActividad = actividad.aconco || actividad.aticve || "Sin nombre";
+      const proposito = inscripcion.formularioData?.purpose === "creditos" 
+        ? "Créditos" 
+        : inscripcion.formularioData?.purpose === "servicio_social" 
+        ? "Servicio Social" 
+        : "Por Gusto";
+
+      return [
+        estudiante.aluctr,
+        nombreCompleto,
+        estudiante.alumai || "N/A",
+        nombreActividad,
+        actividad.aticve || "N/A",
+        actividad.acocre || "N/A",
+        actividad.acohrs || "N/A",
+        inscripcion.calificacion,
+        proposito
+      ];
     });
 
-    return {
-      creditos: Array.from(grupos.creditos.values()),
-      servicio_social: Array.from(grupos.servicio_social.values()),
-      por_gusto: Array.from(grupos.por_gusto.values()),
-    };
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Reporte_Aprobados_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
-
-  const estudiantesPorProposito = agruparPorProposito();
-
-  // Función para exportar a Excel
-  const exportarAExcel = (datos, nombreArchivo) => {
-    const worksheet = XLSX.utils.json_to_sheet(datos);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Estudiantes");
-
-    // Ajustar ancho de columnas
-    const columnWidths = [
-      { wch: 12 }, // No. Control
-      { wch: 35 }, // Nombre
-      { wch: 10 }, // Semestre
-      { wch: 12 }, // Sexo
-      { wch: 30 }, // Email
-      { wch: 30 }, // Actividad
-      { wch: 15 }, // Fecha
-    ];
-    worksheet["!cols"] = columnWidths;
-
-    XLSX.writeFile(workbook, `${nombreArchivo}_${Date.now()}.xlsx`);
-  };
-
-  const exportarTodos = () => {
-    const todosDatos = [
-      ...estudiantesPorProposito.creditos.map((e) => ({
-        ...e,
-        proposito: "Créditos",
-      })),
-      ...estudiantesPorProposito.servicio_social.map((e) => ({
-        ...e,
-        proposito: "Servicio Social",
-      })),
-      ...estudiantesPorProposito.por_gusto.map((e) => ({
-        ...e,
-        proposito: "Por Gusto",
-      })),
-    ];
-
-    exportarAExcel(todosDatos, "Reporte_Completo_Inscripciones");
-  };
-
-  if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="spinner"></div>
-        <p className="loading-text">Cargando reportes...</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="reportes-container">
-      <div className="reportes-content">
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="reportes-header">
-          <div>
-            <h1 className="reportes-title">
-              📊 Reportes por Propósito de Inscripción
-            </h1>
-            <p className="reportes-subtitle">
-              Estudiantes agrupados por razón de inscripción
-            </p>
-          </div>
-          <button onClick={exportarTodos} className="btn-export-all">
-            <Download size={20} />
-            Exportar Todo
-          </button>
-        </div>
-
-        {/* Cards de Resumen */}
-        <div className="resumen-grid">
-          <div className="resumen-card creditos">
-            <div className="resumen-header">
-              <div className="resumen-info">
-                <h3>Créditos</h3>
-                <div className="numero">
-                  {estudiantesPorProposito.creditos.length}
-                </div>
-                <div className="label">estudiantes</div>
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="text-green-600" size={32} />
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Lista de Estudiantes Aprobados
+                </h1>
+                <p className="text-gray-600">
+                  Estudiantes con calificación aprobatoria (≥70) en actividades complementarias
+                </p>
               </div>
-              <FileText size={48} className="resumen-icon" />
             </div>
-          </div>
-
-          <div className="resumen-card servicio">
-            <div className="resumen-header">
-              <div className="resumen-info">
-                <h3>Servicio Social</h3>
-                <div className="numero">
-                  {estudiantesPorProposito.servicio_social.length}
-                </div>
-                <div className="label">estudiantes</div>
-              </div>
-              <Users size={48} className="resumen-icon" />
-            </div>
-          </div>
-
-          <div className="resumen-card gusto">
-            <div className="resumen-header">
-              <div className="resumen-info">
-                <h3>Por Gusto</h3>
-                <div className="numero">
-                  {estudiantesPorProposito.por_gusto.length}
-                </div>
-                <div className="label">estudiantes</div>
-              </div>
-              <TrendingUp size={48} className="resumen-icon" />
-            </div>
-          </div>
-        </div>
-
-        {/* TABLA 1: Créditos */}
-        <div className="tabla-wrapper">
-          <div className="tabla-header creditos">
-            <h2 className="tabla-titulo">
-              <FileText size={24} />
-              Estudiantes Inscritos por Créditos
-            </h2>
             <button
-              onClick={() =>
-                exportarAExcel(
-                  estudiantesPorProposito.creditos,
-                  "Estudiantes_Creditos"
-                )
-              }
-              className="btn-export creditos"
+              onClick={exportarCSV}
+              disabled={inscripcionesFiltradas.length === 0}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               <Download size={18} />
-              Exportar
+              Exportar CSV
             </button>
           </div>
-          <div className="tabla-container">
-            {estudiantesPorProposito.creditos.length === 0 ? (
-              <p className="empty-state">
-                No hay estudiantes inscritos por créditos
-              </p>
-            ) : (
-              <table className="tabla">
-                <thead>
-                  <tr>
-                    <th>No. Control</th>
-                    <th>Nombre Completo</th>
-                    <th>Semestre</th>
-                    <th>Sexo</th>
-                    <th>Email</th>
-                    <th>Actividad</th>
-                    <th>Fecha Inscripción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {estudiantesPorProposito.creditos.map((estudiante, idx) => (
-                    <tr key={idx}>
-                      <td className="control">{estudiante.aluctr}</td>
-                      <td className="nombre">{estudiante.nombreCompleto}</td>
-                      <td>{estudiante.semestre}°</td>
-                      <td>{estudiante.sexo}</td>
-                      <td>{estudiante.email}</td>
-                      <td>{estudiante.actividad}</td>
-                      <td>{estudiante.fechaInscripcion}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        </div>
+
+        {/* Estadísticas rápidas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <CheckCircle className="text-green-600" size={24} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Total Aprobados</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {inscripcionesAprobadas.length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <FileText className="text-blue-600" size={24} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Actividades Distintas</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {actividadesDisponibles.length}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Filter className="text-purple-600" size={24} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Resultados Filtrados</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {inscripcionesFiltradas.length}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Buscador y Filtros */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Buscador */}
+            <div className="relative">
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="Buscar por nombre, control o actividad..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+              />
+            </div>
+
+            {/* Filtro de actividad */}
+            <div className="relative">
+              <Filter
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+              <select
+                value={filtroActividad}
+                onChange={(e) => setFiltroActividad(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none cursor-pointer"
+              >
+                <option value="todas">📋 Todas las actividades</option>
+                {actividadesDisponibles.map((actividad, idx) => (
+                  <option key={idx} value={actividad}>
+                    {actividad}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabla de resultados */}
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-800">
+              Estudiantes aprobados: {inscripcionesFiltradas.length}
+            </h2>
+            {filtroActividad !== "todas" && (
+              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                Filtrando: {filtroActividad}
+              </span>
             )}
           </div>
-        </div>
 
-        {/* TABLA 2: Servicio Social */}
-        <div className="tabla-wrapper">
-          <div className="tabla-header servicio">
-            <h2 className="tabla-titulo">
-              <Users size={24} />
-              Estudiantes Inscritos por Servicio Social
-            </h2>
-            <button
-              onClick={() =>
-                exportarAExcel(
-                  estudiantesPorProposito.servicio_social,
-                  "Estudiantes_Servicio_Social"
-                )
-              }
-              className="btn-export servicio"
-            >
-              <Download size={18} />
-              Exportar
-            </button>
-          </div>
-          <div className="tabla-container">
-            {estudiantesPorProposito.servicio_social.length === 0 ? (
-              <p className="empty-state">
-                No hay estudiantes inscritos por servicio social
-              </p>
-            ) : (
-              <table className="tabla">
-                <thead>
+          {loading ? (
+            <div className="p-8 text-center text-gray-500">
+              <Clock className="animate-spin mx-auto mb-2" size={32} />
+              Cargando estudiantes aprobados...
+            </div>
+          ) : inscripcionesFiltradas.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <FileText className="mx-auto mb-2 text-gray-300" size={48} />
+              <p className="font-medium">No se encontraron estudiantes aprobados</p>
+              <p className="text-sm mt-1">Intenta ajustar los filtros de búsqueda</p>
+            </div>
+          ) : (
+            <div className="max-h-[600px] overflow-y-auto">
+              <table className="w-full">
+                <thead className="bg-gray-100 sticky top-0">
                   <tr>
-                    <th>No. Control</th>
-                    <th>Nombre Completo</th>
-                    <th>Semestre</th>
-                    <th>Sexo</th>
-                    <th>Email</th>
-                    <th>Actividad</th>
-                    <th>Fecha Inscripción</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      No. Control
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      Nombre Completo
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      Correo
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      Actividad
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase">
+                      Código
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase">
+                      Créditos
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase">
+                      Horas
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase">
+                      Calificación
+                    </th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-700 uppercase">
+                      Propósito
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
-                  {estudiantesPorProposito.servicio_social.map(
-                    (estudiante, idx) => (
-                      <tr key={idx}>
-                        <td className="control">{estudiante.aluctr}</td>
-                        <td className="nombre">{estudiante.nombreCompleto}</td>
-                        <td>{estudiante.semestre}°</td>
-                        <td>{estudiante.sexo}</td>
-                        <td>{estudiante.email}</td>
-                        <td>{estudiante.actividad}</td>
-                        <td>{estudiante.fechaInscripcion}</td>
+                <tbody className="divide-y divide-gray-200">
+                  {inscripcionesFiltradas.map((inscripcion, idx) => {
+                    const estudiante = inscripcion.estudiante;
+                    const actividad = inscripcion.actividad;
+                    const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
+                    const nombreActividad = actividad.aconco || actividad.aticve || "Sin nombre";
+                    const proposito = inscripcion.formularioData?.purpose;
+                    
+                    const propositoTexto = proposito === "creditos" 
+                      ? "Créditos" 
+                      : proposito === "servicio_social" 
+                      ? "Servicio Social" 
+                      : "Por Gusto";
+
+                    const propositoColor = proposito === "creditos"
+                      ? "bg-blue-100 text-blue-700"
+                      : proposito === "servicio_social"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-purple-100 text-purple-700";
+
+                    return (
+                      <tr
+                        key={idx}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                          {estudiante.aluctr}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {nombreCompleto}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {estudiante.alumai || "N/A"}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {nombreActividad}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-center text-gray-600">
+                          {actividad.aticve || "N/A"}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-center text-gray-600">
+                          {actividad.acocre || "N/A"}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-center text-gray-600">
+                          {actividad.acohrs || "N/A"}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className="inline-flex items-center justify-center w-12 h-8 bg-green-100 text-green-800 font-bold text-sm rounded">
+                            {inscripcion.calificacion}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${propositoColor}`}>
+                            {propositoTexto}
+                          </span>
+                        </td>
                       </tr>
-                    )
-                  )}
+                    );
+                  })}
                 </tbody>
               </table>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* TABLA 3: Por Gusto */}
-        <div className="tabla-wrapper">
-          <div className="tabla-header gusto">
-            <h2 className="tabla-titulo">
-              <TrendingUp size={24} />
-              Estudiantes Inscritos por Gusto
-            </h2>
-            <button
-              onClick={() =>
-                exportarAExcel(
-                  estudiantesPorProposito.por_gusto,
-                  "Estudiantes_Por_Gusto"
-                )
-              }
-              className="btn-export gusto"
-            >
-              <Download size={18} />
-              Exportar
-            </button>
-          </div>
-          <div className="tabla-container">
-            {estudiantesPorProposito.por_gusto.length === 0 ? (
-              <p className="empty-state">
-                No hay estudiantes inscritos por gusto
-              </p>
-            ) : (
-              <table className="tabla">
-                <thead>
-                  <tr>
-                    <th>No. Control</th>
-                    <th>Nombre Completo</th>
-                    <th>Semestre</th>
-                    <th>Sexo</th>
-                    <th>Email</th>
-                    <th>Actividad</th>
-                    <th>Fecha Inscripción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {estudiantesPorProposito.por_gusto.map(
-                    (estudiante, idx) => (
-                      <tr key={idx}>
-                        <td className="control">{estudiante.aluctr}</td>
-                        <td className="nombre">{estudiante.nombreCompleto}</td>
-                        <td>{estudiante.semestre}°</td>
-                        <td>{estudiante.sexo}</td>
-                        <td>{estudiante.email}</td>
-                        <td>{estudiante.actividad}</td>
-                        <td>{estudiante.fechaInscripcion}</td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
-            )}
+        {/* Footer informativo */}
+        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
+            <div className="text-sm text-green-800">
+              <p className="font-semibold mb-1">ℹ️ Información sobre la lista</p>
+              <ul className="space-y-1 list-disc list-inside">
+                <li>Solo se muestran estudiantes con calificación ≥ 70</li>
+                <li>Si un estudiante está inscrito en múltiples actividades, aparecerá una vez por cada actividad aprobada</li>
+                <li>Los datos se actualizan automáticamente desde la base de datos</li>
+                <li>Puedes exportar la lista completa en formato CSV para análisis externos</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default VistaReportesPage;
+}
