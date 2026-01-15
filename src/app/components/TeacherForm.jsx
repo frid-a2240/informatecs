@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { FaLock, FaChalkboardTeacher, FaEye, FaEyeSlash } from "react-icons/fa";
 
