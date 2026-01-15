@@ -103,6 +103,7 @@ const HomePage = () => {
       <Navbar />
 
       <div className="homepage-wrapper">
+        {/* HERO / SLIDER */}
         <div className="hero-container" data-aos="fade-in">
           <div className="hero-slide">
             {items.map((item) => (
@@ -146,56 +147,54 @@ const HomePage = () => {
           </div>
         </div>
 
+        {/* SECCIÓN DE TARJETAS */}
         <section className="category-cards-section" data-aos="fade-up">
           <h2 className="section-title">Participa en nuestras actividades!</h2>
 
           <div className="cards-grid">
+            {/* Deportes */}
             <div className="card-item">
               <img
                 src="/imagenes/basquet.png"
                 alt="Deportes"
                 className="card-img"
               />
-
-              <div className="card-content ">
+              <div className="card-content">
                 <div className="card-icon">
                   <FaFootball size={32} color="white" />
                 </div>
-
                 <h3>Deportes</h3>
                 <p>Equipos competitivos</p>
               </div>
             </div>
 
+            {/* Cultura */}
             <div className="card-item">
               <img
                 src="/imagenes/albatrocatrin.png"
                 alt="Cultura"
                 className="card-img"
               />
-
               <div className="card-content">
                 <div className="card-icon">
                   <FaMasksTheater size={32} color="white" />
                 </div>
-
                 <h3>Cultura</h3>
                 <p>Eventos artísticos</p>
               </div>
             </div>
 
+            {/* Clubs */}
             <div className="card-item">
               <img
                 src="/imagenes/albatrobanda.png"
                 alt="Clubs"
                 className="card-img"
               />
-
               <div className="card-content">
                 <div className="card-icon">
                   <FaUsers size={32} color="white" />
                 </div>
-
                 <h3>Clubs</h3>
                 <p>Únete a la comunidad</p>
               </div>
@@ -208,46 +207,42 @@ const HomePage = () => {
                 alt="Voluntariado"
                 className="card-img"
               />
-
               <div className="card-content">
                 <div className="card-icon">
                   <FaHandHoldingHeart size={32} color="white" />
                 </div>
-
                 <h3>Voluntariado</h3>
                 <p>Contribuye a causas sociales</p>
               </div>
             </div>
 
+            {/* Talleres */}
             <div className="card-item">
               <img
                 src="/imagenes/albatroreally.png"
                 alt="Talleres"
                 className="card-img"
               />
-
               <div className="card-content">
                 <div className="card-icon">
                   <FaChalkboardUser size={32} color="white" />
                 </div>
-
                 <h3>Talleres</h3>
                 <p>Desarrolla nuevas habilidades</p>
               </div>
             </div>
 
+            {/* Eventos */}
             <div className="card-item">
               <img
                 src="/imagenes/eventos.png"
                 alt="Eventos"
                 className="card-img"
               />
-
               <div className="card-content">
                 <div className="card-icon">
                   <FaCalendarCheck size={32} color="white" />
                 </div>
-
                 <h3>Eventos</h3>
                 <p>Todo el año</p>
               </div>
@@ -255,17 +250,18 @@ const HomePage = () => {
           </div>
         </section>
 
+        {/* SECCIÓN DE ACTIVIDADES EXTRAESCOLARES */}
         <section className="activities-section">
           <h2>¡Activa tu Experiencia ITE!</h2>
 
           <div className="activities-content">
-            <div className=" activity-item reverse" data-aos="fade-right">
+            <div className="activity-item reverse" data-aos="fade-right">
               <div className="text-content">
                 <h3 className="activity-title">Actividades Extraescolares</h3>
                 <p className="activity-description">
-                  En el Instituto Tecnológico de Ensenada, ofrecemos una
-                  variedad de actividades extraescolares diseñadas para
-                  enriquecer tu experiencia educativa...
+                  En el Instituto Tecnológico de Ensenada, ofrecemos una variedad de
+                  actividades extraescolares diseñadas para enriquecer tu experiencia
+                  educativa...
                 </p>
               </div>
 
@@ -290,12 +286,44 @@ const HomePage = () => {
               <div className="text-content">
                 <h3 className="activity-title">Eventos</h3>
                 <p className="activity-description">
-                  ¡No te pierdas los emocionantes eventos del Instituto
-                  Tecnológico de Ensenada!
+                  ¡No te pierdas los emocionantes eventos del Instituto Tecnológico de
+                  Ensenada!
                 </p>
               </div>
             </div>
           </div>
+        </section>
+
+        {/* SECCIÓN DE ENCUESTA / QR */}
+        <section className="activities-section">
+          <h2>Actividades de tu interés</h2>
+
+          <p className="activity-description">
+            Nos interesa conocer tu opinión y saber qué actividades te llaman más la
+            atención como aspirante al Instituto Tecnológico de Ensenada. Tu respuesta
+            nos ayudará a ofrecerte opciones acordes a tus gustos e intereses.
+          </p>
+
+          <p className="qr-text">
+            Si estás navegando desde una computadora, escanea el código QR para responder
+            la encuesta desde tu celular. <br />
+            Si estás en tu celular, puedes contestarla directamente con el botón.
+          </p>
+
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://forms.gle/TU_LINK"
+            alt="Código QR de la encuesta de intereses para aspirantes"
+            className="qr-image"
+          />
+
+          <button
+            className="hero-btn"
+            onClick={() => window.open("https://forms.gle/TU_LINK", "_blank")}
+          >
+            Contestar encuesta
+          </button>
+
+          <small>Encuesta dirigida únicamente a aspirantes de nuevo ingreso</small>
         </section>
 
         <Footer />

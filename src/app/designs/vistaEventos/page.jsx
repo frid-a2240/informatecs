@@ -52,7 +52,7 @@ const Page = () => {
     const datosDeEjemplo = [
       {
         id: 1,
-        titulo: "¡Gran Torneo de Fútbol Inter-Escolar! ⚽",
+        titulo: "¡Gran Torneo de Fútbol Inter-Escolar! ",
         descripcion:
           "Nuestro equipo Albatros participará en el campeonato regional este sábado 16 de noviembre. Los juegos iniciarán a las 9:00 AM en las canchas principales. ¡Vamos Albatros!",
         fecha: "2024-11-16",
@@ -61,16 +61,15 @@ const Page = () => {
       },
       {
         id: 2,
-        titulo: "Exposición de Ciencias 2024 - Innovación Albatros 🔬",
+        titulo: "Exposición de Ciencias 2024 - Innovación Albatros ",
         descripcion:
           "Los estudiantes de secundaria presentarán sus proyectos científicos el próximo jueves 21 de noviembre en el auditorio principal. Habrá experimentos de física, química y biología.",
         fecha: "2024-11-21",
-
         imagen: "./imagenes/tec4.jpg",
       },
       {
         id: 3,
-        titulo: "Festival Cultural Albatros 🎭",
+        titulo: "Festival Cultural Albatros ",
         descripcion:
           "El viernes 29 de noviembre celebraremos nuestro Festival Cultural con danza, teatro, música y gastronomía típica. ¡Entrada libre para toda la comunidad!",
         fecha: "2024-11-29",
@@ -79,7 +78,7 @@ const Page = () => {
       },
       {
         id: 4,
-        titulo: "Reconocimiento a Estudiantes Destacados 🏆",
+        titulo: "Reconocimiento a Estudiantes Destacados ",
         descripcion:
           "Felicitamos a los estudiantes Albatros que lograron primeros lugares en las Olimpiadas del Conocimiento. La ceremonia será el lunes 2 de diciembre.",
         fecha: "2024-12-02",
@@ -88,7 +87,7 @@ const Page = () => {
       },
       {
         id: 5,
-        titulo: "Campaña de Reciclaje - Escuela Verde 🌱",
+        titulo: "Campaña de Reciclaje - Escuela Verde ",
         descripcion:
           "Comienza la campaña ecológica 'Albatros Verde'. Los alumnos podrán traer materiales reciclables del 4 al 15 de diciembre. ¡Participa y gana premios!",
         fecha: "2024-12-04",
@@ -134,42 +133,41 @@ const Page = () => {
       {/* ===== ENCABEZADO ===== */}
       <header className="news-header">
         <div className="news-title-container">
-          <div className="news-attention"></div>
-          <h1 className="news-page-title">¡Noticias Albatros! </h1>
-          <p className="news-subtitle">
-            Mantente informado de todo lo que sucede en tu escuela 📰
-          </p>
+
+          <h1 className="news-page-title">¡Noticias Albatros!</h1>
+
         </div>
       </header>
 
-      {/* ===== CONTENIDO ===== */}
       <main className="content-container">
         {data.length === 0 ? (
           <div className="empty-state">
             <p>No hay noticias disponibles en este momento.</p>
           </div>
         ) : (
-          data.map((element) => (
-            <article key={element.id} className="event-block">
-              {element.imagen && (
-                <div className="event-image-container">
-                  <img
-                    src={element.imagen}
-                    alt={element.titulo}
-                    className="event-image"
-                    loading="lazy"
-                  />
-                </div>
-              )}
-              <div className="event-content">
-                <h2 className="title">{element.titulo}</h2>
-                <p className="description">{element.descripcion}</p>
-                {element.fecha && (
-                  <p className="date">📅 {formatDate(element.fecha)}</p>
+          <div className="news-grid">
+            {data.map((element) => (
+              <article key={element.id} className="event-block">
+                {element.imagen && (
+                  <div className="event-image-container">
+                    <img
+                      src={element.imagen}
+                      alt={element.titulo}
+                      className="event-image"
+                      loading="lazy"
+                    />
+                  </div>
                 )}
-              </div>
-            </article>
-          ))
+                <div className="event-content">
+                  <h2 className="title">{element.titulo}</h2>
+                  <p className="description">{element.descripcion}</p>
+                  {element.fecha && (
+                    <p className="date">{formatDate(element.fecha)}</p>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
         )}
       </main>
 

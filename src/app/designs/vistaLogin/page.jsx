@@ -114,8 +114,8 @@ const LoginPage = () => {
     handleUpdatePassword(e, matricula, newPassword);
   };
 
-  // ----------------------
-  // Funciones de envío MAESTROS (se mantiene)
+ // ----------------------
+  // Funciones de envío MAESTROS
   // ----------------------
   const onTeacherSubmit = (e) => {
     e.preventDefault();
@@ -126,7 +126,8 @@ const LoginPage = () => {
 
   const onTeacherRegisterSubmit = (e) => {
     e.preventDefault();
-    if (!teacherId || !password) return setError("Escribe ID de maestro");
+    if (!teacherId || !password)
+      return setError("Escribe ID de maestro");
     if (password !== "profe123")
       return setError('La contraseña para registro debe ser "profe123"');
     handleMaestroRegister(e, teacherId);
