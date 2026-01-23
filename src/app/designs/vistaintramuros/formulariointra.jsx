@@ -1,78 +1,71 @@
-// src/app/designs/vistaintramuros/formulariointra.jsx
-// ESTE CÓDIGO ES UNA PLANTILLA PARA EL MODAL DE INSCRIPCIÓN
 "use client";
 import React, { useState } from "react";
-import "./form.css"; // Asume que tienes un CSS para el modal
+import "./form.css";
 
-// La URL de tu App Web de Google Apps Script (la misma que usas para GET/POST)
-const POST_API_URL =
-  "https://script.google.com/macros/s/AKfycbyLeN9z1JvTmVs9S8cvQSgmZXKO7LIK33pKzR4Ulk4oMeO4zODhKI0iD2hN5dA4DMh1gw/exec";
-// Usa la URL de tu proyecto con la función doPost
+const POST_API_URL = "https://script.google.com/macros/s/AKfycbyJ2B9Nf0ymC9KXnB1TyBtkidjjW9emCbpP89aZCly6sB5RoPG-hY5Q-9waRp7Yeb2Bew/exec";
 
 const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
+  const esActividadGrupal = ["fútbol", "baloncesto", "torneo", "copa", "vóley"]
+    .some(p => actividad.Actividad.toLowerCase().includes(p));
 
-    sexo: "",
-    carrera: "",
-    telefono: "",
-    matricula: "",
-    comentarios: "",
-    activityId: actividad.ID_Actividad, // ID de la actividad seleccionada
+  const [formData, setFormData] = useState({
+    nombre: "", email: "", sexo: "", telefono: "", 
+    matricula: "", carrera: "", comentarios: "",
+    nombreEquipo: "", responsable: "",
+    activityId: actividad.ID_Actividad,
   });
+
+  // Estado para integrantes con Nombre, Género y Correo
+  const [integrantes, setIntegrantes] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const agregarFila = () => setIntegrantes([...integrantes, { nombre: "", genero: "", email: "" }]);
+  const eliminarFila = (index) => setIntegrantes(integrantes.filter((_, i) => i !== index));
+  
+  const handleIntegranteChange = (index, campo, valor) => {
+    const nuevos = [...integrantes];
+    nuevos[index][campo] = valor;
+    setIntegrantes(nuevos);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !formData.nombre ||
-      !formData.email ||
-      !formData.sexo ||
-      !formData.carrera
-    ) {
-      setError(
-        "Por favor, rellena todos los campos requeridos (Nombre, Email, Sexo, Carrera)."
-      );
-      return;
-    }
-
     setLoading(true);
 
+    // Formateamos los integrantes para que el Excel los reciba ordenados
+    // Ejemplo Nombre: "Juan (M), Maria (F)"
+    const nombresConGenero = integrantes
+      .map(i => `${i.nombre} (${i.genero || 'N/E'})`)
+      .filter(n => n !== " (N/E)")
+      .join(", ");
+
+    const correosList = integrantes.map(i => i.email).filter(e => e).join(", ");
+
+    const payload = {
+      ...formData,
+      nombresIntegrantes: nombresConGenero, // Se guarda en Columna N
+      correosIntegrantes: correosList,     // Se guarda en Columna O
+    };
+
     try {
-      const response = await fetch(POST_API_URL, {
+      await fetch(POST_API_URL, {
         method: "POST",
-        // El contenido del cuerpo debe enviarse como JSON
-        body: JSON.stringify(formData),
-        // Apps Script espera text/plain, no application/json para el POST del cuerpo
-        // pero la conversión a JSON se hace en el lado del servidor.
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8",
-        },
+        mode: "no-cors", 
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "text/plain;charset=utf-8" }
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        onSuccessfulSubmit(result.message);
-        onClose(); // Cerrar el modal al completar la inscripción
-      } else {
-        // Mostrar error del backend (p. ej., "Ya estás inscrito")
-        setError(result.error || "Error desconocido en el registro.");
-      }
+      
+      onSuccessfulSubmit("¡Registro de equipo exitoso!");
+      onClose();
     } catch (err) {
-      console.error("Error al enviar la inscripción:", err);
-      setError("Error de conexión al servidor: " + err.message);
+      setError("Error al enviar los datos.");
     } finally {
       setLoading(false);
     }
@@ -82,114 +75,81 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
     <div className="modal-backdrop">
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Inscripción a: {actividad.Actividad}</h3>
-          <button className="close-button" onClick={onClose}>
-            &times;
-          </button>
+          <h3>Inscripción: {actividad.Actividad}</h3>
+          <button className="close-button" onClick={onClose}>&times;</button>
         </div>
-        <div className="modal-body">
-          {error && <div className="alert alert-danger">{error}</div>}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="nombre">Nombre Completo *</label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="modal-body">
+          {error && <div className="alert-error">{error}</div>}
 
-            <div className="form-group">
-              <label htmlFor="email">Correo Electrónico *</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="sexo">Sexo *</label>
-              <select
-                id="sexo"
-                name="sexo"
-                value={formData.sexo}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Seleccione...</option>
+          <div className="form-section">
+            <label className="section-title">Datos del Responsable</label>
+            <div className="form-grid">
+              <input type="text" name="nombre" placeholder="Tu Nombre *" onChange={handleChange} required />
+              <input type="email" name="email" placeholder="Tu Email *" onChange={handleChange} required />
+              <select name="sexo" onChange={handleChange} required>
+                <option value="">Tu Género *</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
-                <option value="Otro">Otro</option>
               </select>
             </div>
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="carrera">Carrera *</label>
-              <input
-                type="text"
-                id="carrera"
-                name="carrera"
-                value={formData.carrera}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {esActividadGrupal && (
+            <div className="form-section team-bg">
+              <label className="section-title">Datos del Equipo</label>
+              <div className="form-grid">
+                <input type="text" name="nombreEquipo" placeholder="Nombre del Equipo *" onChange={handleChange} required />
+                <input type="text" name="responsable" placeholder="Capitán *" onChange={handleChange} required />
+              </div>
 
-            {/* Campos opcionales */}
-            <div className="form-group">
-              <label htmlFor="telefono">Teléfono</label>
-              <input
-                type="text"
-                id="telefono"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-              />
+              <div className="integrantes-container">
+                <p className="sub-label">Integrantes del Equipo:</p>
+                {integrantes.map((item, idx) => (
+                  <div key={idx} className="integrante-row-triple">
+                    <input 
+                      placeholder="Nombre" 
+                      className="flex-2"
+                      value={item.nombre} 
+                      onChange={(e) => handleIntegranteChange(idx, "nombre", e.target.value)} 
+                      required 
+                    />
+                    <select 
+                      className="flex-1"
+                      value={item.genero} 
+                      onChange={(e) => handleIntegranteChange(idx, "genero", e.target.value)} 
+                      required
+                    >
+                      <option value="">Género</option>
+                      <option value="M">M</option>
+                      <option value="F">F</option>
+                    </select>
+                    <input 
+                      placeholder="Correo" 
+                      className="flex-2"
+                      value={item.email} 
+                      onChange={(e) => handleIntegranteChange(idx, "email", e.target.value)} 
+                      required 
+                    />
+                    <button type="button" onClick={() => eliminarFila(idx)} className="btn-del">×</button>
+                  </div>
+                ))}
+                <button type="button" className="btn-add" onClick={agregarFila}>+ Añadir Integrante</button>
+              </div>
             </div>
-            <div className="form-group">
-              <label htmlFor="matricula">Matrícula</label>
-              <input
-                type="text"
-                id="matricula"
-                name="matricula"
-                value={formData.matricula}
-                onChange={handleChange}
-              />
-            </div>
+          )}
 
-            <div className="form-group">
-              <label htmlFor="comentarios">Comentarios</label>
-              <textarea
-                id="comentarios"
-                name="comentarios"
-                value={formData.comentarios}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="form-grid" style={{marginTop:"10px"}}>
+             <input type="text" name="telefono" placeholder="Teléfono" onChange={handleChange} />
+             <input type="text" name="carrera" placeholder="Carrera *" onChange={handleChange} required />
+          </div>
 
-            <div className="modal-footer">
-              <button type="submit" className="btn-submit" disabled={loading}>
-                {loading ? "Registrando..." : "Confirmar Inscripción"}
-              </button>
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={onClose}
-                disabled={loading}
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
+          <div className="modal-footer">
+            <button type="submit" className="btn-submit" disabled={loading}>
+              {loading ? "Enviando..." : "Finalizar Inscripción"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
