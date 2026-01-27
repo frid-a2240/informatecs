@@ -1,699 +1,268 @@
-/* ================================= */
-/* MODAL - BACKDROP Y CONTENEDOR */
-/* ================================= */
-.list-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-  color: var(--white); /* Texto blanco */
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.list-header .header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.list-header .header-left h2 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin: 0;
-}
-
-.list-header .header-left .icon {
-  font-size: 2rem; /* Ajusta el tamaño del icono */
-  background-color: var(--white);
-  padding: 0.5rem;
-  border-radius: 50%;
-  color: var(--primary);
-}
-
-/* Indicador de estado */
-.list-header .status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.list-header .status .status-indicator {
-  width: 10px;
-  height: 10px;
-  background-color: #28a745; /* Verde */
-  border-radius: 50%;
-}
-
-.list-header .status span {
-  font-size: 1rem;
-  font-weight: 600;
-}
-
+/* --- CONTENEDOR PRINCIPAL (BACKDROP) --- */
 .modal-backdrop {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
-  animation: fadeIn 0.2s ease;
-  padding: 1rem;
-  overflow-y: auto;
+  z-index: 1000;
+  padding: 20px;
 }
 
+/* --- CAJA DEL MODAL --- */
 .modal-content {
   background: #ffffff;
-  border-radius: 0.75rem;
-  width: 90%;
-  max-width: 600px;
+  width: 100%;
+  max-width: 550px;
   max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.3s ease;
-  position: relative;
-}
-
-/* ================================= */
-/* HEADER DEL MODAL */
-/* ================================= */
-.modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f9fafb;
-  border-radius: 0.75rem 0.75rem 0 0;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #111827;
-  font-weight: 700;
-}
-
-.close-button {
-  background: transparent;
-  border: none;
-  color: #6b7280;
-  font-size: 2rem;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  line-height: 1;
-  padding: 0;
-}
-
-.close-button:hover {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-/* ================================= */
-/* BODY DEL MODAL */
-/* ================================= */
-.modal-body {
-  padding: 1.5rem;
-}
-
-/* ================================= */
-/* ALERTAS */
-/* ================================= */
-.alert {
-  padding: 1rem 1.25rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  border: 1px solid;
-}
-
-.alert-danger {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-  color: #991b1b;
-}
-
-/* ================================= */
-/* FORMULARIO */
-/* ================================= */
-.form-group {
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #374151;
-  font-size: 0.9rem;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #4176c4;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  color: #1f2937;
-}
-
-.form-group select {
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 12px;
-  padding-right: 2.5rem;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.form-group input:disabled,
-.form-group textarea:disabled,
-.form-group select:disabled {
-  background: #f3f4f6;
-  cursor: not-allowed;
-  color: #6b7280;
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-  color: #9ca3af;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-/* ================================= */
-/* FOOTER DEL MODAL */
-/* ================================= */
-.modal-footer {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-/* ================================= */
-/* BOTONES */
-/* ================================= */
-.btn-submit,
-.btn-cancel {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.btn-submit {
-  background-color: #2563eb;
-  color: #ffffff;
-}
-
-.btn-submit:hover:not(:disabled) {
-  background-color: #1e40af;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-cancel {
-  background-color: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.btn-cancel:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-}
-
-.btn-cancel:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ================================= */
-/* ANIMACIONES */
-/* ================================= */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================================= */
-/* RESPONSIVE */
-/* ================================= */
-@media (max-width: 768px) {
-  .modal-content {
-    width: 95%;
-    max-height: 85vh;
-  }
-
-  .modal-header,
-  .modal-body {
-    padding: 1rem;
-  }
-
-  .modal-header h3 {
-    font-size: 1.25rem;
-  }
-
-  .modal-footer {
-    flex-direction: column;
-  }
-
-  .btn-submit,
-  .btn-cancel {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-backdrop {
-    padding: 0.5rem;
-  }
-
-  .modal-content {
-    width: 100%;
-    max-height: 95vh;
-    border-radius: 0.5rem;
-  }
-
-  .form-group input,
-  .form-group textarea,
-  .form-group select {
-    font-size: 0.95rem;
-    padding: 0.625rem 0.875rem;
-  }
-}
-
-/* ================================= */
-/* SCROLLBAR PERSONALIZADO */
-/* ================================= */
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-content::-webkit-scrollbar-track {
-  background: #f3f4f6;
-  border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-  background: #9ca3af;
-  border-radius: 4px;
-}
-
-.modal-content::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
-}
-
-/* ================================= */
-/* ACCESIBILIDAD */
-/* ================================= */
-.btn-submit:focus-visible,
-.btn-cancel:focus-visible,
-.close-button:focus-visible,
-.form-group input:focus-visible,
-.form-group textarea:focus-visible,
-.form-group select:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-/* Prevenir scroll del body cuando el modal está abierto */
-body.modal-open {
+  flex-direction: column;
   overflow: hidden;
+  border: 1px solid #e5e7eb;
 }
 
-/* ================================= */
-/* MEJORAS VISUALES */
-/* ================================= */
-.form-group label::after {
-  content: " *";
-  color: #dc2626;
-  font-weight: 700;
-}
-
-/* Remover asterisco de campos opcionales */
-.form-group.optional label::after {
-  content: "";
-}
-
-/* Estilos para campos válidos/inválidos (opcional) */
-.form-group input:valid,
-.form-group textarea:valid,
-.form-group select:valid {
-  border-color: #d1d5db;
-}
-
-.form-group input:invalid:not(:placeholder-shown),
-.form-group textarea:invalid:not(:placeholder-shown),
-.form-group select:invalid:not(:placeholder-shown) {
-  border-color: #ef4444;
-}
-
-/* Animación de reducción de movimiento */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-/* ================================= */
-/* VARIABLES (Para fácil mantenimiento) */
-/* ================================= */
-:root {
-  --modal-bg: #ffffff;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-color: #e5e7eb;
-  --radius: 0.75rem;
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-    0 8px 10px -6px rgb(0 0 0 / 0.1);
-}
-
-/* ================================= */
-/* BACKDROP - Mejorado con Glassmorphism */
-/* ================================= */
-.modal-backdrop {
-  position: fixed;
-  inset: 0; /* Atajo para top/left/right/bottom: 0 */
-  background: rgba(15, 23, 42, 0.65); /* Color ligeramente más profundo */
-  backdrop-filter: blur(8px);
-  display: grid; /* Grid suele centrar mejor que flex en modales largos */
-  place-items: center;
-  z-index: 9999;
-  padding: 1.5rem;
-  overflow-y: auto;
-  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ================================= */
-/* CONTENEDOR - Mejor manejo de scroll */
-/* ================================= */
-.modal-content {
-  background: var(--modal-bg);
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 600px;
-  max-height: min(90vh, 800px); /* Evita que sea gigante en pantallas enormes */
-  display: flex;
-  flex-direction: column; /* Importante para separar header/body/footer */
-  box-shadow: var(--shadow-xl);
-  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ================================= */
-/* HEADER - Más limpio */
-/* ================================= */
+/* --- CABECERA --- */
 .modal-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-shrink: 0; /* Evita que el header se encoja */
+  background: #f8fafc;
 }
 
 .modal-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--text-main);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  color: #1e293b;
+  font-weight: 700;
 }
 
 .close-button {
-  background: #f3f4f6;
+  background: none;
   border: none;
-  color: var(--text-muted);
+  font-size: 1.5rem;
+  color: #64748b;
   cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 5px;
+  line-height: 1;
 }
 
-.close-button:hover {
-  background: #fee2e2;
-  color: #ef4444;
-  transform: rotate(90deg);
-}
-
-/* ================================= */
-/* BODY - Con Scroll Independiente */
-/* ================================= */
+/* --- CUERPO DEL FORMULARIO --- */
 .modal-body {
-  padding: 1.5rem;
-  overflow-y: auto; /* Solo el body hace scroll */
-  flex-grow: 1;
-  scrollbar-gutter: stable; /* Evita saltos de layout al aparecer el scroll */
-}
-
-/* Estilización de scrollbar (Webkit) */
-.modal-body::-webkit-scrollbar {
-  width: 6px;
-}
-.modal-body::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 10px;
-}
-
-/* ================================= */
-/* FORM ELEMENTS - Más "Premium" */
-/* ================================= */
-.form-group label {
-  display: inline-block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #4b5563;
-  font-size: 0.875rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  transition: all 0.2s;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.form-input:focus {
-  border-color: var(--primary);
-  grid: 2px solid var(--primary); /* Conceptual */
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
-/* ================================= */
-/* FOOTER - Glass effect o Color suave */
-/* ================================= */
-.modal-footer {
-  padding: 1rem 1.5rem;
-  background: #f9fafb;
-  border-top: 1px solid var(--border-color);
+  padding: 24px;
+  overflow-y: auto;
   display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  border-radius: 0 0 var(--radius) var(--radius);
-  flex-shrink: 0;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* ================================= */
-/* BOTONES - Efectos de presión */
-/* ================================= */
-.btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.15s ease-out;
-  display: inline-flex;
+/* --- SWITCH (ALUMNO / EXTERNO) --- */
+.toggle-wrapper {
+  display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+  background: #f1f5f9;
+  padding: 10px;
+  border-radius: 50px;
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  border: 1px solid var(--primary);
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 22px;
 }
 
-.btn-primary:hover {
-  background: var(--primary-hover);
+.switch input { display: none; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: .4s;
+  border-radius: 34px;
 }
 
-.btn-primary:active {
-  transform: scale(0.97);
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px; width: 16px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
 }
 
-.btn-secondary {
-  background: white;
-  color: #374151;
+input:checked + .slider { background-color: #2563eb; }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* --- GRID DE INPUTS --- */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-body input, 
+.modal-body select, 
+.modal-body textarea {
+  padding: 10px 14px;
   border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+.modal-body input:focus, .modal-body select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* ================================= */
-/* ANIMACIONES - Curvas Bézier */
-/* ================================= */
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.full-width { grid-column: 1 / -1; }
+
+/* --- SECCIÓN DE EQUIPO E INTEGRANTES --- */
+.team-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 10px;
 }
 
-@keyframes modalSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ================================= */
-/* RESPONSIVE - Mejorado para móviles */
-/* ================================= */
-@media (max-width: 640px) {
-  .modal-backdrop {
-    padding: 0; /* Sin padding para pegar el modal a los bordes */
-    align-items: flex-end; /* Modal tipo "Bottom Sheet" en móviles */
-  }
-
-  .modal-content {
-    max-height: 92vh;
-    border-radius: 1.25rem 1.25rem 0 0;
-    animation: modalSlideUpMobile 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .modal-footer {
-    flex-direction: column-reverse; /* Cancelar abajo, enviar arriba */
-    padding-bottom: 2rem; /* Espacio para barra de navegación móvil */
-  }
-
-  .btn {
-    width: 100%;
-    padding: 0.875rem;
-  }
-}
-
-@keyframes modalSlideUpMobile {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-.status-badge {
-  display: inline-flex;
+.section-divider {
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.75rem;
+  gap: 8px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: #1e40af;
   text-transform: uppercase;
-  border-radius: 999px;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-}
-.status-open {
-  background: hsl(142 72% 95%);
-  color: hsl(142 72% 30%);
+  margin: 15px 0 10px;
 }
 
-.status-inprogress {
-  background: hsl(32 90% 95%);
-  color: hsl(32 90% 35%);
+.integrante-input-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.status-closed {
-  background: hsl(0 72% 95%);
-  color: hsl(0 72% 40%);
+.btn-add {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
 }
 
-.status-default {
-  background: var(--gray-200);
-  color: var(--gray-700);
+.btn-add:hover { background: #059669; }
+
+/* --- LISTA DE INTEGRANTES AGREGADOS --- */
+.integrantes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.integrante-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #334155;
+}
+
+.integrante-item button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* --- PIE DEL MODAL (BOTONES) --- */
+.modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #475569;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-submit {
+  padding: 10px 24px;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover { background: #1d4ed8; }
+.btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.alert-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  border: 1px solid #fee2e2;
+}
+
+/* --- ANIMACIÓN --- */
+.animate-in {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- RESPONSIVO --- */
+@media (max-width: 480px) {
+  .form-grid, .integrante-input-group {
+    grid-template-columns: 1fr;
+  }
+  .btn-add { width: 100%; height: 40px; }
 }

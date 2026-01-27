@@ -52,7 +52,7 @@ export default function AdminSidebar() {
     {
       href: "/designs/menuadmin/vistaEvaluaciones",
       icon: <FaStar />,
-      label: "Evaluaciones",
+      label: "Intramuros",
     },
     {
       href: "/designs/menuadmin/vistaInscripcionesAdmin",

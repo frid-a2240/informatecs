@@ -1,4 +1,3 @@
-// src/app/designs/vistaintramuros/IntramurosList.jsx
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -9,56 +8,57 @@ import {
   FaMapMarkerAlt,
   FaUserTie,
   FaClock,
-  FaSearch,
 } from "react-icons/fa";
 
 import ModalInscripcion from "./formulariointra";
 
 // ================= CONFIGURACIÓN API =================
-const API_PROXY_URL =
-  "https://script.google.com/macros/s/AKfycbyLeN9z1JvTmVs9S8cvQSgmZXKO7LIK33pKzR4Ulk4oMeO4zODhKI0iD2hN5dA4DMh1gw/exec";
+const API_PROXY_URL = "/api/intramuros";
 
-// ================= FUNCIONES AUXILIARES =================
+// ================= FUNCIONES AUXILIARES (ZONA HORARIA TIJUANA) =================
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/A";
   const date = new Date(dateString);
-  return isNaN(date)
-    ? "N/A"
-    : date.toLocaleDateString("es-MX", { timeZone: "UTC" });
+  if (isNaN(date)) return dateString;
+
+  // Forzamos la visualización en el horario de Tijuana para evitar desfases de día
+  return new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Tijuana",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
 };
 
 const formatTime = (timeString) => {
   if (!timeString) return "N/A";
-  const date = new Date(timeString);
-
-  if (isNaN(date)) {
-    const match = timeString.match(/^(\d{1,2}):(\d{2})$/);
-    return match ? timeString : "N/A";
+  
+  // Si Google Sheets envía un string simple "HH:mm", lo respetamos
+  if (typeof timeString === "string" && timeString.length === 5 && timeString.includes(":")) {
+    return timeString;
   }
 
-  return date.toLocaleTimeString("es-MX", {
+  const date = new Date(timeString);
+  if (isNaN(date)) return "N/A";
+
+  return new Intl.DateTimeFormat("es-MX", {
+    timeZone: "America/Tijuana",
     hour: "2-digit",
     minute: "2-digit",
-    hour12: false,
-    timeZone: "UTC",
-  });
+    hour12: true,
+  }).format(date);
 };
 
 const getStatusClass = (status) => {
-  switch (status?.toLowerCase()) {
-    case "abierto":
-      return "status-open";
-    case "en curso":
-      return "status-inprogress";
-    case "cerrado":
-      return "status-closed";
-    default:
-      return "status-default";
-  }
+  const s = status?.toLowerCase().trim();
+  if (s === "abierto") return "status-open";
+  if (s === "en curso" || s === "proceso") return "status-inprogress";
+  if (s === "cerrado") return "status-closed";
+  return "status-default";
 };
 
-// ================= COMPONENTE =================
+// ================= COMPONENTE PRINCIPAL =================
 
 const IntramurosList = () => {
   const [actividades, setActividades] = useState([]);
@@ -68,39 +68,24 @@ const IntramurosList = () => {
   const [modalActivo, setModalActivo] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const handleSuccessfulSubmit = (msg) => {
-    setModalActivo(null);
-    setSuccessMessage(`${msg} Por favor revisa tu correo.`);
-    setTimeout(() => setSuccessMessage(null), 5000);
-  };
-
-  const handleCloseModal = useCallback(() => {
-    setModalActivo(null);
-  }, []);
-
   const fetchActividades = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(API_PROXY_URL);
-      if (!response.ok) {
-        throw new Error(`Error HTTP ${response.status}`);
-      }
+      const response = await fetch(`${API_PROXY_URL}?hoja=lista`);
+      if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      if (Array.isArray(data)) {
-        setActividades(data.filter((a) => a?.ID_Actividad));
+      // Ajustamos para leer result.data que viene del API Route corregido
+      if (result && result.status === "success" && Array.isArray(result.data)) {
+        setActividades(result.data);
       } else {
-        throw new Error("Formato de datos inválido.");
+        throw new Error(result.message || "Formato de respuesta inválido.");
       }
     } catch (err) {
-      setError(err.message || "Error de conexión.");
+      setError(err.message || "Error de conexión al servidor.");
     } finally {
       setLoading(false);
     }
@@ -110,49 +95,38 @@ const IntramurosList = () => {
     fetchActividades();
   }, [fetchActividades]);
 
+  const handleSuccessfulSubmit = (msg) => {
+    setModalActivo(null);
+    setSuccessMessage(msg);
+    setTimeout(() => setSuccessMessage(null), 6000);
+  };
+
   const filteredActividades = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
     if (!term) return actividades;
 
-    return actividades.filter((a) =>
-      [a.ID_Actividad, a.Actividad, a.Coordinador, a.Deporte_Area]
-        .join(" ")
-        .toLowerCase()
-        .includes(term)
-    );
+    return actividades.filter((a) => {
+      const content = [
+        a.ID_Actividad,
+        a.Nombre_Actividad,
+        a.Actividad,
+        a.Deporte_o_Area,
+        a.Coordinador,
+      ].join(" ").toLowerCase();
+      return content.includes(term);
+    });
   }, [actividades, searchTerm]);
 
   // ================= RENDER =================
 
-  if (loading) {
-    return (
-      <div className="intramuros-list-wrapper">
-        <div className="alert">Cargando actividades…</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="intramuros-list-wrapper">
-        <div className="alert alert-error"> {error}</div>
-        <button className="btn btn-primary" onClick={fetchActividades}>
-          Reintentar
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <div className="loading-state">Cargando actividades...</div>;
 
   return (
     <div className="intramuros-list-wrapper">
       <header className="list-header">
         <div className="titulo-banner">
-          <div className="titulo-icon">
-            <FaCalendarAlt />
-          </div>
-          <div className="titulo-content">
-            <h2>Registro de Actividades Intramuros</h2>
-          </div>
+          <FaCalendarAlt className="header-icon" />
+          <h2>Registro de Actividades Intramuros</h2>
         </div>
       </header>
 
@@ -160,14 +134,20 @@ const IntramurosList = () => {
         <div className="alert alert-success">✅ {successMessage}</div>
       )}
 
+      {error && (
+        <div className="alert alert-error">
+          ⚠️ {error} 
+          <button onClick={fetchActividades} className="btn-retry">Reintentar</button>
+        </div>
+      )}
+
       <div className="search-container">
         <input
           className="search-input"
           type="text"
-          placeholder="Buscar por ID, actividad, coordinador o área…"
+          placeholder="Buscar actividad, área o coordinador..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          aria-label="Buscar actividad"
         />
       </div>
 
@@ -186,28 +166,27 @@ const IntramurosList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredActividades.length ? (
-              filteredActividades.map((a) => (
-                <tr key={a.ID_Actividad}>
+            {filteredActividades.length > 0 ? (
+              filteredActividades.map((a, index) => (
+               <tr key={`${a.ID_Actividad}-${index}`}>
                   <td data-label="ID">{a.ID_Actividad}</td>
-                  <td data-label="Actividad">{a.Actividad}</td>
-                  <td data-label="Área">{a.Deporte_Area}</td>
+                  <td data-label="Actividad" className="font-bold">
+                    {a.Nombre_Actividad || a.Actividad}
+                  </td>
+                  <td data-label="Área">{a.Deporte_o_Area || a.Deporte_Area}</td>
                   <td data-label="Coordinador">
-                    <FaUserTie /> {a.Coordinador || "N/A"}
+                    <FaUserTie className="icon-small" /> {a.Coordinador || "N/A"}
                   </td>
                   <td data-label="Fecha / Hora">
-                    <FaCalendarAlt /> {formatDate(a.Fecha_Inicio)}
-                    <br />
-                    <FaClock /> {formatTime(a.Hora_Inicio)}
+                    <div className="datetime-cell">
+                      <span>{formatDate(a.Fecha_Inicio)}</span>
+                      <small><FaClock /> {formatTime(a.Hora_Inicio)}</small>
+                    </div>
                   </td>
-                  <td data-label="Lugar">
-                    <FaMapMarkerAlt /> {a.Lugar_Sede}
-                  </td>
+                  <td data-label="Lugar">{a.Lugar_Sede}</td>
                   <td data-label="Estado">
-                    <span
-                      className={`status-badge ${getStatusClass(a.Estado)}`}
-                    >
-                      {a.Estado || "Desconocido"}
+                    <span className={`status-badge ${getStatusClass(a.Estado)}`}>
+                      {a.Estado || "Abierto"}
                     </span>
                   </td>
                   <td data-label="Acción">
@@ -220,7 +199,7 @@ const IntramurosList = () => {
                       </button>
                     ) : (
                       <button className="btn" disabled>
-                        {a.Estado || "No disponible"}
+                        No disponible
                       </button>
                     )}
                   </td>
@@ -240,8 +219,7 @@ const IntramurosList = () => {
       {modalActivo && (
         <ModalInscripcion
           actividad={modalActivo}
-          activityId={modalActivo.ID_Actividad}
-          onClose={handleCloseModal}
+          onClose={() => setModalActivo(null)}
           onSuccessfulSubmit={handleSuccessfulSubmit}
         />
       )}

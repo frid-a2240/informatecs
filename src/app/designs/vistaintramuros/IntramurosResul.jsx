@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   BarChart,
   Bar,
@@ -8,260 +8,164 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { Trophy, TrendingUp, Filter } from "lucide-react";
 import "./IntramurosResults.css";
 
-// ¡URL DE LA API MANTENIDA SIN CAMBIOS!
-const RESULTS_API_URL =
-  "https://script.google.com/macros/s/AKfycbzWV3wcc8CST1SNaZQoj1zHcOvbHriuLZzEcbrV9IZ1oS9X67Ndf_ekkiWeSuOF4uMa6Q/exec";
+// Cambia la URL para apuntar específicamente a la hoja de resultados
+const RESULTS_API_URL = "/api/intramuros?hoja=resultado";
 
 const IntramurosResults = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [selectedActivityID, setSelectedActivityID] = useState(null);
   const [activityList, setActivityList] = useState([]);
 
-  // Lógica para cargar resultados y lista de actividades
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await fetch(RESULTS_API_URL);
+        if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+        
+        const result = await response.json();
+        
+        // Log para que verifiques los nombres de las columnas en la consola del navegador console.log("Datos recibidos de Google Sheets:", result);
 
-        if (!response.ok) {
-          throw new Error(
-            `Error HTTP ${response.status}: No se pudo acceder a la API.`
-          );
-        }
+        if (result.status === "success" && Array.isArray(result.data)) {
+          const dataArray = result.data;
 
-        const rawData = await response.json();
+          // Mapeo de actividades usando los nombres exactos de tu Excel
+          const uniqueActivitiesMap = dataArray.reduce((acc, current) => {
+            const id = current.ID_Actividad; 
+            const nombre = current.Actividad;
+            
+            if (id && nombre && !acc[id]) {
+              acc[id] = nombre;
+            }
+            return acc;
+          }, {});
 
-        if (rawData.error) {
-          throw new Error(`Error de Google Apps Script: ${rawData.error}`);
-        }
+          const activities = Object.keys(uniqueActivitiesMap).map((id) => ({
+            ID: id,
+            Nombre: uniqueActivitiesMap[id],
+          }));
 
-        const dataArray = rawData.data || [];
-
-        const uniqueActivitiesMap = dataArray.reduce((acc, current) => {
-          if (
-            current.ID_Actividad &&
-            current.Actividad &&
-            !acc[current.ID_Actividad]
-          ) {
-            acc[current.ID_Actividad] = current.Actividad;
+          setResults(dataArray);
+          setActivityList(activities);
+          
+          if (activities.length > 0) {
+            setSelectedActivityID(activities[0].ID);
           }
-          return acc;
-        }, {});
-
-        const activities = Object.keys(uniqueActivitiesMap).map((id) => ({
-          ID: id,
-          Nombre: uniqueActivitiesMap[id],
-        }));
-
-        setResults(dataArray);
-        setActivityList(activities);
-
-        if (activities.length > 0) {
-          setSelectedActivityID(activities[0].ID);
-        } else {
-          setSelectedActivityID(null);
         }
       } catch (e) {
-        setError(`Error al obtener datos: ${e.message || "Error desconocido"}`);
+        setError(`Error al obtener datos: ${e.message}`);
       } finally {
         setLoading(false);
       }
     };
-
     fetchResults();
   }, []);
 
-  // Lógica para transformar los datos para el gráfico
   const chartDetails = useMemo(() => {
     if (!selectedActivityID || results.length === 0) {
-      return { chartData: [], dataKey: null, yAxisLabel: null };
+      return { chartData: [], dataKey: "Puntaje_Final", yAxisLabel: "Puntos" };
     }
 
+    // Filtrado por ID_Actividad (asegurando coincidencia de tipos)
     const filteredResults = results
       .filter((r) => String(r.ID_Actividad) === String(selectedActivityID))
-      .sort((a, b) => a.Posicion - b.Posicion);
+      .sort((a, b) => (Number(a.Posicion) || 0) - (Number(b.Posicion) || 0));
 
-    if (filteredResults.length === 0) {
-      return { chartData: [], dataKey: null, yAxisLabel: null };
-    }
+    if (filteredResults.length === 0) return { chartData: [], dataKey: "Puntaje_Final", yAxisLabel: "Puntos" };
 
     const firstResult = filteredResults[0];
-    const unit = firstResult.Unidad
-      ? String(firstResult.Unidad).toLowerCase()
-      : "puntos";
-
-    const valueKey =
-      unit.includes("minuto") || unit.includes("segundo")
-        ? "Tiempo_minutos"
-        : "Puntos_totales";
+    const unitLabel = firstResult.Unidad || "Puntos";
 
     const chartData = filteredResults.map((r) => {
-      const numericValue = r.Puntaje_Final || 0;
+      // Prioridad: Nombre_Equipo > Nombre_Participante
+      const etiquetaPrincipal = (r.Nombre_Equipo && r.Nombre_Equipo !== "Individual") 
+        ? r.Nombre_Equipo 
+        : (r.Nombre_Participante || "Participante");
+
+      // Limpieza de valores numéricos (maneja casos donde el Excel envía texto)
+      const valorNumerico = typeof r.Puntaje_Final === 'string' 
+        ? parseFloat(r.Puntaje_Final.replace(',', '.')) 
+        : parseFloat(r.Puntaje_Final);
+
       return {
-        name: `${r.Posicion}° ${r.Nombre_Participante}`,
-        [valueKey]: Number(numericValue),
-        unidad: r.Unidad,
+        name: `${r.Posicion || "S/P"}° ${etiquetaPrincipal}`,
+        Puntaje_Final: valorNumerico || 0,
+        unidad: r.Unidad || "Puntos",
+        participante: r.Nombre_Participante || "N/A",
+        equipo: r.Nombre_Equipo || "Individual"
       };
     });
 
-    const yAxisLabel =
-      firstResult?.Unidad ||
-      (valueKey === "Tiempo_minutos" ? "Tiempo (minutos)" : "Puntos");
-
-    return { chartData, dataKey: valueKey, yAxisLabel };
+    return { chartData, dataKey: "Puntaje_Final", yAxisLabel: unitLabel };
   }, [results, selectedActivityID]);
 
   const { chartData, dataKey, yAxisLabel } = chartDetails;
 
-  const chartTitle = useMemo(() => {
-    return (
-      activityList.find((a) => String(a.ID) === String(selectedActivityID))
-        ?.Nombre || "Actividad Desconocida"
-    );
-  }, [activityList, selectedActivityID]);
+  if (loading) return <div className="intramuros-container"><div className="loading-state">Cargando estadísticas...</div></div>;
 
-  const handleActivityChange = useCallback((e) => {
-    setSelectedActivityID(e.target.value);
-  }, []);
-
-  // Renderizado de estados de carga y error
-  if (loading) {
-    return (
-      <div className="intramuros-container">
-        <div className="loading-state">
-          Cargando resultados y estadísticas...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="intramuros-container">
-        <div className="error-state">
-          <p className="error-title">Error al cargar datos:</p>
-          <p className="error-message">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!results.length) {
-    return (
-      <div className="intramuros-container">
-        <div className="empty-state">
-          <TrendingUp size={48} className="empty-icon" />
-          <p className="empty-title">
-            No hay resultados finales cargados en la base de datos.
-          </p>
-          <p className="empty-description">
-            Verifique la conexión de la API o la fuente de datos.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // RENDERIZADO PRINCIPAL
   return (
     <div className="intramuros-container">
-      {/* ============================== */}
-      {/* HEADER (Encabezado Oscuro con Filtro Integrado) */}
-      {/* ============================== */}
       <header className="intramuros-header">
         <div className="header-info">
-          <div className="header-icon">
-            <Trophy size={28} />
-          </div>
+          <div className="header-icon"><Trophy size={28} /></div>
           <div className="intramuros-title">
             <h1>Ranking y Estadísticas</h1>
             <p>Instituto Tecnológico de Ensenada</p>
           </div>
         </div>
-
-        {/* FILTRO DENTRO DEL HEADER */}
         <div className="filter-container">
           <Filter size={18} className="filter-icon" />
           <select
             value={selectedActivityID || ""}
-            onChange={handleActivityChange}
+            onChange={(e) => setSelectedActivityID(e.target.value)}
             className="activity-select"
           >
-            <option value="" disabled>
-              Selecciona una Actividad
-            </option>
-            {activityList.map((activity) => (
-              <option key={activity.ID} value={activity.ID}>
-                {activity.Nombre}
-              </option>
+            {activityList.map((act) => (
+              <option key={act.ID} value={act.ID}>{act.Nombre}</option>
             ))}
           </select>
         </div>
       </header>
 
-      {/* ============================== */}
-      {/* CONTENIDO (Subtítulo y Gráfico) */}
-      {/* ============================== */}
       <div className="content-area">
-        <h3 className="activity-subtitle">{chartTitle} - Top Resultados</h3>
-
-        {/* GRÁFICO O ESTADO SIN DATOS PARA LA ACTIVIDAD */}
-        {chartData.length > 0 && dataKey ? (
+        {chartData.length > 0 ? (
           <div className="chart-wrapper">
-            <ResponsiveContainer width="100%" height={400}>
-              <BarChart
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <ResponsiveContainer width="100%" height={450}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis
                   dataKey="name"
                   interval={0}
-                  angle={-30}
+                  angle={-45}
                   textAnchor="end"
-                  height={70}
-                  tick={{ fontSize: 12 }}
+                  height={100}
                 />
-                <YAxis
-                  label={{
-                    value: yAxisLabel,
-                    angle: -90,
-                    position: "insideLeft",
-                  }}
-                />
+                <YAxis label={{ value: yAxisLabel, angle: -90, position: "insideLeft" }} />
                 <Tooltip
                   formatter={(value, name, props) => [
                     `${value} ${props.payload.unidad}`,
-                    name,
+                    props.payload.equipo !== "Individual" 
+                      ? `Equipo: ${props.payload.equipo}` 
+                      : `Participante: ${props.payload.participante}`
                   ]}
                 />
-                <Legend />
-                <Bar
-                  dataKey={dataKey}
-                  name={yAxisLabel}
-                  fill="#2563eb"
-                  radius={[5, 5, 0, 0]}
-                />
+                <Bar dataKey={dataKey} fill="#2563eb" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         ) : (
           <div className="no-data-state">
-            <TrendingUp size={48} className="no-data-icon" />
-            <p className="no-data-title">
-              No hay datos de ranking para esta actividad.
-            </p>
+            <TrendingUp size={48} />
+            <p>No hay resultados disponibles para esta actividad.</p>
           </div>
         )}
       </div>
