@@ -10,27 +10,17 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
   const [error, setError] = useState(null);
   const [esExterno, setEsExterno] = useState(false);
 
-  // Extraemos datos de la actividad
   const nombreActividad = actividad.Nombre_Actividad || actividad.Actividad || "Actividad";
   const idActividad = actividad.ID_Actividad || "N/A";
-
-  // Lógica para detectar si es grupal
   const esActividadGrupal = ["fútbol", "baloncesto", "torneo", "copa", "vóley", "relevos", "flag", "fubol"]
     .some(p => nombreActividad.toLowerCase().includes(p));
 
   const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    sexo: "",
-    telefono: "",
-    matricula: "",
-    carrera: "",
-    comentarios: "",
-    nombreEquipo: "",
+    nombre: "", email: "", sexo: "", telefono: "", matricula: "", carrera: "", comentarios: "", nombreEquipo: "",
   });
 
   const [integrantes, setIntegrantes] = useState([]);
-  const [nuevoInt, setNuevoInt] = useState({ nombre: "", correo: "" });
+  const [nuevoInt, setNuevoInt] = useState({ nombre: "", correo: "", genero: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,9 +29,12 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
 
   const agregarIntegrante = (e) => {
     e.preventDefault();
-    if (!nuevoInt.nombre.trim()) return;
+    if (!nuevoInt.nombre || !nuevoInt.correo || !nuevoInt.genero) {
+      setError("Completa Nombre, Correo y Género del integrante.");
+      return;
+    }
     setIntegrantes(prev => [...prev, { ...nuevoInt }]);
-    setNuevoInt({ nombre: "", correo: "" });
+    setNuevoInt({ nombre: "", correo: "", genero: "" });
     setError(null);
   };
 
@@ -51,12 +44,10 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Bloqueo manual si ya está cargando para evitar doble clic accidental
     if (loading) return;
 
     if (esActividadGrupal && integrantes.length === 0) {
-      setError("Agrega al menos un integrante con el botón (+)");
+      setError("Agrega al menos un integrante al equipo.");
       return;
     }
 
@@ -73,12 +64,14 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
       matricula: esExterno ? "EXTERNO" : formData.matricula,
       carrera: esExterno ? "EXTERNO" : formData.carrera,
       comentarios: formData.comentarios || "Sin obs.",
-      externo: esExterno ? "SÍ" : "NO",
       nombreEquipo: esActividadGrupal ? (formData.nombreEquipo || "Equipo") : "Individual",
       responsable: formData.nombre,
-      nombresIntegrantes: esActividadGrupal ? integrantes.map(i => i.nombre).join(", ") : "N/A",
-      correosIntegrantes: esActividadGrupal ? integrantes.map(i => i.correo || "S/C").join(", ") : "N/A",
-      is_admin: false // Flag para el script de Google
+      nombresIntegrantes: esActividadGrupal 
+        ? integrantes.map(i => `${i.nombre} (${i.genero})`).join(", ") 
+        : "N/A",
+      correosIntegrantes: esActividadGrupal 
+        ? integrantes.map(i => i.correo).join(", ") 
+        : "N/A",
     };
 
     try {
@@ -89,18 +82,14 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
       });
 
       const result = await response.json();
-      
-      if (result.status === "success" || result.result === "success") {
+      if (result.status === "success") {
         onSuccessfulSubmit("¡Inscripción exitosa!");
         onClose();
       } else {
-        // Manejo de error de duplicado enviado por el Script
-        throw new Error(result.message || "Error al procesar la inscripción.");
+        throw new Error(result.message || "Error al registrar.");
       }
     } catch (err) {
-      console.error("Submit Error:", err);
-      setError(err.message || "Error de conexión. Intenta de nuevo.");
-    } finally {
+      setError(err.message);
       setLoading(false);
     }
   };
@@ -109,25 +98,21 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
     <div className="modal-backdrop">
       <div className="modal-content animate-in">
         <div className="modal-header">
-          <h3>Registro: {nombreActividad}</h3>
+          <h3>Inscripción: {nombreActividad}</h3>
           <button type="button" className="close-button" onClick={onClose} disabled={loading}>&times;</button>
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          {error && <div className="alert-error">{error}</div>}
+          {error && <div className="alert-error" style={{color:'red', background:'#fee2e2', padding:'10px', borderRadius:'8px', marginBottom:'10px'}}>{error}</div>}
 
-          <div className="toggle-wrapper">
-            <span>Alumno ITE</span>
+          {/* SWITCH ALUMNO / EXTERNO */}
+          <div className="toggle-container" style={{display:'flex', justifyContent:'center', gap:'15px', marginBottom:'20px', alignItems:'center'}}>
+            <span style={{fontWeight: !esExterno ? 'bold' : 'normal', color: !esExterno ? '#002855' : '#666'}}>Alumno ITE</span>
             <label className="switch">
-              <input 
-                type="checkbox" 
-                checked={esExterno} 
-                onChange={() => setEsExterno(!esExterno)} 
-                disabled={loading}
-              />
+              <input type="checkbox" checked={esExterno} onChange={() => setEsExterno(!esExterno)} disabled={loading} />
               <span className="slider round"></span>
             </label>
-            <span>Externo</span>
+            <span style={{fontWeight: esExterno ? 'bold' : 'normal', color: esExterno ? '#002855' : '#666'}}>Externo</span>
           </div>
 
           <div className="form-grid">
@@ -142,76 +127,48 @@ const ModalInscripcion = ({ actividad, onClose, onSuccessfulSubmit }) => {
 
             <input type="tel" name="telefono" placeholder="WhatsApp / Teléfono *" onChange={handleChange} required disabled={loading} />
             
+            {/* CAMPOS CONDICIONALES */}
             {!esExterno && (
               <>
                 <input type="text" name="matricula" placeholder="Matrícula *" onChange={handleChange} required disabled={loading} />
                 <input type="text" name="carrera" placeholder="Carrera *" onChange={handleChange} required disabled={loading} />
               </>
             )}
-
-            <input 
-              type="text" 
-              name="comentarios" 
-              placeholder="¿Alguna observación?" 
-              className="full-width" 
-              onChange={handleChange} 
-              disabled={loading}
-            />
+            
+            <input type="text" name="comentarios" placeholder="Observaciones" onChange={handleChange} disabled={loading} className={esExterno ? "full-width" : ""} />
           </div>
 
           {esActividadGrupal && (
             <div className="team-section">
-              <div className="section-divider"><Users size={16}/> Configuración de Equipo</div>
-              <input 
-                type="text" 
-                name="nombreEquipo" 
-                placeholder="Nombre de tu Equipo *" 
-                onChange={handleChange} 
-                required 
-                className="full-width" 
-                disabled={loading}
-              />
+              <div className="section-divider"><Users size={16}/> Datos del Equipo</div>
+              <input type="text" name="nombreEquipo" placeholder="Nombre del Equipo *" onChange={handleChange} required className="full-width" disabled={loading} />
               
-              <div className="section-divider">Integrantes</div>
-              <div className="integrante-input-group">
-                <input 
-                  type="text" 
-                  placeholder="Nombre" 
-                  value={nuevoInt.nombre}
-                  onChange={(e) => setNuevoInt({...nuevoInt, nombre: e.target.value})}
-                  disabled={loading}
-                />
-                <input 
-                  type="email" 
-                  placeholder="Correo" 
-                  value={nuevoInt.correo}
-                  onChange={(e) => setNuevoInt({...nuevoInt, correo: e.target.value})}
-                  disabled={loading}
-                />
-                <button type="button" onClick={agregarIntegrante} className="btn-add" disabled={loading}>
-                  <Plus size={18} />
-                </button>
+              <div className="section-divider">Agregar Integrantes</div>
+              <div className="integrante-input-group" style={{display:'flex', gap:'5px', marginBottom:'10px'}}>
+                <input type="text" placeholder="Nombre" style={{flex:2}} value={nuevoInt.nombre} onChange={(e) => setNuevoInt({...nuevoInt, nombre: e.target.value})} disabled={loading} />
+                <input type="email" placeholder="Correo" style={{flex:2}} value={nuevoInt.correo} onChange={(e) => setNuevoInt({...nuevoInt, correo: e.target.value})} disabled={loading} />
+                <select style={{flex:1}} value={nuevoInt.genero} onChange={(e) => setNuevoInt({...nuevoInt, genero: e.target.value})} disabled={loading}>
+                  <option value="">Gén.</option>
+                  <option value="M">M</option>
+                  <option value="F">F</option>
+                </select>
+                <button type="button" onClick={agregarIntegrante} className="btn-add" disabled={loading}><Plus size={18} /></button>
               </div>
 
               <div className="integrantes-list">
-                {integrantes.map((int, index) => (
-                  <div key={index} className="integrante-item">
-                    <span>{int.nombre}</span>
-                    <button type="button" className="btn-delete-int" onClick={() => eliminarIntegrante(index)} disabled={loading}>
-                      <Trash2 size={14}/>
-                    </button>
+                {integrantes.map((int, i) => (
+                  <div key={i} className="integrante-item" style={{display:'flex', justifyContent:'space-between', padding:'8px', background:'#f8f9fa', borderRadius:'6px', marginBottom:'4px', fontSize:'13px'}}>
+                    <span><b>{int.nombre}</b> ({int.genero}) - {int.correo}</span>
+                    <button type="button" onClick={() => eliminarIntegrante(i)} style={{color:'red', border:'none', background:'none', cursor:'pointer'}}><Trash2 size={14}/></button>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="modal-footer">
-            <button type="button" onClick={onClose} className="btn-cancel" disabled={loading}>Cancelar</button>
-            <button type="submit" className="btn-submit" disabled={loading}>
-              {loading ? "Registrando..." : "Confirmar Registro"}
-            </button>
-          </div>
+          <button type="submit" className="btn-submit" disabled={loading} style={{width:'100%', padding:'15px', background: loading ? '#ccc' : '#002855', color:'white', borderRadius:'10px', marginTop:'20px', fontWeight:'bold', border:'none', cursor: loading ? 'not-allowed' : 'pointer'}}>
+            {loading ? "Procesando Registro..." : "Confirmar Inscripción"}
+          </button>
         </form>
       </div>
     </div>
