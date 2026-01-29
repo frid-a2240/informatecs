@@ -50,7 +50,7 @@ export default function AdminSidebar() {
       label: "Gestionar Eventos",
     },
     {
-      href: "/designs/menuadmin/vistaEvaluaciones",
+      href: "/designs/menuadmin/vistaIntramuros",
       icon: <FaStar />,
       label: "Intramuros",
     },
