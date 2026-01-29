@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, FileText, Download, Edit2, X, Info, Shield } from "lucide-react";
+import { Search, FileText, Download, X, Info, Shield } from "lucide-react";
 import jsPDF from "jspdf";
 
 export default function VistaConstancias() {
@@ -14,10 +14,9 @@ export default function VistaConstancias() {
   const [inscripcionesEstudiante, setInscripcionesEstudiante] = useState([]);
   const [inscripcionSeleccionada, setInscripcionSeleccionada] = useState(null);
 
-  //  CAMBIO: Solo cantidad editable, unidad automática
   const [datosConstancia, setDatosConstancia] = useState({
     periodo: "",
-    cantidadAcreditacion: "", // Solo el número
+    cantidadAcreditacion: "",
   });
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function VistaConstancias() {
       });
       
       if (!response.ok) {
-        console.error(" Error HTTP:", response.status);
+        console.error("Error HTTP:", response.status);
         setEstudiantes([]);
         return;
       }
@@ -41,7 +40,7 @@ export default function VistaConstancias() {
       const inscripciones = await response.json();
       
       if (!Array.isArray(inscripciones)) {
-        console.error(" Respuesta no es array:", inscripciones);
+        console.error("Respuesta no es array:", inscripciones);
         setEstudiantes([]);
         return;
       }
@@ -74,7 +73,7 @@ export default function VistaConstancias() {
 
       setEstudiantes(listaEstudiantes);
     } catch (error) {
-      console.error(" Error al cargar estudiantes:", error);
+      console.error("Error al cargar estudiantes:", error);
       setEstudiantes([]);
     } finally {
       setLoading(false);
@@ -101,7 +100,7 @@ export default function VistaConstancias() {
       });
       
       if (!response.ok) {
-        console.error(" Error HTTP:", response.status);
+        console.error("Error HTTP:", response.status);
         setInscripcionesEstudiante([]);
         return;
       }
@@ -109,7 +108,7 @@ export default function VistaConstancias() {
       const todasInscripciones = await response.json();
 
       if (!Array.isArray(todasInscripciones)) {
-        console.error(" Respuesta no es array");
+        console.error("Respuesta no es array");
         setInscripcionesEstudiante([]);
         return;
       }
@@ -128,7 +127,7 @@ export default function VistaConstancias() {
         }
       }
     } catch (error) {
-      console.error(" Error al cargar inscripciones del estudiante:", error);
+      console.error("Error al cargar inscripciones del estudiante:", error);
       setInscripcionesEstudiante([]);
     }
   };
@@ -146,7 +145,6 @@ export default function VistaConstancias() {
     await cargarInscripcionesEstudiante(estudiante.aluctr);
   };
 
-  //  FUNCIÓN PARA OBTENER UNIDAD SEGÚN PROPÓSITO
   const obtenerUnidadAcreditacion = (proposito) => {
     if (proposito === "servicio_social") {
       return "Horas";
@@ -156,7 +154,6 @@ export default function VistaConstancias() {
     return "";
   };
 
-  //  FUNCIÓN PARA TÍTULO DEL DOCUMENTO
   const obtenerTituloConstancia = (proposito) => {
     if (proposito === "servicio_social") {
       return "Liberación de horas";
@@ -180,12 +177,11 @@ export default function VistaConstancias() {
                              inscripcionSeleccionada.actividad?.aticve || 
                              "Actividad no especificada";
 
-      //  OBTENER PROPÓSITO Y ACREDITACIÓN DINÁMICA
       const proposito = inscripcionSeleccionada.formularioData?.purpose;
       const unidad = obtenerUnidadAcreditacion(proposito);
       const acreditacionCompleta = `${datosConstancia.cantidadAcreditacion} ${unidad}`;
 
-      //  GUARDAR CONSTANCIA EN BASE DE DATOS
+      // GUARDAR CONSTANCIA EN BASE DE DATOS
       const responseConstancia = await fetch("/api/constancias", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -210,50 +206,98 @@ export default function VistaConstancias() {
       const { constancia } = await responseConstancia.json();
       const { folio, codigoVerificacion } = constancia;
 
-      // 2️⃣ GENERAR CÓDIGO QR
+      // GENERAR CÓDIGO QR
       const urlVerificacion = `${window.location.origin}/verificar/${folio}`;
       const qrCodeDataURL = await generarQRCode(urlVerificacion);
 
-      //  GENERAR PDF CON FOLIO Y QR
+      // GENERAR PDF CON FOLIO Y QR
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
+      // ===== CARGAR FUENTE MONTSERRAT =====
+      // IMPORTANTE: Para usar Montserrat en jsPDF, necesitas:
+      // 1. Descargar Montserrat.ttf desde Google Fonts
+      // 2. Convertirlo a base64 usando https://products.aspose.app/font/base64
+      // 3. Agregar la fuente usando doc.addFileToVFS() y doc.addFont()
+      // 
+      // Ejemplo:
+      // const montserratBase64 = "AAEAAAALAIAAAwAwT1M..."; // Base64 de la fuente
+      // doc.addFileToVFS("Montserrat-Regular.ttf", montserratBase64);
+      // doc.addFont("Montserrat-Regular.ttf", "Montserrat", "normal");
+      // doc.setFont("Montserrat");
+      //
+      // Por ahora usamos Helvetica como fuente similar
       doc.setFont("helvetica");
 
-      // Header
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.text("EDUCACIÓN", pageWidth / 2, 20, { align: "center" });
-      doc.setFontSize(10);
-      doc.text("SECRETARÍA DE EDUCACIÓN PÚBLICA", pageWidth / 2, 26, {
-        align: "center",
-      });
+      // ===== CARGAR TODOS LOS LOGOS =====
+      const cargarLogo = (src) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => {
+            console.warn(`No se pudo cargar el logo: ${src}`);
+            resolve(null);
+          };
+          img.src = src;
+          
+          setTimeout(() => {
+            console.warn(`Timeout cargando logo: ${src}`);
+            resolve(null);
+          }, 3000);
+        });
+      };
 
-      doc.setFontSize(12);
-      doc.text("TECNOLÓGICO", pageWidth - 40, 20, { align: "center" });
-      doc.text("NACIONAL DE MÉXICO", pageWidth - 40, 26, { align: "center" });
+      const [logoEducacion, logoTecNM, logoITE] = await Promise.all([
+        cargarLogo('/imagenes/educacionlogo.png'),
+        cargarLogo('/imagenes/tecnlogo.png'),
+        cargarLogo('/imagenes/itelogo.png')
+      ]);
 
-      doc.setFontSize(10);
-      doc.text("Instituto Tecnológico de Ensenada", pageWidth - 30, 35, {
-        align: "right",
-      });
+      // ===== LOGO EDUCACIÓN (IZQUIERDA SUPERIOR) =====
+      if (logoEducacion && logoEducacion.complete && logoEducacion.naturalHeight !== 0) {
+        const logoEdWidth = 60;
+        const logoEdHeight = 15;
+        const logoEdX = 15;
+        const logoEdY = 12;
+        
+        doc.addImage(logoEducacion, 'PNG', logoEdX, logoEdY, logoEdWidth, logoEdHeight);
+      }
 
-      //  TÍTULO DINÁMICO
+      // ===== LOGO TECNM (DERECHA SUPERIOR) =====
+      if (logoTecNM && logoTecNM.complete && logoTecNM.naturalHeight !== 0) {
+        const logoTecNMWidth = 50;
+        const logoTecNMHeight = 20;
+        const logoTecNMX = pageWidth - logoTecNMWidth - 10;
+        const logoTecNMY = 12;
+        
+        doc.addImage(logoTecNM, 'PNG', logoTecNMX, logoTecNMY, logoTecNMWidth, logoTecNMHeight);
+      }
+
+      // ===== TÍTULO Y SUBTÍTULO (DERECHA) =====
       const tituloConstancia = obtenerTituloConstancia(proposito);
       
-      doc.setFontSize(14);
+      doc.setFontSize(13);
       doc.setFont("helvetica", "bold");
-      doc.text("CONSTANCIA DE ACREDITACIÓN DE ACTIVIDAD", pageWidth - 30, 50, {
+      doc.text("Constancia de Acreditación de Actividad", pageWidth - 30, 50, {
         align: "right",
       });
-      doc.text("COMPLEMENTARIA", pageWidth - 30, 57, { align: "right" });
+      doc.text("Complementaria", pageWidth - 30, 57, { align: "right" });
       
-      //  SUBTÍTULO: "Liberación de horas" o "Liberación de créditos"
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       doc.text(tituloConstancia, pageWidth - 30, 64, { align: "right" });
 
-      //  FOLIO Y CÓDIGO DE VERIFICACIÓN
+      // ===== LOGO ITE (A LA ALTURA DE "A QUIEN CORRESPONDA", ESQUINA DERECHA) =====
+      if (logoITE && logoITE.complete && logoITE.naturalHeight !== 0) {
+        const logoITEWidth = 45;
+        const logoITEHeight = 25;
+        const logoITEX = pageWidth - logoITEWidth - 30;
+        const logoITEY = 88; // A la altura de "A quien corresponda"
+        
+        doc.addImage(logoITE, 'PNG', logoITEX, logoITEY, logoITEWidth, logoITEHeight);
+      }
+
+      // ===== FOLIO Y CÓDIGO =====
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
       doc.text(`Folio: ${folio}`, 20, 50);
@@ -264,76 +308,110 @@ export default function VistaConstancias() {
       doc.setFontSize(11);
       doc.setFont("helvetica", "normal");
 
-      let y = 80;
-      doc.text("A QUIEN CORRESPONDA", 20, y);
+      let y = 95;
+      doc.text("A quien corresponda", 20, y);
 
       y += 15;
       doc.setFont("helvetica", "bold");
-      doc.text("PRESENTE", 20, y);
+      doc.text("Presente", 20, y);
 
       y += 15;
       doc.setFont("helvetica", "normal");
 
-      const texto1 = `Se envía un cordial saludo y a su vez se le extiende la presente constancia al (la) alumno (a): `;
-      const texto2 = `, con número de control `;
-      const texto3 = `, quien ha participado en la actividad complementaria: `;
-      const texto4 = `, en el período `;
-      const texto5 = `, bajo la asesoría de `;
-      const texto6 = `Juan Carlos Leal Nodal, obteniendo una acreditación de `;
-      const texto7 = ` conforme a las disposiciones del ITE.`;
-
+      // ===== CONSTRUCCIÓN DEL PÁRRAFO CON CAMPOS EN NEGRITA =====
       const margenIzq = 20;
       const margenDer = pageWidth - 20;
       const anchoTexto = margenDer - margenIzq;
 
-      const escribirTexto = (texto, yPos) => {
-        const lineas = doc.splitTextToSize(texto, anchoTexto);
-        lineas.forEach((linea) => {
-          doc.text(linea, margenIzq, yPos);
-          yPos += 7;
-        });
-        return yPos;
+      // Función helper para capitalizar correctamente (primera letra mayúscula, resto minúscula)
+      const capitalizarTexto = (texto) => {
+        return texto
+          .split(' ')
+          .map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1).toLowerCase())
+          .join(' ');
       };
 
-      const parrafoCompleto = `${texto1}${nombreCompleto}${texto2}${
-        estudianteSeleccionado.aluctr
-      }${texto3}${nombreActividad}${texto4}${
-        datosConstancia.periodo
-      }${texto5}${texto6}${acreditacionCompleta}${texto7}`;
+      // Preparar los textos
+      const nombreFormateado = capitalizarTexto(nombreCompleto);
+      const actividadFormateada = capitalizarTexto(nombreActividad);
+      
+      // Construir el párrafo completo alternando normal y negrita
+      const parrafo = [
+        { texto: "Se envía un cordial saludo y a su vez se le extiende la presente constancia al (la) alumno (a): ", negrita: false },
+        { texto: nombreFormateado, negrita: true },
+        { texto: ", con número de control ", negrita: false },
+        { texto: estudianteSeleccionado.aluctr, negrita: true },
+        { texto: ", quien ha participado en la actividad complementaria: ", negrita: false },
+        { texto: actividadFormateada, negrita: true },
+        { texto: ", en el período ", negrita: false },
+        { texto: datosConstancia.periodo, negrita: true },
+        { texto: ", bajo la asesoría de Juan Carlos Leal Nodal, obteniendo una acreditación de ", negrita: false },
+        { texto: acreditacionCompleta, negrita: true },
+        { texto: " conforme a las disposiciones del ITE.", negrita: false }
+      ];
 
-      y = escribirTexto(parrafoCompleto, y);
+      // Renderizar el párrafo con formato mixto
+      let currentY = y;
+      let currentX = margenIzq;
+      
+      parrafo.forEach((parte, index) => {
+        doc.setFont("helvetica", parte.negrita ? "bold" : "normal");
+        
+        const palabras = parte.texto.split(' ');
+        
+        palabras.forEach((palabra, idxPalabra) => {
+          const palabraConEspacio = (idxPalabra > 0 || index > 0) ? ' ' + palabra : palabra;
+          const anchoPalabra = doc.getTextWidth(palabraConEspacio);
+          
+          // Si la palabra no cabe, saltar a la siguiente línea
+          if (currentX + anchoPalabra > margenDer && currentX > margenIzq) {
+            currentY += 7;
+            currentX = margenIzq;
+            
+            // Quitar el espacio inicial si es inicio de línea
+            const palabraSinEspacio = palabra;
+            const anchoPalabraSinEspacio = doc.getTextWidth(palabraSinEspacio);
+            doc.text(palabraSinEspacio, currentX, currentY);
+            currentX += anchoPalabraSinEspacio;
+          } else {
+            doc.text(palabraConEspacio, currentX, currentY);
+            currentX += anchoPalabra;
+          }
+        });
+      });
 
-      y += 10;
+      currentY += 15;
+      doc.setFont("helvetica", "normal");
       doc.text(
         "Por lo que agradezco su atención para las gestiones necesarias que se requieran.",
         margenIzq,
-        y
+        currentY
       );
 
-      y += 15;
-      doc.text("Saludos.", margenIzq, y);
+      currentY += 15;
+      doc.text("Saludos.", margenIzq, currentY);
 
-      // Firma
-      y += 25;
+      // ===== FIRMA =====
+      currentY += 25;
       doc.setFont("helvetica", "bold");
-      doc.text("A T E N T A M E N T E", margenIzq, y);
-      y += 7;
+      doc.text("Atentamente", margenIzq, currentY);
+      currentY += 7;
       doc.setFont("helvetica", "italic");
       doc.setFontSize(9);
-      doc.text("Excelencia en Educación Tecnológica»", margenIzq, y);
-      y += 5;
-      doc.text("Por la tecnología de hoy y del futuro»", margenIzq, y);
+      doc.text("«Excelencia en Educación Tecnológica»", margenIzq, currentY);
+      currentY += 5;
+      doc.text("«Por la tecnología de hoy y del futuro»", margenIzq, currentY);
 
-      y += 25;
-      doc.line(margenIzq, y, margenIzq + 100, y);
-      y += 7;
+      currentY += 25;
+      doc.line(margenIzq, currentY, margenIzq + 100, currentY);
+      currentY += 7;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.text("Juan Carlos Leal Nodal", margenIzq, y);
-      y += 5;
-      doc.text("Departamento de Actividades Complementarias", margenIzq, y);
+      doc.text("Juan Carlos Leal Nodal", margenIzq, currentY);
+      currentY += 5;
+      doc.text("Departamento de Actividades Extracurriculares", margenIzq, currentY);
 
-      // AGREGAR CÓDIGO QR
+      // ===== CÓDIGO QR =====
       if (qrCodeDataURL) {
         const qrSize = 35;
         const qrX = pageWidth - qrSize - 20;
@@ -348,7 +426,7 @@ export default function VistaConstancias() {
         });
       }
 
-      // Footer
+      // ===== FOOTER =====
       const footerY = pageHeight - 20;
       doc.setFontSize(8);
       doc.text(
@@ -364,14 +442,12 @@ export default function VistaConstancias() {
         { align: "center" }
       );
 
-      doc.save(
-        `Constancia_${folio}_${nombreCompleto}.pdf`
-      );
+      doc.save(`Constancia_${folio}_${nombreCompleto}.pdf`);
 
-      alert(` Constancia generada exitosamente\n\nFolio: ${folio}\nCódigo: ${codigoVerificacion}\nTipo: ${tituloConstancia}`);
+      alert(`Constancia generada exitosamente\n\nFolio: ${folio}\nCódigo: ${codigoVerificacion}\nTipo: ${tituloConstancia}`);
       setMostrarModal(false);
     } catch (error) {
-      console.error(" Error al generar constancia:", error);
+      console.error("Error al generar constancia:", error);
       alert("Error al generar constancia. Inténtalo de nuevo.");
     } finally {
       setGenerandoPDF(false);
@@ -516,7 +592,7 @@ export default function VistaConstancias() {
           )}
         </div>
 
-        {/* Modal de edición */}
+        {/* Modal */}
         {mostrarModal && estudianteSeleccionado && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
@@ -546,17 +622,13 @@ export default function VistaConstancias() {
                 </h4>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm text-gray-600">
-                      No. Control:
-                    </label>
+                    <label className="text-sm text-gray-600">No. Control:</label>
                     <p className="font-semibold text-gray-900">
                       {estudianteSeleccionado.aluctr}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm text-gray-600">
-                      Nombre Completo:
-                    </label>
+                    <label className="text-sm text-gray-600">Nombre Completo:</label>
                     <p className="font-semibold text-gray-900">
                       {`${estudianteSeleccionado.alunom || ""} ${
                         estudianteSeleccionado.aluapp || ""
@@ -588,13 +660,12 @@ export default function VistaConstancias() {
                       const calificacion = inscripcion.calificacion || 0;
                       const estaAprobado = calificacion >= 70;
                       const estadoTexto = calificacion > 0 
-                        ? (estaAprobado ? " Aprobado" : " Reprobado") 
+                        ? (estaAprobado ? "✅ Aprobado" : "❌ Reprobado") 
                         : "⏳ Sin calificar";
                       const estadoColor = calificacion > 0
                         ? (estaAprobado ? "text-green-600" : "text-red-600")
                         : "text-yellow-600";
 
-                      //  Mapeo visual del propósito
                       const propositoTexto = proposito === "creditos" 
                         ? "Créditos" 
                         : proposito === "servicio_social" 
@@ -659,7 +730,7 @@ export default function VistaConstancias() {
                 )}
               </div>
 
-              {/* Datos de la actividad (no editables) */}
+              {/* Datos de la actividad */}
               {inscripcionSeleccionada && (
                 <div className="p-6 bg-green-50 border-b">
                   <h4 className="font-semibold text-gray-700 mb-3">
@@ -730,7 +801,7 @@ export default function VistaConstancias() {
                 </div>
               )}
 
-              {/* ✅ CAMPOS EDITABLES (Solo período y cantidad) */}
+              {/* Campos editables */}
               {inscripcionSeleccionada && (
                 <div className="p-6 space-y-4">
                   <h4 className="font-semibold text-gray-700 mb-3">
@@ -755,7 +826,6 @@ export default function VistaConstancias() {
                     />
                   </div>
 
-                  {/* ✅ ACREDITACIÓN: Solo número editable */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Acreditación *
@@ -787,7 +857,6 @@ export default function VistaConstancias() {
                     </p>
                   </div>
 
-                  {/* Nota de seguridad */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                     <div className="flex items-start gap-3">
                       <Shield className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
