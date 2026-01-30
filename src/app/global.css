@@ -19,6 +19,19 @@
   --white: #ffffff;
   font-family: "Montserrat";
 }
+/* Asegura que el contenedor de la animación sea visible */
+.main-headline {
+  overflow: visible !important;
+  line-height: 1.2;
+  min-height: 1.5em; /* Evita que el contenedor colapse mientras carga */
+}
+
+/* Estilo para el componente SplitText */
+.main-headline-animated {
+  display: inline-block;
+  color: white; /* O el color que desees */
+  font-weight: bold;
+}
 
 /* Corrección para el Título Principal: "Instituto Tecnológico" */
 .main-headline {
@@ -683,7 +696,7 @@
 }
 /* Separación entre secciones */
 .activities-section {
-  padding: 4rem 2rem; /* espacio arriba y abajo */
+  padding: 4rem 4rem; /* espacio arriba y abajo */
   background-color: #f9f9f9; /* opcional para diferenciar */
   border-radius: 8px; /* opcional */
   margin-bottom: 3rem; /* separación de la siguiente sección */
@@ -969,6 +982,33 @@
     padding-left: 0;
     padding-bottom: 10px;
     margin-bottom: 20px;
+  }
+}
+.custom-shape-divider-bottom-hero {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+
+.custom-shape-divider-bottom-hero svg {
+  position: relative;
+  display: block;
+  width: calc(100% + 1.3px);
+  height: 231px;
+}
+
+.custom-shape-divider-bottom-hero .shape-fill {
+  fill: #0d2a52;
+}
+
+@media (max-width: 767px) {
+  .custom-shape-divider-bottom-hero svg {
+    width: calc(103% + 1.3px);
+    height: 156px;
   }
 }
 /* ==========================
@@ -1386,14 +1426,14 @@
   }
 }
 
-@layer base {
+/* @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
   }
-}
+} */
 
 /* ==========================
    Contenedor principal (Modal de formulario)
@@ -1505,6 +1545,7 @@
     flex: 2; /* Imagen toma 40% del espacio */
   }
 }
+
 
 /* En móvil (pantallas menores a 992px), ambos se apilan verticalmente (column) */
 @media (max-width: 991px) {

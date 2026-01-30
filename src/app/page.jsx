@@ -19,16 +19,17 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa6";
+import SplitText from "./components/SplitText";
 
 const HomePage = () => {
   const router = useRouter();
 
-  // Inicialización AOS
+  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeFavOw7p2RTtuzVdN9mQ2WH7Imy1B7uQ45s4HhsEOTSyJRrw/viewform";
+
   useEffect(() => {
     Aos.init({ duration: 1000, once: true });
   }, []);
 
-  // ITEMS DEL SLIDER
   const [items, setItems] = useState([
     {
       id: 1,
@@ -74,25 +75,24 @@ const HomePage = () => {
     },
   ]);
 
-  // SIGUIENTE
   const handleNext = useCallback(() => {
     setItems((prev) => {
       const arr = [...prev];
-      arr.push(arr.shift());
+      const first = arr.shift();
+      if (first) arr.push(first);
       return arr;
     });
   }, []);
 
-  // ANTERIOR
   const handlePrev = useCallback(() => {
     setItems((prev) => {
       const arr = [...prev];
-      arr.unshift(arr.pop());
+      const last = arr.pop();
+      if (last) arr.unshift(last);
       return arr;
     });
   }, []);
 
-  // AUTOPLAY BIEN HECHO + CLEANUP
   useEffect(() => {
     const interval = setInterval(handleNext, 6000);
     return () => clearInterval(interval);
@@ -114,9 +114,18 @@ const HomePage = () => {
               >
                 <div className="content">
                   <div className="instituto-block">
-                    <h1 className="main-headline">
-                      Instituto <br /> Tecnológico
-                    </h1>
+                    <div className="main-headline">
+                      <SplitText
+                        text="Instituto Tecnológico"
+                        className="main-headline-animated"
+                        delay={150}
+                        animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
+                        animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+                        easing="easeOutCubic"
+                        threshold={0.2}
+                        rootMargin="-50px"
+                      />
+                    </div>
                     <span className="sub-headline">De Ensenada</span>
                   </div>
 
@@ -144,6 +153,21 @@ const HomePage = () => {
             <button onClick={handleNext}>
               <FaAngleRight />
             </button>
+          </div>
+
+          {/* WAVE DIVIDER */}
+          <div className="custom-shape-divider-bottom-hero">
+            <svg
+              data-name="Layer 1"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 1200 120"
+              preserveAspectRatio="none"
+            >
+              <path
+                d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+                className="shape-fill"
+              ></path>
+            </svg>
           </div>
         </div>
 
@@ -311,14 +335,14 @@ const HomePage = () => {
           </p>
 
           <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://forms.gle/TU_LINK"
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(formUrl)}`}
             alt="Código QR de la encuesta de intereses para aspirantes"
             className="qr-image"
           />
 
           <button
             className="hero-btn"
-            onClick={() => window.open("https://forms.gle/TU_LINK", "_blank")}
+            onClick={() => window.open(formUrl, "_blank")}
           >
             Contestar encuesta
           </button>
