@@ -12,8 +12,8 @@ import {
   Cell
 } from "recharts";
 import { Trophy, TrendingUp, Filter } from "lucide-react";
-import "./IntramurosResults.css";
-
+// ✅ Corregido: Salir de 'componentes' para entrar en 'styles'
+import "../styles/IntramurosResults.css";
 // Cambia la URL para apuntar específicamente a la hoja de resultados
 const RESULTS_API_URL = "/api/intramuros?hoja=resultado";
 

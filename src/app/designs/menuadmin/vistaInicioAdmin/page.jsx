@@ -12,7 +12,7 @@ import {
   Plus,
   X,
 } from "lucide-react";
-import "./adminpanel.css";
+import "@/styles/admin/adminpanel.css";
 
 const AdminPanel = () => {
   const [modalVerMaestro, setModalVerMaestro] = useState(null);

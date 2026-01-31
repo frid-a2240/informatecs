@@ -1,18 +1,20 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { Calendar, List, User, Trophy } from "lucide-react"; // Importamos Trophy
-// Importamos el archivo CSS personalizado
-import "./intramuros.css";
-import "./intramurocalendario.css";
-import "./form.css";
-// Componentes importados (asegúrate que las rutas sean correctas)
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
-import IntramurosCalendar from "./IntramurosCalendar";
-import IntramurosList from "./intramuroslist";
-import IntramurosResults from "./IntramurosResul";
-// Corregida la capitalización si es necesario
-// 🟢 CORRECCIÓN DE LA RUTA DE IMPORTACIÓN
+
+// 1. Estilos (Rutas relativas a la carpeta 'styles')
+import "./styles/intramuros.css";
+import "./styles/intramurocalendario.css";
+import "./styles/form.css";
+
+// 2. Layout Global (Usando el alias @ correctamente)
+import Navbar from "@/app/components/layout/navbar";
+import Footer from "@/app/components/layout/footer";
+import IntramurosCalendar from "./componentes/IntramurosCalendar";
+import IntramurosList from "./componentes/intramuroslist";
+import IntramurosResults from "./componentes/IntramurosResul";
+
+
 
 const IntramurosPage = () => {
   // Estado para la sección activa: 'calendario', 'actividades', 'contacto', 'resultados'

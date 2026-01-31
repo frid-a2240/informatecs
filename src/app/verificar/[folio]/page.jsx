@@ -8,7 +8,6 @@ export default function VerificarConstancia({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // ✅ Usar React.use() para unwrap params
   const resolvedParams = use(params);
   const folio = resolvedParams.folio;
 

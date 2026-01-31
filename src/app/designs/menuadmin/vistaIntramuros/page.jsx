@@ -8,14 +8,14 @@ import {
 
 // Importamos las secciones (asumiendo que las moviste a archivos propios)
 
-import AdminPublicador from './intramurospublicador';
-import SeccionPartidos from './seccionpartidos';
-import SeccionEquipos from './equipos';
-import SeccionRankings from './seccionracking';
-import SeccionParticipantes from './seccionparticipantes';
-import SeccionReportes from './reportes';
-import Dashboard from './dashboard';
-import SectionActividades from './seccionactividades';
+import SeccionPartidos from './secciones/seccionpartidos';
+import SeccionEquipos from './secciones/equipos';
+import SeccionRankings from './secciones/seccionracking';
+import SeccionParticipantes from './secciones/seccionparticipantes';
+import SeccionReportes from './secciones/reportes';
+import AdminPublicador from './ componentes/intramurospublicador';
+import SectionActividades from './secciones/seccionactividades';
+import Dashboard from './ componentes/dashboard';
 
 const WEB_APP_URL = "/api/intramuros";
 
@@ -56,7 +56,7 @@ const IntramurosPanel = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
-      {/* HEADER - Se queda aquí por ser parte de la navegación */}
+    
       <header className="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-3">
           <div className="bg-blue-600 p-2.5 rounded-xl shadow-lg">
@@ -96,7 +96,7 @@ const IntramurosPanel = () => {
       <main className="p-4 sm:p-6 max-w-[1600px] mx-auto">
         {activeTab === 'dashboard' && <Dashboard {...data} />}
         {activeTab === 'actividades' && (
-            <SectionActividades 
+            <SectionActividades
                 data={data.actividades} 
                 inscripciones={data.inscripciones} 
                 onEdit={(a) => { setEditingActivity(a); setShowEditModal(true); }} 

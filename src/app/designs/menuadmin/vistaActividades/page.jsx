@@ -1,5 +1,5 @@
 "use client";
-import Formulario from "@/app/components/formulario";
+import Formulario from "@/app/components/forms/formulario";
 import React from "react";
 
 const ActividadForm = ({

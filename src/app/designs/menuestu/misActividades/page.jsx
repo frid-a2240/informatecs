@@ -18,7 +18,7 @@ import {
   Ban,
 } from "lucide-react";
 import { FaRunning } from "react-icons/fa";
-import "./actividades.css";
+import "@/styles/alumno/actividades.css";
 import BloodTypeValidator from "@/app/components/blood";
 
 

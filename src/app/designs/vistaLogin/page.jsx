@@ -6,18 +6,18 @@ import { FaUser, FaLock, FaChalkboardTeacher } from "react-icons/fa";
 // Importación de Hooks y estilos
 import { useAuth } from "@/app/components/hooks/authHandlers";
 import { useMaestroAuth } from "@/app/components/hooks/useMaestroAuth";
-import "./login.css";
+import "@/styles/auth/login.css";
 
 // Importar formularios (NOTA: Corregir importación de MascotCarousel)
-import TeacherForm from "@/app/components/TeacherForm";
-import AdminForm from "@/app/components/AdminForm";
-import RegisterForm from "@/app/components/RegisterForm";
-import LoginForm from "@/app/components/loginform";
-import AskEmailForm from "@/app/components/AskEmailForm";
+import TeacherForm from "@/app/components/forms/TeacherForm";
+import AdminForm from "@/app/components/forms/AdminForm";
+import RegisterForm from "@/app/components/forms/RegisterForm";
+import LoginForm from "@/app/components/forms/loginform";
+import AskEmailForm from "@/app/components/forms/AskEmailForm";
 // NOTA: Si VerifyCodeForm es un componente, generalmente no va en /hooks/
 import VerifyCodeForm from "@/app/components/hooks/VerifyCodeForm";
-import UpdatePasswordForm from "@/app/components/UpdatePasswordForm";
-import SchoolRainEffect from "@/app/components/SchoolRainEffect";
+import UpdatePasswordForm from "@/app/components/forms/UpdatePasswordForm";
+import SchoolRainEffect from "@/app/components/animation/SchoolRainEffect";
 import MascotCarousel from "@/app/components/ MascotCarousel";
 
 const LoginPage = () => {

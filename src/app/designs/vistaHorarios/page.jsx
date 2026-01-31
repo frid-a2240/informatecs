@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { FaRunning } from "react-icons/fa";
 import "./horario.css";
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
+import Navbar from "@/app/components/layout/navbar";
+import Footer from "@/app/components/layout/footer";
 
 export default function HorariosActividades() {
   const [actividades, setActividades] = useState([]);

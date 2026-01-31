@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Search, Users } from "lucide-react";
-import AdminSidebar from "@/app/components/navbaradm";
+import AdminSidebar from "@/app/components/layout/navbaradm";
 
 const AlumnosPanel = () => {
   const [estudiantes, setEstudiantes] = useState([]);

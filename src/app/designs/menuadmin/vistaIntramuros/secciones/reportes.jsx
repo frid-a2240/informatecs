@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { Calendar, Swords, Users, Globe, GraduationCap } from 'lucide-react';
-import { ReportCard } from './admincards';
+import { ReportCard } from '../ componentes/admincards';
 
 const SeccionReportes = ({ actividades, resultados, inscripciones }) => {
   
@@ -62,7 +62,7 @@ const SeccionReportes = ({ actividades, resultados, inscripciones }) => {
 
       {/* Fila Principal de Conteos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ReportCard 
+        <ReportCard
           icon={<Calendar size={32}/>} 
           title="Torneos" 
           desc="Disciplinas abiertas" 

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import "./intramurocalendario.css"; // Asegúrate de tener tu CSS vinculado
+import "../styles/intramurocalendario.css"; // Asegúrate de tener tu CSS vinculado
 import {
   Calendar,
   Clock3,

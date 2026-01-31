@@ -69,11 +69,7 @@ export default function AdminSidebar() {
       icon: <FiFile />,
       label: "Constancias",
     },
-    {
-      href: "/designs/menuadmin/configuracion",
-      icon: <FiSettings />,
-      label: "Configuración",
-    },
+   
     {
       href: "/designs/menuadmin/publicaciones",
       icon: <Edit />,

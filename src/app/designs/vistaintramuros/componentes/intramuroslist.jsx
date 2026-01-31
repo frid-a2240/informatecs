@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import "./actividades.css";
+import "../styles/actividades.css";
 
 import {
   FaCalendarAlt,
@@ -10,7 +10,7 @@ import {
   FaClock,
 } from "react-icons/fa";
 
-import ModalInscripcion from "./formulariointra";
+import ModalInscripcion from "../styles/form.css";
 
 // ================= CONFIGURACIÓN API =================
 const API_PROXY_URL = "/api/intramuros";

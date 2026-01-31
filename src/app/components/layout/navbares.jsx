@@ -13,8 +13,7 @@ import {
 } from "react-icons/fi";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import "../styles/navbares.css";
-
+import "@/styles/layouts/navbares.css";
 export default function Sidebar() {
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);

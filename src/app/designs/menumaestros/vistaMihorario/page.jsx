@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import NavbarMaestro from "@/app/components/navbarmaestro";
+import NavbarMaestro from "@/app/components/layout/navbarmaestro";
 import {
   FiCalendar,
   FiClock,

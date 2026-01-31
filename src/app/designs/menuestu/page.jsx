@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
-import NavbarEst from "@/app/components/navbares";
-import "./perfil.css";
+import NavbarEst from "@/app/components/layout/navbares";
+import "@/styles/alumno//perfil.css";
 
 const initialStudentData = {
   nombreCompleto: "",

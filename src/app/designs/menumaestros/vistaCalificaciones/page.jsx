@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import NavbarMaestro from "@/app/components/navbarmaestro";
+import NavbarMaestro from "@/app/components/layout/navbarmaestro";
 import {
   FiBook,
   FiUsers,

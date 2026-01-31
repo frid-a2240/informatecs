@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from 'react';
 import { Download } from 'lucide-react';
 
@@ -33,10 +33,17 @@ export const ReportCard = ({ icon, title, desc, count, color }) => {
   };
   return (
     <button className={`bg-gradient-to-br ${colors[color]} border-2 rounded-2xl p-6 text-left hover:shadow-lg transition-all w-full`}>
-      <div className="flex items-start justify-between mb-4 text-slate-700">{icon}<Download size={20} className="text-slate-400"/></div>
+      <div className="flex items-start justify-between mb-4 text-slate-700">
+        {icon}
+        <Download size={20} className="text-slate-400"/>
+      </div>
       <h3 className="font-black text-slate-900 text-lg mb-2">{title}</h3>
       <p className="text-sm text-slate-600 mb-3">{desc}</p>
       <div className="text-2xl font-black text-slate-900">{count} registros</div>
     </button>
   );
 };
+
+
+const AdminCards = { StatCard, ReportCard };
+export default AdminCards;

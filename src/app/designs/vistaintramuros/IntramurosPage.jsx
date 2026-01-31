@@ -1,6 +1,6 @@
 import React from "react";
 import IntramurosList from "./IntramurosList";
-import IntramurosCalendar from "./IntramurosCalendar";
+import IntramurosCalendar from "./componentes/IntramurosCalendar";
 
 const IntramurosPage = () => {
   return (

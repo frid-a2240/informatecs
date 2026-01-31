@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Plus, Trash2, Users } from "lucide-react";
-import "./form.css";
+import "../styles/form.css";
 
 const POST_API_URL = "/api/intramuros";
 

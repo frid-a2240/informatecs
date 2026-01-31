@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "./components/navbar";
+import Navbar from "./components/layout/navbar";
 import Aos from "aos";
 import "aos/dist/aos.css";
 
-import Footer from "./components/footer";
+import Footer from "./components/layout/footer";
 
 // Icons
 import {
@@ -19,7 +19,7 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa6";
-import SplitText from "./components/SplitText";
+import SplitText from "./components/animation/SplitText";
 
 const HomePage = () => {
   const router = useRouter();
@@ -103,7 +103,7 @@ const HomePage = () => {
       <Navbar />
 
       <div className="homepage-wrapper">
-        {/* HERO / SLIDER */}
+      
         <div className="hero-container" data-aos="fade-in">
           <div className="hero-slide">
             {items.map((item) => (
@@ -121,14 +121,14 @@ const HomePage = () => {
                         delay={150}
                         animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
                         animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
-                        easing="easeOutCubic"
+                        // CORRECCIÓN: Pasamos el array de Bézier directamente para evitar el Runtime Error
+                        easing={[0.33, 1, 0.68, 1]} 
                         threshold={0.2}
                         rootMargin="-50px"
                       />
                     </div>
                     <span className="sub-headline">De Ensenada</span>
                   </div>
-
                   <div className="slide-info">
                     <div className="category-badge">{item.categoria}</div>
                     <div className="name">{item.titulo}</div>

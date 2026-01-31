@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ActividadForm from "@/app/components/formulario";
-import "./eventos.css";
+import ActividadForm from "@/app/components/forms/formulario";
+import "@/styles/alumno/eventos.css";
 import { useStudentData } from "@/app/components/hooks/useStudentData";
 import { useOfertas } from "@/app/components/hooks/useOfertas";
 import { useModalHandler } from "@/app/components/hooks/useModalHandler";
@@ -13,9 +13,7 @@ import OfferModal from "@/app/components/offterModal";
 
 export default function App() {
   // Hook para datos del estudiante
-  const { studentData } = useStudentData(); // ← Eliminé updateStudentData porque solo se usaba para tipo de sangre
-
-  // Hook para ofertas
+  const { studentData } = useStudentData(); 
   const { ofertas, loading, error } = useOfertas("/api/act-disponibles");
 
   // Hook para control del modal
@@ -43,20 +41,16 @@ export default function App() {
     handleClose();
   };
 
-  // Handler para enviar formulario
   const handleFormSubmit = async (formDataFromChild) => {
-    console.log("🟢 handleFormSubmit recibió:", formDataFromChild);
-    console.log("🟢 studentData:", studentData);
-    console.log("🟢 formSport:", formSport);
-
+   
     try {
       await submitInscripcion(
         studentData,
-        null, // ← AQUÍ QUITÉ LA FUNCIÓN QUE ACTUALIZABA EL TIPO DE SANGRE
+        null, 
         formDataFromChild
       );
     } catch (error) {
-      console.error("🔴 Error en handleFormSubmit:", error);
+      console.error("Error en handleFormSubmit:", error);
     }
   };
 
