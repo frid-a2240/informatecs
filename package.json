@@ -13,6 +13,7 @@
     "@fullcalendar/react": "^6.1.11",
     "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.9.0",
+    "@react-pdf/renderer": "^4.3.2",
     "animate.css": "^4.1.1",
     "animejs": "^4.2.2",
     "aos": "^2.3.4",
