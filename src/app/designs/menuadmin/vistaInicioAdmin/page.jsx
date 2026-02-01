@@ -60,7 +60,7 @@ const AdminPanel = () => {
       const actividades = await response.json();
       setTodasActividades(actividades);
     } catch (error) {
-      console.error(error);
+      console.error(error); 
       alert("Error de conexión o al cargar actividades");
     } finally {
       setLoading(false);
