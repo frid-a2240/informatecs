@@ -1,57 +1,510 @@
+/* ================================
+   WELCOME PAGE ENHANCED STYLES
+   ================================ */
 :root {
   --blue-primary: #1b396a;
   --yellow-accent: #fe9e10;
   --blue-hover: #8eafef;
   --text-dark: #333333;
-  --bg-light: linear-gradient(
-    to left,
-    rgba(8, 94, 222, 0.7),
-    rgba(8, 94, 222, 0)
-  );
+  --act-primary: #1b396a;
+  --act-primary-dark: #142a50;
+  --act-primary-light: #8eafef;
+  
   --white: #ffffff;
-  font-family: "Noto Sans", sans-serif;
+  font-family: "Montserrat";
+}
+.welcome-main-enhanced {
+  min-height: 80vh;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
 }
 
-/* Página de bienvenida */
-.welcome-main {
+/* ================================
+   HERO SECTION
+   ================================ */
+
+.welcome-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  min-height: calc(100vh - 80px);
+  align-items: center;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.welcome-hero.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ================================
+   ALBATROS SHOWCASE
+   ================================ */
+
+.albatros-showcase {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  gap: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.main-albatros-container {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.welcome-card {
-  background-color: #ffffff;
-  padding: 2rem;
+.albatros-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8) rotate(-10deg);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.albatros-slide.active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  pointer-events: auto;
+  animation: float 3s ease-in-out infinite;
+}
+
+.albatros-main-image {
+  width: 500px;
+  height: 500px;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+  position: relative;
+  z-index: 2;
+}
+
+.albatros-glow {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  border-radius: 50%;
+  opacity: 0.3;
+  filter: blur(80px);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+/* ================================
+   ALBATROS INDICATORS
+   ================================ */
+
+.albatros-indicators {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(33.333% - 0.67rem);
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1rem 0.5rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+/* Scrollbar styling */
+.albatros-indicators::-webkit-scrollbar {
+  height: 8px;
+}
+
+.albatros-indicators::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.albatros-indicators::-webkit-scrollbar-thumb {
+  background:var(--blue-hover);
+  border-radius: 10px;
+}
+
+.albatros-indicators::-webkit-scrollbar-thumb:hover {
+  background: var(--blue-hover);
+}
+
+.indicator-btn {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.indicator-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.indicator-btn:hover {
+  transform: translateY(-5px);
+  border-color:var(--blue-primary);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+}
+
+.indicator-btn:hover::before {
+  opacity: 1;
+}
+
+.indicator-btn.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+}
+
+.indicator-image {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.indicator-btn:hover .indicator-image {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.indicator-label {
+  color: #1a1a1a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================
+   WELCOME CONTENT
+   ================================ */
+
+.welcome-content-enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  color: #60a5fa;
+  font-size: 0.875rem;
+  font-weight: 600;
+  width: fit-content;
+  animation: slideInRight 0.6s ease 0.2s both;
+}
+
+.icon-trophy {
+  width: 20px;
+  height: 20px;
+}
+
+.welcome-title-enhanced {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1.2;
+  margin: 0;
+  animation: slideInRight 0.6s ease 0.3s both;
+}
+
+.welcome-description {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+  max-width: 600px;
+  margin: 0;
+  animation: slideInRight 0.6s ease 0.4s both;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ================================
+   BENEFITS GRID
+   ================================ */
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.benefit-card {
+  /* background: rgba(5, 5, 255, 0.212); */
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease both;
+}
+
+.benefit-card:nth-child(1) { animation-delay: 0.5s; }
+.benefit-card:nth-child(2) { animation-delay: 0.6s; }
+.benefit-card:nth-child(3) { animation-delay: 0.7s; }
+.benefit-card:nth-child(4) { animation-delay: 0.8s; }
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+}
+
+.benefit-icon {
+  width: 48px;
+  height: 48px;
+  background:  #1d4ed8;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  max-width: 800px;
-}
-
-.welcome-card h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--blue-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
 }
 
-.welcome-card p {
-  font-size: 1rem;
-  line-height: 1.8;
-  color: #333;
+.benefit-icon svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+  stroke-width: 2.5;
 }
 
-/* Responsividad */
+.benefit-card h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 0.5rem 0;
+}
+
+.benefit-card p {
+  font-size: 0.875rem;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.5;
+}
+
+
+
+/* ================================
+   CTA BUTTON
+   ================================ */
+
+.cta-button {
+  background: var(--blue-primary);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+  animation: fadeInUp 0.6s ease 0.8s both;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--blue-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+}
+
+.cta-button:hover::before {
+  opacity: 1;
+}
+
+.cta-button span,
+.cta-button .arrow-icon {
+  position: relative;
+  z-index: 1;
+}
+
+.arrow-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+  stroke-width: 2.5;
+}
+
+.cta-button:hover .arrow-icon {
+  transform: translateX(5px);
+}
+
+/* ================================
+   DECORATIVE SHAPES
+   ================================ */
+
+.decorative-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
 @media (max-width: 1024px) {
-  .dashboard-main {
-    padding: 1.5rem 2rem;
+  .welcome-hero {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 3rem 1.5rem;
   }
 
-  .welcome-card h1 {
-    font-size: 1.7rem;
+  .albatros-main-image {
+    width: 500px;
+    height: 500px;
   }
 
-  .welcome-card p {
-    font-size: 0.95rem;
+  .main-albatros-container {
+    height: 400px;
+  }
+
+  .welcome-title-enhanced {
+    font-size: 2.5rem;
+  }
+
+  .albatros-indicators {
+  display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-hero {
+    padding: 2rem 1rem;
+  }
+
+  .albatros-main-image {
+    width: 250px;
+    height: 250px;
+  }
+
+  .main-albatros-container {
+    height: 350px;
+  }
+
+  .welcome-title-enhanced {
+    font-size: 2rem;
+  }
+
+  .welcome-description {
+    font-size: 1rem;
+  }
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .albatros-indicators {
+    grid-auto-columns: 100%;
+  }
+
+  .indicator-btn {
+    padding: 0.75rem;
+  }
+
+  .indicator-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .indicator-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .albatros-main-image {
+    width: 200px;
+    height: 200px;
+  }
+
+  .main-albatros-container {
+    height: 300px;
+  }
+
+  .welcome-title-enhanced {
+    font-size: 1.75rem;
+  }
+
+  .cta-button {
+    width: 100%;
+    justify-content: center;
   }
 }

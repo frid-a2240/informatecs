@@ -11,11 +11,7 @@
   --act-primary: #1b396a;
   --act-primary-dark: #142a50;
   --act-primary-light: #8eafef;
-  --bg-light: linear-gradient(
-    to left,
-    rgba(8, 94, 222, 0.7),
-    rgba(8, 94, 222, 0)
-  );
+  
   --white: #ffffff;
   font-family: "Montserrat";
 }
