@@ -104,7 +104,8 @@ export default function WelcomePage() {
             </div>
           </div>
 
-          {/* Contenido de Bienvenida */}
+    
+                {/* Contenido de Bienvenida */}
           <div className="welcome-content-enhanced">
             <div className="welcome-badge">
               <svg className="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -112,7 +113,6 @@ export default function WelcomePage() {
               </svg>
               <span>Portal de Eventos ITE</span>
             </div>
-
             <h1 className="welcome-title-enhanced">
               ¡Bienvenido a tu panel de eventos!
             </h1>
