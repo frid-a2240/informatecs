@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import NavbarEst from "@/app/components/layout/navbares";
-import "@/styles/alumno//perfil.css";
+import "@/styles/alumno/perfil.css";
 
 const initialStudentData = {
   nombreCompleto: "",
@@ -14,9 +14,11 @@ const initialStudentData = {
   telefono: "",
   email: "",
   sexo: "",
-  carrera: "", // Nombre de la carrera
-  carreraId: "", // ID de la carrera
-  semestre: "", // Semestre
+  sangre: "", 
+  creditosAprobados: 0,
+  carrera: "", 
+  carreraId: "", 
+  semestre: "",
   inscripciones: [],
 };
 
@@ -37,24 +39,20 @@ export default function DashboardPage() {
       const merged = {
         ...initialStudentData,
         ...parsed,
+        sangre: parsed.alutsa || parsed.sangre || "No disponible",
         carrera: carreraObj.carnom || "Sin carrera asignada",
         carreraId: carreraObj.carcve?.toString() || "N/A",
         semestre: firstInscripcion.calnpe || "No disponible",
-        sexo:
-          parsed.alusex === 1
-            ? "Masculino"
-            : parsed.alusex === 2
-            ? "Femenino"
-            : parsed.sexo || "No disponible",
+        telefono: parsed.alute1 || parsed.telefono || "No disponible",
+        creditosAprobados: parsed.calcac ?? parsed.creditosAprobados ?? 0,
+        sexo: parsed.alusex === 1 ? "Masculino" : parsed.alusex === 2 ? "Femenino" : parsed.sexo || "No disponible",
       };
 
       setStudentData(merged);
-      console.log("✅ Datos del estudiante actualizados:", merged);
       setError(null);
     } catch (err) {
-      console.error("❌ Error al procesar datos del estudiante:", err);
+      console.error("❌ Error al procesar datos:", err);
       setError("Error al procesar la información del estudiante.");
-      setStudentData(initialStudentData);
     } finally {
       setLoading(false);
     }
@@ -68,45 +66,20 @@ export default function DashboardPage() {
     const handleStorageChange = (event) => {
       if (event.key === "studentData") fetchStudentData();
     };
-
     window.addEventListener("storage", handleStorageChange);
-    const interval = setInterval(() => {
-      const savedData = localStorage.getItem("studentData");
-      if (savedData) {
-        const parsed = JSON.parse(savedData);
-        if (parsed.numeroControl !== studentData.numeroControl) {
-          fetchStudentData();
-        }
-      }
-    }, 5000);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [fetchStudentData]);
 
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      clearInterval(interval);
-    };
-  }, [fetchStudentData, studentData.numeroControl]);
-
-  if (loading)
-    return (
-      <div className="perfil-container perfil-centered">
-        <div className="perfil-loading">
-          <div className="spinner"></div>
-          <p>Cargando información del perfil...</p>
-        </div>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="perfil-container perfil-centered">
-        <div className="perfil-error">{error}</div>
-      </div>
-    );
+  if (loading) return (
+    <div className="perfil-centered">
+      <div className="spinner"></div>
+      <p>Cargando información del perfil...</p>
+    </div>
+  );
 
   const {
     nombreCompleto,
     numeroControl,
-    ubicacion,
     fotoUrl,
     fechaNacimiento,
     rfc,
@@ -117,95 +90,86 @@ export default function DashboardPage() {
     carreraId,
     semestre,
     sexo,
+    sangre,
+    creditosAprobados,
   } = studentData;
-
-  const defaultText = "No disponible";
 
   const InfoCard = ({ icon, title, items }) => (
     <div className="info-card">
       <div className="card-header">
-        <div className="card-icon">{icon}</div>
-        <h2 className="card-title">{title}</h2>
+        <div className="card-icon-box">{icon}</div>
+        <div>
+          <h2 className="card-title">{title}</h2>
+          
+        </div>
       </div>
       <div className="card-content">
-        {items.map(
-          (item, index) =>
-            item.value && (
-              <div key={index} className="info-item">
-                <span className="info-label">{item.label}</span>
-                <span className="info-value">{item.value}</span>
-              </div>
-            )
-        )}
+        {items.map((item, index) => (
+          <div key={index} className="data-row">
+            <span className="data-label">{item.label}</span>
+            <span className="data-value">
+              {item.value || "No disponible"}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
 
   return (
-    <div className="perfil-container">
+    <div className="main-page-container">
+    
       <div className="portfolio-wrapper">
-        <div className="hero-section">
-          <div className="hero-background"></div>
-          <div className="hero-content">
-            <div className="profile-image-wrapper">
-              <img
-                className="profile-image"
-                src={fotoUrl || "/imagenes/logoelegantee.png"}
-                alt="Foto del estudiante"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = "/imagenes/logoelegantee.png";
-                }}
+        <header className="welcome-section">
+          <div className="welcome-grid">
+            <div className="mascot-container">
+              <img 
+                src={fotoUrl || "/imagenes/logoelegantee.png"} 
+                className="profile-main-img" 
+                alt="Foto" 
+                onError={(e) => { e.target.src = "/imagenes/logoelegantee.png"; }}
               />
-              <div className="status-badge">Activo</div>
             </div>
-            <div className="hero-text">
-              <h1 className="hero-name">{nombreCompleto || defaultText}</h1>
-              <p className="hero-control">{numeroControl || defaultText}</p>
-              <div className="hero-meta">
-                <span className="meta-item">
-                  {ubicacion || "Sin ubicación"}
-                </span>
-                <span className="meta-item">{email || "Sin email"}</span>
-              </div>
+            <div className="welcome-text-content">
+            
+              <h1 className="welcome-title">¡Bienvenido, {nombreCompleto.split(' ')[0]}!</h1>
+              <p className="welcome-description">
+                Esta es tu ficha de identidad académica. Por favor, verifica que tu información 
+                personal y escolar coincida con tus documentos oficiales.
+              </p>
+              
             </div>
           </div>
-        </div>
+        </header>
 
-        <div className="info-grid">
+        <main className="info-grid">
           <InfoCard
-            icon={
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 9s1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            }
+            icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>}
             title="Información Personal"
             items={[
               { label: "Nombre Completo", value: nombreCompleto },
               { label: "Fecha de Nacimiento", value: fechaNacimiento },
+              { label: "Tipo de Sangre", value: sangre },
               { label: "RFC", value: rfc },
               { label: "CURP", value: curp },
-              { label: "Teléfono", value: telefono },
-              { label: "Email", value: email },
               { label: "Sexo", value: sexo },
-              { label: "Semestre", value: semestre },
+              { label: "Teléfono", value: telefono },
+              { label: "Email", value: email || studentData.alumai },
             ]}
           />
 
           <InfoCard
-            icon={
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
-              </svg>
-            }
+            icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>}
             title="Información Académica"
             items={[
               { label: "Carrera", value: carrera },
-              { label: "ID Carrera", value: carreraId },
-              { label: "Número de Control", value: numeroControl },
+              { label: "Clave de Carrera", value: carreraId },
+              { label: "Matrícula / Control", value: numeroControl },
+              { label: "Semestre Actual", value: semestre },
+              { label: "Créditos Aprobados", value: creditosAprobados },
             ]}
           />
-        </div>
+        </main>
       </div>
     </div>
   );

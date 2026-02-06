@@ -161,41 +161,49 @@ const LoginPage = () => {
   // Componente interno de redirección para estudiantes
   // ----------------------
   const RedirectAfterLogin = ({ fullName, studentData }) => {
-    const internalRouter = useRouter(); // Usar internalRouter para evitar confusión
+    const internalRouter = useRouter();
 
     useEffect(() => {
       if (studentData) {
+        // Mapeo exhaustivo para asegurar que "jalen" los datos nuevos
         const cleanedData = {
-          nombreCompleto: studentData.nombreCompleto || "",
-          numeroControl: studentData.numeroControl || "",
-          ubicacion: studentData.ubicacion || "",
-          fotoUrl: studentData.fotoUrl || "",
-          fechaNacimiento: studentData.fechaNacimiento || "",
-          rfc: studentData.rfc || "",
-          curp: studentData.curp || "",
-          telefono: studentData.telefono || "",
-          email: studentData.email || "",
+          // Datos básicos
+          nombreCompleto: studentData.nombreCompleto || fullName || "",
+          numeroControl: studentData.numeroControl || studentData.aluctr || "",
+          
+          // Información Personal (mapeada de tu esquema Prisma)
+          ubicacion: studentData.ubicacion || studentData.aluciu || "",
+          fotoUrl: studentData.fotoUrl || studentData.alufac || "",
+          fechaNacimiento: studentData.fechaNacimiento || studentData.alunac || "",
+          rfc: studentData.rfc || studentData.alurfc || "",
+          curp: studentData.curp || studentData.alucur || "",
+          telefono: studentData.telefono || studentData.alute1 || "",
+          email: studentData.email || studentData.alumai || "",
           sexo: studentData.sexo || "",
-          alunac: studentData.alunac || "Sin carrera asignada",
-          cve: studentData.cve || "N/A",
+          
+          
+          sangre: studentData.sangre || studentData.alutsa || "No disponible", 
+          creditosAprobados: studentData.creditosAprobados || studentData.calcac || studentData.aluegr || 0,
+          
+          // Información Académica
+          carrera: studentData.carrera || "Sin carrera asignada",
+          carreraId: studentData.carreraId || studentData.carcve || "N/A",
+          semestre: studentData.semestre || "No disponible",
           inscripciones: studentData.inscripciones || [],
         };
 
+        // Guardamos en localStorage para que el Dashboard lo lea
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
-        console.log(
-          "✅ Datos del estudiante guardados en localStorage:",
-          cleanedData
-        );
+        
+        console.log("✅ Datos preparados para el perfil:", cleanedData);
 
+        // Redirección al menú de estudiantes
         internalRouter.push(
-          `/designs/menuestu?name=${encodeURIComponent(fullName)}`
+          `/designs/menuestu?name=${encodeURIComponent(fullName || cleanedData.nombreCompleto)}`
         );
       }
     }, [internalRouter, fullName, studentData]);
-
-    return null;
-  };
-
+  }
   const RedirectAfterMaestroLogin = ({ fullName, maestroData }) => {
     const internalRouter = useRouter(); // Usar internalRouter para evitar confusión
 

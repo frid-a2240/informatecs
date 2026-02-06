@@ -105,7 +105,6 @@ export default function WelcomePage() {
           </div>
 
     
-                {/* Contenido de Bienvenida */}
           <div className="welcome-content-enhanced">
             <div className="welcome-badge">
               <svg className="icon-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -124,7 +123,7 @@ Antes de lanzarte a las actividades, dale un vistazo rápido a tu perfil para co
 Desde aquí podrás seguir tus registros y, al terminar, descargar tu constancia de liberación fácilmente. ¡Esperamos que disfrutes la experiencia!
     </p>
 
-            {/* Cards de Beneficios */}
+          
             <div className="benefits-grid">
               <div className="benefit-card">
                 <div className="benefit-icon">
@@ -143,7 +142,7 @@ Desde aquí podrás seguir tus registros y, al terminar, descargar tu constancia
                   </svg>
                 </div>
                 <h3>Actividades Ofertadas</h3>
-                <p>Descubre e inscríbete en eventos adaptados a tu perfil</p>
+                <p>Descubre e inscríbete en eventos adaptados a tus intereses </p>
               </div>
 
               <div className="benefit-card">
