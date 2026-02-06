@@ -496,8 +496,9 @@
 
 @media (max-width: 480px) {
   .albatros-main-image {
-    width: 200px;
-    height: 200px;
+    top: 2;
+    width: 300px;
+    height: 400px;
   }
 
   .main-albatros-container {

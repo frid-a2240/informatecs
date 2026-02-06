@@ -7,6 +7,7 @@
   --bg-activity-light: rgba(8, 94, 222, 0.05);
   font-family: "Noto Sans", sans-serif;
 }
+
 /* === Submenús anidados === */
 .submenu {
   max-height: 0;
@@ -152,57 +153,71 @@
   white-space: nowrap;
 }
 
-/* ─────────── RESPONSIVE (móviles) ─────────── */
-
+/* ─────────── RESPONSIVE (Móvil: Transparente y Colapsable) ─────────── */
 @media (max-width: 768px) {
-  .title {
-    padding-top: 60px; /* o margin-top */
-  }
-
   .sliderstu {
-    top: 0;
-    bottom: auto;
-    height: 60px !important;
     width: 100% !important;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    padding: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Cambié border-top a border-bottom */
-    z-index: 1000;
+    height: 70px !important; /* Altura de la barra superior */
+    background: rgba(27, 57, 106, 0.7) !important; /* Cristal transparente */
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    overflow: visible; 
   }
 
   .sliderstu-header {
-    display: none;
+    display: flex !important; /* Se ve el contenido (Logo/Botón) */
+    height: 70px;
+    padding: 0 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
+  .logo-container img {
+    height: 50px;
+    width: auto;
+  }
+
+  /* EL MENÚ QUE CAE (Oculto por defecto) */
   .menu {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
+    position: absolute;
+    top: 70px;
+    left: 0;
     width: 100%;
-    margin: 0;
-    padding: 0;
+    background: rgba(27, 57, 106, 0.95); /* Fondo del menú desplegado */
+    backdrop-filter: blur(10px);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.4s ease-in-out;
+  }
+
+  /* Clase para MOSTRAR el menú (Úsala en el <ul> o mediante una clase en el padre) */
+  .menu.open, 
+  .sliderstu-open .menu {
+    max-height: 100vh;
+    opacity: 1;
+    padding: 1rem 0;
   }
 
   .menu-item {
-    flex-direction: column;
-    padding: 0.3rem;
+    width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .menu-link {
-    flex-direction: column;
-    gap: 0.25rem;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.75rem;
+    display: flex !important; /* Asegura que se vea icono y texto */
+    flex-direction: row !important; /* Icono a la izquierda */
+    padding: 1rem 1.5rem;
+    gap: 1.5rem;
   }
 
   .icon {
-    font-size: 1.3rem;
+    display: block !important;
+    font-size: 1.4rem;
+    color: var(--white);
   }
 
   .title {
-    font-size: 0.7rem;
+    display: block !important;
+    font-size: 1rem;
   }
 }

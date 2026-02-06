@@ -16,19 +16,7 @@
   font-family: "Noto Sans", sans-serif;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
-body {
-  min-height: 100vh;
-  background: var(--bg-main);
-  padding: 2rem 1rem;
-  position: relative;
-  overflow-x: hidden;
-}
 
 body::before {
   content: "";
@@ -297,7 +285,7 @@ body::before {
   background: var(--card-bg-primary);
   border-radius: 30px;
   box-shadow: 0 15px 50px var(--card-shadow);
-  overflow: hidden;
+  /* overflow: hidden; */
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: 2px solid rgba(142, 175, 239, 0.2);
   position: relative;

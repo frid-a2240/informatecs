@@ -76,9 +76,6 @@
 }
 
 /* ==================== Main Content ==================== */
-.act-main {
-  animation: actFadeIn 0.5s ease-in;
-}
 
 @keyframes actFadeIn {
   from {
