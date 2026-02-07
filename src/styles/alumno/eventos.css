@@ -198,7 +198,6 @@ p.subtitle {
   z-index: 10; /* Asegura que esté sobre ::after */
 }
 
-/* 🔹 Borde eléctrico animado */
 .modal::before {
   content: "";
   position: absolute;
@@ -220,7 +219,6 @@ p.subtitle {
   z-index: 0;
 }
 
-/* 🔹 Capa blanca interna */
 .modal::after {
   content: "";
   position: absolute;
@@ -230,7 +228,7 @@ p.subtitle {
   z-index: 1;
 }
 
-/* 🔹 Contenido real del modal */
+
 .modal > * {
   position: relative;
   z-index: 2;
@@ -267,28 +265,9 @@ p.subtitle {
   }
 }
 
-@keyframes popOut {
-  from {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0.85) translateY(15px);
-    opacity: 0;
-  }
-}
 
-@keyframes electricBorder {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+
+
 
 /* Imagen, títulos y botones siguen igual */
 .modal img {
@@ -312,61 +291,7 @@ p.subtitle {
   color: #4b5563;
 }
 
-/* ==========================
-   🔹 Animaciones
-========================== */
 
-/* Fondo (overlay) */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-  }
-  to {
-    opacity: 1;
-    backdrop-filter: blur(6px);
-  }
-}
-
-/* Aparición del modal */
-@keyframes popIn {
-  0% {
-    transform: scale(0.8) translateY(20px);
-    opacity: 0;
-  }
-  60% {
-    transform: scale(1.05) translateY(-6px);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-  }
-}
-
-/* Efecto de cierre suave */
-@keyframes popOut {
-  from {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0.85) translateY(15px);
-    opacity: 0;
-  }
-}
-
-/* Borde eléctrico */
-@keyframes electricBorder {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 
 /* Estado de cierre */
 .modal.closing {
@@ -405,7 +330,7 @@ p.subtitle {
 /* --- Botón de registro --- */
 .register-btn {
   padding: 0.9rem 2rem;
-  background: linear-gradient(135deg, var(--blue-primary), #1e88ff);
+  background: var(--blue-primary);
   border: none;
   border-radius: 0.6rem;
   color: var(--white);
@@ -418,7 +343,7 @@ p.subtitle {
 }
 
 .register-btn:hover {
-  background: linear-gradient(135deg, var(--blue-hover), var(--yellow-accent));
+  background: var(--blue-hover);
   transform: scale(1.02) translateY(-2px);
   box-shadow: 0 8px 20px rgba(27, 57, 106, 0.35);
 }
@@ -428,12 +353,6 @@ p.subtitle {
   margin-top: 1rem;
   text-align: center;
   font-weight: bold;
-}
-.status-message.success {
-  color: #16a34a; /* verde éxito */
-}
-.status-message.error {
-  color: #dc2626; /* rojo error */
 }
 
 @media (max-width: 640px) {
@@ -465,5 +384,234 @@ p.subtitle {
 
   .info-item {
     margin-bottom: 1rem;
+  }
+}
+/* Header con mascota */
+.header-with-mascot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 2rem;
+  padding: 0;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.header-content h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--blue-primary);
+  margin-bottom: 0.5rem;
+}
+
+.header-content .subtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.mascot-container {
+  flex-shrink: 0;
+  animation: float 3s ease-in-out infinite;
+}
+
+.mascot-image {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.mascot-image:hover {
+  transform: scale(1.05) rotate(-5deg);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Indicador de pasos */
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  padding: 2rem 1.5rem;
+  
+  border-radius: 16px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  position: relative;
+  min-width: 140px;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+  border: 4px solid transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.step.active .step-number {
+  background: var(--blue-primary);
+  color: white;
+  border-color: var(--blue-primary);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.step.completed .step-number {
+  background: var(--blue-primary);
+  color: white;
+  border-color: var(--blue-primary);
+}
+
+/* Checkmark para pasos completados */
+.step.completed .step-number::before {
+  content: "✓";
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.step-label {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  font-weight: 500;
+  text-align: center;
+  max-width: 140px;
+  line-height: 1.4;
+}
+
+.step.active .step-label {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.step.completed .step-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.step-line {
+  width: 120px;
+  height: 3px;
+  background-color: #e5e7eb;
+  margin: 0 1rem;
+  transition: all 0.4s ease;
+  position: relative;
+  top: -25px;
+  border-radius: 2px;
+}
+
+.step-line.completed {
+  background: var(--blue-primary)
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .header-with-mascot {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mascot-container {
+    order: -1;
+  }
+
+  .header-content h1 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .steps-indicator {
+    padding: 1.5rem 0.75rem;
+    overflow-x: auto;
+  }
+
+  .step {
+    min-width: 110px;
+  }
+
+  .step-number {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+    max-width: 110px;
+  }
+
+  .step-line {
+    width: 70px;
+    margin: 0 0.5rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.75rem;
+  }
+
+  .header-content .subtitle {
+    font-size: 1rem;
+  }
+
+  .mascot-image {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 640px) {
+  .step {
+    min-width: 90px;
+  }
+
+  .step-number {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    max-width: 90px;
+  }
+
+  .step-line {
+    width: 50px;
+    margin: 0 0.25rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .mascot-image {
+    width: 120px;
+    height: 120px;
   }
 }

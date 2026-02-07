@@ -7,8 +7,6 @@ export async function GET(request) {
     const aluctr = searchParams.get('aluctr');
     const whereClause = aluctr ? { estudianteId: aluctr } : {};
 
-    console.log("🔍 Buscando inscripciones para:", aluctr || "TODOS");
-
     const inscripciones = await prisma.inscripact.findMany({
       where: whereClause,
       include: {
@@ -23,10 +21,8 @@ export async function GET(request) {
             alusex: true,
             alumai: true,
             alutsa: true,
-            inscripciones: {  // ← estudicarr (aquí está calnpe)
-              select: {
-                calnpe: true
-              }
+            inscripciones: {
+              select: { calnpe: true }
             }
           },
         },
@@ -34,27 +30,19 @@ export async function GET(request) {
       orderBy: { fechaInscripcion: 'desc' },
     });
 
-    console.log("📊 Inscripciones encontradas:", inscripciones.length);
-    console.log("🔍 Primera estudiante.inscripciones:", 
-      inscripciones[0]?.estudiante.inscripciones);
-
     const inscripcionesTransformadas = inscripciones.map((inscripcion) => {
-      // Parse formularioData
       let formularioData = null;
       if (inscripcion.formularioData) {
         try {
-          formularioData = typeof inscripcion.formularioData === 'string' 
-            ? JSON.parse(inscripcion.formularioData) 
+          formularioData = typeof inscripcion.formularioData === 'string'
+            ? JSON.parse(inscripcion.formularioData)
             : inscripcion.formularioData;
         } catch (error) {
           console.error("Error parseando formularioData:", error);
         }
       }
 
-      // ✅ EXTRAER calnpe de inscripciones (estudicarr)
       const calnpe = inscripcion.estudiante.inscripciones?.[0]?.calnpe || null;
-
-      console.log(`📊 Estudiante ${inscripcion.estudiante.aluctr}: calnpe="${calnpe}"`);
 
       return {
         id: inscripcion.id,
@@ -79,26 +67,71 @@ export async function GET(request) {
           alusex: inscripcion.estudiante.alusex,
           alumai: inscripcion.estudiante.alumai,
           alutsa: inscripcion.estudiante.alutsa,
-          calnpe: calnpe,  // ✅ AQUÍ ESTÁ LA CLAVE
+          calnpe,
         },
       };
     });
 
-    return new Response(
-      JSON.stringify(inscripcionesTransformadas),
-      {
-        status: 200,
-        headers: { 
-          "Content-Type": "application/json",
-          "Cache-Control": "no-store, max-age=0",
-        },
-      }
-    );
+    return new Response(JSON.stringify(inscripcionesTransformadas), {
+      status: 200,
+      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    });
   } catch (error) {
     console.error("❌ Error en GET /api/inscripciones:", error);
-    return new Response(JSON.stringify([]), { 
-      status: 500, 
-      headers: { "Content-Type": "application/json" } 
+    return new Response(JSON.stringify([]), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+// ======================
+// POST: Crear nueva inscripción
+// ======================
+export async function POST(request) {
+  try {
+    const body = await request.json();
+
+    // Validación básica
+    if (!body.aluctr || !body.actividadId) {
+      return new Response(JSON.stringify({ error: "Datos incompletos" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Verificar si ya existe
+    const existente = await prisma.inscripact.findFirst({
+      where: { estudianteId: body.aluctr, actividadId: body.actividadId },
+    });
+
+    if (existente) {
+      return new Response(JSON.stringify({ error: "Ya inscrito en esta actividad" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Crear inscripción
+    const nuevaInscripcion = await prisma.inscripact.create({
+      data: {
+        estudianteId: body.aluctr,
+        actividadId: body.actividadId,
+        ofertaId: body.ofertaId || null,
+        formularioData: body.formularioData ? JSON.stringify(body.formularioData) : null,
+        tipoSangreSolicitado: body.tipoSangreSolicitado || null,
+      },
+    });
+
+    return new Response(JSON.stringify(nuevaInscripcion), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("❌ Error en POST /api/inscripciones:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
     });
   }
 }

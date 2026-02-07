@@ -10,17 +10,15 @@ import { useInscripcion } from "@/app/components/hooks/useInscripcion";
 import { useCarousel } from "@/app/components/hooks/useCarousel";
 import Card from "@/app/components/card";
 import OfferModal from "@/app/components/offterModal";
+import Image from "next/image";
 
 export default function App() {
-  // Hook para datos del estudiante
   const { studentData } = useStudentData(); 
   const { ofertas, loading, error } = useOfertas("/api/act-disponibles");
 
-  // Hook para control del modal
   const { selectedItem, selectedId, handleOpen, handleClose } =
     useModalHandler();
 
-  // Hook para inscripción
   const {
     formSport,
     showForm,
@@ -32,21 +30,34 @@ export default function App() {
     submitInscripcion,
   } = useInscripcion();
 
-  // Hook para el carousel
   const { carouselRef, scrollCarousel } = useCarousel(408);
 
-  // Handler para registrar (abre el formulario)
+  /* ===============================
+     REGISTRAR ACTIVIDAD
+     =============================== */
   const handleRegister = (item) => {
-    iniciarInscripcion(item);
+    if (!studentData?.numeroControl) {
+      alert("No se pudo obtener el número de control del alumno");
+      return;
+    }
+
+    iniciarInscripcion(item, studentData.numeroControl); // ✅ CORREGIDO
     handleClose();
   };
 
+  /* ===============================
+     ENVIAR FORMULARIO
+     =============================== */
   const handleFormSubmit = async (formDataFromChild) => {
-   
+    if (!studentData?.numeroControl) {
+      alert("No se pudo obtener el número de control del alumno");
+      return;
+    }
+
     try {
       await submitInscripcion(
         studentData,
-        null, 
+        null,
         formDataFromChild
       );
     } catch (error) {
@@ -54,27 +65,101 @@ export default function App() {
     }
   };
 
-  // Mostrar formulario de inscripción
+  /* ===============================
+     VISTA FORMULARIO (PASO 2)
+     =============================== */
   if (showForm && formSport) {
     return (
-      <ActividadForm
-        formData={formData}
-        setFormData={setFormData}
-        handleFormSubmit={handleFormSubmit}
-        selectedSport={formSport}
-        cancelar={cancelarInscripcion}
-        isSubmitting={isSubmitting}
-      />
+      <div className="dashboard-container">
+        <main className="dashboard-main">
+          <div className="header-with-mascot">
+            <div className="header-content">
+              <h1>Ofertas del Semestre</h1>
+              <p className="subtitle">
+                Explora las actividades disponibles y regístrate fácilmente
+              </p>
+
+              <div className="steps-indicator">
+                <div className="step completed">
+                  <div className="step-number">1</div>
+                  <div className="step-label">Seleccionar actividad</div>
+                </div>
+                <div className="step-line completed"></div>
+                <div className="step active">
+                  <div className="step-number">2</div>
+                  <div className="step-label">Llenar formulario</div>
+                </div>
+                <div className="step-line"></div>
+                <div className="step">
+                  <div className="step-number">3</div>
+                  <div className="step-label">Confirmar inscripción</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mascot-container">
+              <Image
+                src="/imagenes/eventos.png"
+                alt="Mascota Albatros"
+                width={180}
+                height={180}
+              />
+            </div>
+          </div>
+
+          <ActividadForm
+            formData={formData}
+            setFormData={setFormData}
+            handleFormSubmit={handleFormSubmit}
+            selectedSport={formSport}
+            cancelar={cancelarInscripcion}
+            isSubmitting={isSubmitting}
+          />
+        </main>
+      </div>
     );
   }
 
+  /* ===============================
+     VISTA PRINCIPAL (PASO 1)
+     =============================== */
   return (
     <div className="dashboard-container">
       <main className="dashboard-main">
-        <h1>Ofertas del Semestre</h1>
-        <p className="subtitle">
-          Explora las actividades disponibles y regístrate fácilmente
-        </p>
+        <div className="header-with-mascot">
+          <div className="header-content">
+            <h1>Ofertas del Semestre</h1>
+            <p className="subtitle">
+              Explora las actividades disponibles y regístrate fácilmente
+            </p>
+
+            <div className="steps-indicator">
+              <div className="step active">
+                <div className="step-number">1</div>
+                <div className="step-label">Seleccionar actividad</div>
+              </div>
+              <div className="step-line"></div>
+              <div className="step">
+                <div className="step-number">2</div>
+                <div className="step-label">Llenar formulario</div>
+              </div>
+              <div className="step-line"></div>
+              <div className="step">
+                <div className="step-number">3</div>
+                <div className="step-label">Confirmar en Mis Inscripciones</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mascot-container">
+            <Image
+              src="/imagenes/eventos.png"
+              alt="Mascota Albatros"
+              width={180}
+              height={180}
+            />
+          </div>
+        </div>
 
         {loading ? (
           <p>Cargando...</p>
@@ -85,10 +170,10 @@ export default function App() {
             <button
               className="carousel-btn left"
               onClick={() => scrollCarousel("left")}
-              aria-label="Desplazar ofertas a la izquierda"
             >
               <ChevronLeft />
             </button>
+
             <div ref={carouselRef} className="carousel">
               {ofertas.map((item) => (
                 <Card
@@ -99,10 +184,10 @@ export default function App() {
                 />
               ))}
             </div>
+
             <button
               className="carousel-btn right"
               onClick={() => scrollCarousel("right")}
-              aria-label="Desplazar ofertas a la derecha"
             >
               <ChevronRight />
             </button>
