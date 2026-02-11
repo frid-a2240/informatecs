@@ -54,7 +54,8 @@ export default function DashboardPage() {
       console.error("❌ Error al procesar datos:", err);
       setError("Error al procesar la información del estudiante.");
     } finally {
-      setLoading(false);
+      // Un pequeño delay para asegurar que el CSS esté listo antes de quitar el spinner
+      setTimeout(() => setLoading(false), 100);
     }
   }, []);
 
@@ -70,37 +71,12 @@ export default function DashboardPage() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [fetchStudentData]);
 
-  if (loading) return (
-    <div className="perfil-centered">
-      <div className="spinner"></div>
-      <p>Cargando información del perfil...</p>
-    </div>
-  );
-
-  const {
-    nombreCompleto,
-    numeroControl,
-    fotoUrl,
-    fechaNacimiento,
-    rfc,
-    curp,
-    telefono,
-    email,
-    carrera,
-    carreraId,
-    semestre,
-    sexo,
-    sangre,
-    creditosAprobados,
-  } = studentData;
-
   const InfoCard = ({ icon, title, items }) => (
     <div className="info-card">
       <div className="card-header">
         <div className="card-icon-box">{icon}</div>
         <div>
           <h2 className="card-title">{title}</h2>
-          
         </div>
       </div>
       <div className="card-content">
@@ -118,59 +94,71 @@ export default function DashboardPage() {
 
   return (
     <div className="main-page-container">
-    
-      <div className="portfolio-wrapper">
-        <header className="welcome-section">
-          <div className="welcome-grid">
-            <div className="mascot-container">
-              <img 
-                src={fotoUrl || "/imagenes/logoelegantee.png"} 
-                className="profile-main-img" 
-                alt="Foto" 
-                onError={(e) => { e.target.src = "/imagenes/logoelegantee.png"; }}
-              />
-            </div>
-            <div className="welcome-text-content">
-            
-              <h1 className="welcome-title">¡Bienvenido, {nombreCompleto.split(' ')[0]}!</h1>
-              <p className="welcome-description">
-                Esta es tu ficha de identidad académica. Por favor, verifica que tu información 
-                personal y escolar coincida con tus documentos oficiales.
-              </p>
-              
-            </div>
-          </div>
-        </header>
+     
 
-        <main className="info-grid">
-          <InfoCard
-            icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>}
-            title="Información Personal"
-            items={[
-              { label: "Nombre Completo", value: nombreCompleto },
-              { label: "Fecha de Nacimiento", value: fechaNacimiento },
-              { label: "Tipo de Sangre", value: sangre },
-              { label: "RFC", value: rfc },
-              { label: "CURP", value: curp },
-              { label: "Sexo", value: sexo },
-              { label: "Teléfono", value: telefono },
-              { label: "Email", value: email || studentData.alumai },
-            ]}
-          />
+      {loading ? (
+        <div className="perfil-centered" style={{ minHeight: '80vh' }}>
+          <div className="spinner"></div>
+          <p>Cargando información del perfil...</p>
+        </div>
+      ) : (
+        <div className="portfolio-wrapper animacion-entrada">
+          <header className="welcome-section">
+            <div className="welcome-grid">
+              <div className="profile-mascot-container">
+                <img 
+                  src={studentData.fotoUrl || "/imagenes/logoelegantee.png"} 
+                  className="profile-main-img" 
+                  alt="Foto" 
+                  width="180"
+                  height="180"
+                  loading="eager" // Carga inmediata
+                  style={{ height: 'auto' }} // Evita error de aspecto
+                  onError={(e) => { e.target.src = "/imagenes/logoelegantee.png"; }}
+                />
+              </div>
+              <div className="welcome-text-content">
+                <h1 className="welcome-title">
+                  ¡Bienvenido, {studentData.nombreCompleto.split(' ')[0]}!
+                </h1>
+                <p className="welcome-description">
+                  Esta es tu ficha de identidad académica. Por favor, verifica que tu información 
+                  personal y escolar coincida con tus documentos oficiales.
+                </p>
+              </div>
+            </div>
+          </header>
 
-          <InfoCard
-            icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>}
-            title="Información Académica"
-            items={[
-              { label: "Carrera", value: carrera },
-              { label: "Clave de Carrera", value: carreraId },
-              { label: "Matrícula / Control", value: numeroControl },
-              { label: "Semestre Actual", value: semestre },
-              { label: "Créditos Aprobados", value: creditosAprobados },
-            ]}
-          />
-        </main>
-      </div>
+          <main className="info-grid">
+            <InfoCard
+              icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>}
+              title="Información Personal"
+              items={[
+                { label: "Nombre Completo", value: studentData.nombreCompleto },
+                { label: "Fecha de Nacimiento", value: studentData.fechaNacimiento },
+                { label: "Tipo de Sangre", value: studentData.sangre },
+                { label: "RFC", value: studentData.rfc },
+                { label: "CURP", value: studentData.curp },
+                { label: "Sexo", value: studentData.sexo },
+                { label: "Teléfono", value: studentData.telefono },
+                { label: "Email", value: studentData.email || studentData.alumai },
+              ]}
+            />
+
+            <InfoCard
+              icon={<svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>}
+              title="Información Académica"
+              items={[
+                { label: "Carrera", value: studentData.carrera },
+                { label: "Clave de Carrera", value: studentData.carreraId },
+                { label: "Matrícula / Control", value: studentData.numeroControl },
+                { label: "Semestre Actual", value: studentData.semestre },
+                { label: "Créditos Aprobados", value: studentData.creditosAprobados },
+              ]}
+            />
+          </main>
+        </div>
+      )}
     </div>
   );
 }

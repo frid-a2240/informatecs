@@ -24,7 +24,8 @@ import SplitText from "./components/animation/SplitText";
 const HomePage = () => {
   const router = useRouter();
 
-  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeFavOw7p2RTtuzVdN9mQ2WH7Imy1B7uQ45s4HhsEOTSyJRrw/viewform";
+  const formUrl =
+    "https://docs.google.com/forms/d/e/1FAIpQLSeFavOw7p2RTtuzVdN9mQ2WH7Imy1B7uQ45s4HhsEOTSyJRrw/viewform";
 
   useEffect(() => {
     Aos.init({ duration: 1000, once: true });
@@ -100,10 +101,7 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar />
-
       <div className="homepage-wrapper">
-      
         <div className="hero-container" data-aos="fade-in">
           <div className="hero-slide">
             {items.map((item) => (
@@ -119,10 +117,16 @@ const HomePage = () => {
                         text="Instituto Tecnológico"
                         className="main-headline-animated"
                         delay={150}
-                        animationFrom={{ opacity: 0, transform: 'translate3d(0,50px,0)' }}
-                        animationTo={{ opacity: 1, transform: 'translate3d(0,0,0)' }}
+                        animationFrom={{
+                          opacity: 0,
+                          transform: "translate3d(0,50px,0)",
+                        }}
+                        animationTo={{
+                          opacity: 1,
+                          transform: "translate3d(0,0,0)",
+                        }}
                         // CORRECCIÓN: Pasamos el array de Bézier directamente para evitar el Runtime Error
-                        easing={[0.33, 1, 0.68, 1]} 
+                        easing={[0.33, 1, 0.68, 1]}
                         threshold={0.2}
                         rootMargin="-50px"
                       />
@@ -283,9 +287,9 @@ const HomePage = () => {
               <div className="text-content">
                 <h3 className="activity-title">Actividades Extraescolares</h3>
                 <p className="activity-description">
-                  En el Instituto Tecnológico de Ensenada, ofrecemos una variedad de
-                  actividades extraescolares diseñadas para enriquecer tu experiencia
-                  educativa...
+                  En el Instituto Tecnológico de Ensenada, ofrecemos una
+                  variedad de actividades extraescolares diseñadas para
+                  enriquecer tu experiencia educativa...
                 </p>
               </div>
 
@@ -310,8 +314,8 @@ const HomePage = () => {
               <div className="text-content">
                 <h3 className="activity-title">Eventos</h3>
                 <p className="activity-description">
-                  ¡No te pierdas los emocionantes eventos del Instituto Tecnológico de
-                  Ensenada!
+                  ¡No te pierdas los emocionantes eventos del Instituto
+                  Tecnológico de Ensenada!
                 </p>
               </div>
             </div>
@@ -323,15 +327,17 @@ const HomePage = () => {
           <h2>Actividades de tu interés</h2>
 
           <p className="activity-description">
-            Nos interesa conocer tu opinión y saber qué actividades te llaman más la
-            atención como aspirante al Instituto Tecnológico de Ensenada. Tu respuesta
-            nos ayudará a ofrecerte opciones acordes a tus gustos e intereses.
+            Nos interesa conocer tu opinión y saber qué actividades te llaman
+            más la atención como aspirante al Instituto Tecnológico de Ensenada.
+            Tu respuesta nos ayudará a ofrecerte opciones acordes a tus gustos e
+            intereses.
           </p>
 
           <p className="qr-text">
-            Si estás navegando desde una computadora, escanea el código QR para responder
-            la encuesta desde tu celular. <br />
-            Si estás en tu celular, puedes contestarla directamente con el botón.
+            Si estás navegando desde una computadora, escanea el código QR para
+            responder la encuesta desde tu celular. <br />
+            Si estás en tu celular, puedes contestarla directamente con el
+            botón.
           </p>
 
           <img
@@ -347,7 +353,9 @@ const HomePage = () => {
             Contestar encuesta
           </button>
 
-          <small>Encuesta dirigida únicamente a aspirantes de nuevo ingreso</small>
+          <small>
+            Encuesta dirigida únicamente a aspirantes de nuevo ingreso
+          </small>
         </section>
 
         <Footer />

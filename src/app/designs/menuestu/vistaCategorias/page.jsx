@@ -13,7 +13,7 @@ import OfferModal from "@/app/components/offterModal";
 import Image from "next/image";
 
 export default function App() {
-  const { studentData } = useStudentData(); 
+  const { studentData } = useStudentData();
   const { ofertas, loading, error } = useOfertas("/api/act-disponibles");
 
   const { selectedItem, selectedId, handleOpen, handleClose } =
@@ -45,9 +45,6 @@ export default function App() {
     handleClose();
   };
 
-  /* ===============================
-     ENVIAR FORMULARIO
-     =============================== */
   const handleFormSubmit = async (formDataFromChild) => {
     if (!studentData?.numeroControl) {
       alert("No se pudo obtener el número de control del alumno");
@@ -55,19 +52,12 @@ export default function App() {
     }
 
     try {
-      await submitInscripcion(
-        studentData,
-        null,
-        formDataFromChild
-      );
+      await submitInscripcion(studentData, null, formDataFromChild);
     } catch (error) {
       console.error("Error en handleFormSubmit:", error);
     }
   };
 
-  /* ===============================
-     VISTA FORMULARIO (PASO 2)
-     =============================== */
   if (showForm && formSport) {
     return (
       <div className="dashboard-container">
@@ -96,13 +86,17 @@ export default function App() {
                 </div>
               </div>
             </div>
-
-            <div className="mascot-container">
+            <div>
               <Image
                 src="/imagenes/eventos.png"
                 alt="Mascota Albatros"
-                width={180}
-                height={180}
+                width={200}
+                height={200}
+                priority={true}
+                loading="eager"
+                style={{
+                  height: "auto",
+                }}
               />
             </div>
           </div>
@@ -151,7 +145,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mascot-container">
+          <div className="ofertas-mascota-container">
             <Image
               src="/imagenes/eventos.png"
               alt="Mascota Albatros"

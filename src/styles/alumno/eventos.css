@@ -168,9 +168,7 @@ p.subtitle {
 /* ==========================
    --- Modal ---
 ========================== */
-/* ==========================
-   --- Modal Mejorado ---
-========================== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -228,7 +226,6 @@ p.subtitle {
   z-index: 1;
 }
 
-
 .modal > * {
   position: relative;
   z-index: 2;
@@ -265,10 +262,6 @@ p.subtitle {
   }
 }
 
-
-
-
-
 /* Imagen, títulos y botones siguen igual */
 .modal img {
   width: 100%;
@@ -290,8 +283,6 @@ p.subtitle {
   margin-bottom: 1.5rem;
   color: #4b5563;
 }
-
-
 
 /* Estado de cierre */
 .modal.closing {
@@ -325,6 +316,13 @@ p.subtitle {
 .info-item:hover .icon {
   color: var(--yellow-accent);
   transform: scale(1.2) rotate(-8deg);
+}
+
+.ofertas-mascota-container img {
+  width: 100%;
+  max-width: 200px;
+  height: auto !important;
+  object-fit: contain;
 }
 
 /* --- Botón de registro --- */
@@ -414,12 +412,12 @@ p.subtitle {
   margin-bottom: 0;
 }
 
-.mascot-container {
+ofertas-mascota-container {
   flex-shrink: 0;
   animation: float 3s ease-in-out infinite;
 }
 
-.mascot-image {
+ofertas-mascota-image {
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
   transition: transform 0.3s ease;
 }
@@ -429,7 +427,8 @@ p.subtitle {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -444,7 +443,7 @@ p.subtitle {
   justify-content: center;
   margin-bottom: 2.5rem;
   padding: 2rem 1.5rem;
-  
+
   border-radius: 16px;
 }
 
@@ -526,7 +525,7 @@ p.subtitle {
 }
 
 .step-line.completed {
-  background: var(--blue-primary)
+  background: var(--blue-primary);
 }
 
 /* Responsive */

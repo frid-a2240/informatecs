@@ -5,7 +5,7 @@
   --text-dark: #333333;
   --act-primary: #1b396a;
   --act-primary-dark: #142a50;
- 
+
   --white: #ffffff;
   font-family: "Montserrat";
 }
@@ -19,15 +19,23 @@
 
 /* Patrón de fondo sutil */
 .main-page-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 400px;
-  background: 
-    radial-gradient(circle at 20% 50%, rgba(59, 102, 245, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 26, 61, 0.03) 0%, transparent 50%);
+  background:
+    radial-gradient(
+      circle at 20% 50%,
+      rgba(59, 102, 245, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(0, 26, 61, 0.03) 0%,
+      transparent 50%
+    );
   pointer-events: none;
   z-index: 0;
 }
@@ -43,18 +51,16 @@
 /* ============================================
    HEADER SECTION - Más compacto
    ============================================ */
-.welcome-section { 
+.welcome-section {
   margin-bottom: 25px; /* Reducido de 35px */
   animation: fadeInDown 0.6s ease-out;
 }
 
-
-
-.welcome-grid { 
-  display: grid; 
+.welcome-grid {
+  display: grid;
   grid-template-columns: 160px 1fr; /* Reducido aún más */
   gap: 30px; /* Reducido */
-  align-items: center; 
+  align-items: center;
 }
 
 /* Imagen de perfil con efecto glassmorphism */
@@ -63,48 +69,42 @@
   animation: fadeInLeft 0.7s ease-out;
 }
 
-
-
 .profile-main-img {
   width: 100%;
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid white;
-  box-shadow: 
+  box-shadow:
     0 10px 25px rgba(0, 26, 61, 0.15),
     0 5px 15px rgba(0, 0, 0, 0.08);
   display: block;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
   position: relative;
   z-index: 2;
 }
 
 .profile-main-img:hover {
   transform: scale(1.03) rotate(1deg);
-  box-shadow: 
+  box-shadow:
     0 20px 45px rgba(0, 26, 61, 0.2),
     0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
-
 .profile-img-container::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -8px;
   left: -8px;
   right: -8px;
   bottom: -8px;
   border-radius: 50%;
- 
+
   opacity: 0.1;
   z-index: 1;
   animation: pulse 3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.1; }
-  50% { transform: scale(1.05); opacity: 0.15; }
 }
 
 /* Badge oculto */
@@ -116,7 +116,7 @@
   font-size: 2.2rem;
   color: var(--ite-blue-dark);
   font-weight: 800;
-  margin: 0 0 10px 0; 
+  margin: 0 0 10px 0;
   line-height: 1.2;
   background: var(--blue-primary);
   -webkit-background-clip: text;
@@ -127,7 +127,7 @@
 .welcome-description {
   color: var(--ite-text);
   line-height: 1.6;
-  font-size: 0.95rem; 
+  font-size: 0.95rem;
   max-width: 600px;
 }
 
@@ -137,18 +137,17 @@
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 20px; 
+  gap: 20px;
   justify-content: center;
   animation: fadeInUp 0.7s ease-out 0.2s backwards;
 }
 
-
 .info-card {
   background: white;
   border-radius: 24px;
-  padding: 25px; 
+  padding: 25px;
   border: 1px solid rgba(0, 26, 61, 0.06);
-  box-shadow:#8eafef;
+  box-shadow: #8eafef;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -156,7 +155,7 @@
 
 /* Efecto de brillo sutil en hover */
 .info-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -170,7 +169,7 @@
   left: 100%;
 }
 
-.info-card:hover { 
+.info-card:hover {
   transform: translateY(-8px);
   box-shadow: var(--shadow-lg);
   border-color: rgba(59, 102, 245, 0.15);
@@ -182,8 +181,8 @@
   text-align: center;
   justify-content: center;
   gap: 15px;
-  margin-bottom: 22px; 
-  padding-bottom: 16px; 
+  margin-bottom: 22px;
+  padding-bottom: 16px;
   border-bottom: 2px solid #2286c9;
 }
 
@@ -222,14 +221,16 @@
    DATA ROWS
    ============================================ */
 .data-row {
-  padding: 12px 0; 
+  padding: 12px 0;
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   align-items: center; /* ESTO centra la etiqueta y el valor */
   text-align: center;
   flex-direction: column;
   gap: 5px;
-  transition: background-color 0.2s ease, padding-left 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    padding-left 0.2s ease;
   border-radius: var(--radius-sm);
 }
 
@@ -238,8 +239,8 @@
   padding-left: 0;
 }
 
-.data-row:last-child { 
-  border: none; 
+.data-row:last-child {
+  border: none;
 }
 
 .data-label {
@@ -256,7 +257,6 @@
 
 /* Indicador visual */
 .data-label::before {
- 
   width: 4px;
   height: 4px;
   background: var(--blue-primary);
@@ -287,7 +287,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #e2e8f0;
-  border-top-color:var(--blue-primary);
+  border-top-color: var(--blue-primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 20px;
@@ -301,35 +301,34 @@
   animation: fadeInOut 1.5s ease-in-out infinite;
 }
 
-
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 850px) {
-  .welcome-grid { 
-    grid-template-columns: 1fr; 
+  .welcome-grid {
+    grid-template-columns: 1fr;
     text-align: center;
     gap: 20px; /* Reducido */
   }
-  
+
   .profile-img-container {
     max-width: 140px; /* Reducido */
     margin: 0 auto;
   }
-  
-  .welcome-title { 
+
+  .welcome-title {
     font-size: 1.8rem;
   }
-  
+
   .welcome-description {
     margin: 0 auto;
     font-size: 0.9rem;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .welcome-section {
     margin-bottom: 20px;
   }
@@ -339,15 +338,15 @@
   .portfolio-wrapper {
     padding: 20px 15px;
   }
-  
+
   .welcome-title {
     font-size: 1.6rem;
   }
-  
+
   .info-card {
     padding: 20px;
   }
-  
+
   .card-icon-box {
     width: 44px;
     height: 44px;
