@@ -1,72 +1,81 @@
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
-  page: { 
-    padding: '40 50', 
-    fontSize: 10, 
-    fontFamily: 'Helvetica', 
-    lineHeight: 1.5 
+  page: {
+    padding: "40 50",
+    fontSize: 10,
+    fontFamily: "Helvetica",
+    lineHeight: 1.5,
   },
   // Logos en los extremos superiores
-  headerLogos: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center',
-    marginBottom: 40 
+  headerLogos: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 40,
   },
   logoEducacion: { width: 140 },
-  logoTecNM: { width: 100 },
+  logoTecNM: { width: 140 },
+  // Tamaño para el escudo central o lateral
+  // ...
 
   // Sección de Folio a la izquierda y Título a la derecha
   topInfoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 60
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 60,
   },
-  folioColumn: { width: '40%' },
-  titleColumn: { 
-    width: '60%', 
-    textAlign: 'right' 
+  folioColumn: { width: "40%" },
+  titleColumn: {
+    width: "60%",
+    textAlign: "right",
   },
-  bold: { fontWeight: 'bold' },
-  
-  mainTitle: { fontSize: 11, fontWeight: 'bold' },
-  subTitle: { fontSize: 11, fontWeight: 'bold', marginTop: 2 },
+  bold: { fontWeight: "bold" },
+
+  mainTitle: { fontSize: 11, fontWeight: "bold" },
+  subTitle: { fontSize: 11, fontWeight: "bold", marginTop: 2 },
 
   // Cuerpo del documento
   section: { marginBottom: 20 },
   destinatario: { marginBottom: 30 },
-  parrafo: { textAlign: 'justify', marginBottom: 15 },
+  parrafo: { textAlign: "justify", marginBottom: 15 },
 
   // Firma y QR alineados
   footerSign: {
     marginTop: 40,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
   },
   signatureLine: {
     borderTopWidth: 1,
-    borderColor: 'black',
+    borderColor: "black",
     width: 250,
     marginTop: 60,
-    marginBottom: 5
+    marginBottom: 5,
   },
   qrContainer: {
-    alignItems: 'center',
-    width: 100
+    alignItems: "center",
+    width: 100,
   },
   qrImage: { width: 80, height: 80 },
-  
+
   footerPagina: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     left: 0,
     right: 0,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 7,
-    color: '#333'
-  }
+    color: "#333",
+  },
 });
 
 export const ConstanciaPDF = ({ datos }) => (
@@ -82,13 +91,21 @@ export const ConstanciaPDF = ({ datos }) => (
       <View style={styles.topInfoContainer}>
         <View style={styles.folioColumn}>
           <Text style={styles.bold}>Folio: {datos?.folio}</Text>
-          <Text style={{ fontSize: 8 }}>Código: {datos?.codigoVerificacion || datos?.codigo}</Text>
+          <Text style={{ fontSize: 8 }}>
+            Código: {datos?.codigoVerificacion || datos?.codigo}
+          </Text>
         </View>
         <View style={styles.titleColumn}>
-          <Text style={styles.mainTitle}>Constancia de Acreditación de Actividad</Text>
+          <Text style={styles.mainTitle}>
+            Constancia de Acreditación de Actividad
+          </Text>
           <Text style={styles.mainTitle}>Complementaria</Text>
           <Text style={styles.subTitle}>
-            {datos?.acreditacion?.includes("Horas") ? "Liberación de horas" : datos?.acreditacion?.includes("Créditos") ? "Liberación de créditos" : "Constancia de participación"}
+            {datos?.acreditacion?.includes("Horas")
+              ? "Liberación de horas"
+              : datos?.acreditacion?.includes("Créditos")
+                ? "Liberación de créditos"
+                : "Constancia de participación"}
           </Text>
         </View>
       </View>
@@ -102,26 +119,42 @@ export const ConstanciaPDF = ({ datos }) => (
       {/* 4. Cuerpo del Texto */}
       <View style={styles.parrafo}>
         <Text>
-          Se envía un cordial saludo y a su vez se le extiende la presente constancia al (la) alumno (a):{" "}
-          <Text style={styles.bold}>{datos?.nombreCompleto || datos?.nombre}</Text>, con número de control{" "}
-          <Text style={styles.bold}>{datos?.numeroControl || datos?.control}</Text>, quien ha participado en la
-          actividad complementaria: <Text style={styles.bold}>{datos?.actividadNombre || datos?.actividad}</Text>, en el período{" "}
-          <Text style={styles.bold}>{datos?.periodo}</Text>, bajo la asesoría de Juan Carlos Leal Nodal, obteniendo una acreditación de{" "}
-          <Text style={styles.bold}>{datos?.acreditacion}</Text> conforme a las disposiciones del ITE.
+          Se envía un cordial saludo y a su vez se le extiende la presente
+          constancia al (la) alumno (a):{" "}
+          <Text style={styles.bold}>
+            {datos?.nombreCompleto || datos?.nombre}
+          </Text>
+          , con número de control{" "}
+          <Text style={styles.bold}>
+            {datos?.numeroControl || datos?.control}
+          </Text>
+          , quien ha participado en la actividad complementaria:{" "}
+          <Text style={styles.bold}>
+            {datos?.actividadNombre || datos?.actividad}
+          </Text>
+          , en el período <Text style={styles.bold}>{datos?.periodo}</Text>,
+          bajo la asesoría de Juan Carlos Leal Nodal, obteniendo una
+          acreditación de <Text style={styles.bold}>{datos?.acreditacion}</Text>{" "}
+          conforme a las disposiciones del ITE.
         </Text>
       </View>
 
       <Text style={styles.parrafo}>
-        Por lo que agradezco su atención para las gestiones necesarias que se requieran.
+        Por lo que agradezco su atención para las gestiones necesarias que se
+        requieran.
       </Text>
-      
+
       <Text style={styles.parrafo}>Saludos.</Text>
 
       {/* 5. Firma y QR */}
       <View style={{ marginTop: 40 }}>
         <Text style={styles.bold}>Atentamente</Text>
-        <Text style={{ fontStyle: 'italic', fontSize: 9 }}>«Excelencia en Educación Tecnológica»</Text>
-        <Text style={{ fontStyle: 'italic', fontSize: 9 }}>«Por la tecnología de hoy y del futuro»</Text>
+        <Text style={{ fontStyle: "italic", fontSize: 9 }}>
+          «Excelencia en Educación Tecnológica»
+        </Text>
+        <Text style={{ fontStyle: "italic", fontSize: 9 }}>
+          «Por la tecnología de hoy y del futuro»
+        </Text>
       </View>
 
       <View style={styles.footerSign}>
@@ -130,16 +163,19 @@ export const ConstanciaPDF = ({ datos }) => (
           <Text>Juan Carlos Leal Nodal</Text>
           <Text>Departamento de Actividades Extracurriculares</Text>
         </View>
-        
+
         <View style={styles.qrContainer}>
           {datos?.qrData && <Image src={datos.qrData} style={styles.qrImage} />}
-          <Text style={{ fontSize: 7, marginTop: 5 }}>Escanea para verificar</Text>
+          <Text style={{ fontSize: 7, marginTop: 5 }}>
+            Escanea para verificar
+          </Text>
         </View>
       </View>
 
       {/* 6. Pie de página */}
       <Text style={styles.footerPagina}>
-        Blvd. Tecnológico #150, Ex Ejido Chapultepec C.P.22780, Ensenada, Baja California{"\n"}
+        Blvd. Tecnológico #150, Ex Ejido Chapultepec C.P.22780, Ensenada, Baja
+        California{"\n"}
         Tel. (646) 1775680 e-mail: dir_ensenada@tecnm.mx | ensenada.tecnm.mx
       </Text>
     </Page>

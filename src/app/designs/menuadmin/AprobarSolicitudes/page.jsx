@@ -4,13 +4,14 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   User,
-  Activity,
-  XCircle,
   CheckCircle,
   FileX,
   Search,
   Loader2,
   MessageSquare,
+  BookOpen,
+  ShieldCheck,
+  Layers,
 } from "lucide-react";
 
 export default function AdminSolicitudes() {
@@ -19,243 +20,198 @@ export default function AdminSolicitudes() {
   const [motivoRechazo, setMotivoRechazo] = useState("");
   const queryClient = useQueryClient();
 
-  // 1. CARGA DE DATOS
-  const { data: solicitudes = [], isLoading: cargandoLista } = useQuery({
+  const { data: solicitudes = [], isLoading } = useQuery({
     queryKey: ["inscripciones"],
     queryFn: async () => {
       const res = await fetch("/api/inscripciones");
-      if (!res.ok) throw new Error("Error al cargar inscripciones");
+      if (!res.ok) throw new Error("Error al cargar");
       return res.json();
     },
-    refetchInterval: 15000, // Refresca cada 15 seg para ver nuevos archivos
+    refetchInterval: 30000,
   });
 
-  // 2. MUTACIÓN (APROBAR/RECHAZAR)
-  const actualizarSangreMutation = useMutation({
-    mutationFn: async ({ numeroControl, data }) => {
+  // --- LÓGICA DE AGRUPACIÓN POR ESTUDIANTE ---
+  const alumnosAgrupados = React.useMemo(() => {
+    const grupos = {};
+
+    solicitudes.forEach((reg) => {
+      const id = reg.estudianteId;
+      if (!grupos[id]) {
+        grupos[id] = {
+          ...reg,
+          todasLasActividades: [],
+        };
+      }
+      // Agregamos la actividad a la lista del alumno
+      grupos[id].todasLasActividades.push(reg.actividad);
+    });
+
+    const lista = Object.values(grupos);
+    if (filtroEstado === "pendiente") {
+      return lista.filter((a) => a.tipoSangreSolicitado && !a.sangreValidada);
+    }
+    return lista;
+  }, [solicitudes, filtroEstado]);
+
+  const mutation = useMutation({
+    mutationFn: async ({ aluctr, accion, actividades }) => {
+      // 1. Validar sangre en la tabla de inscripciones
       const res = await fetch(`/api/sangre`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          aluctr: numeroControl,
-          ...data,
-        }),
+        body: JSON.stringify({ aluctr, accion, mensaje: motivoRechazo }),
       });
+      if (!res.ok) throw new Error("Error en validación");
 
-      if (!res.ok) {
-        const errorData = await res
-          .json()
-          .catch(() => ({ error: "Error en servidor" }));
-        throw new Error(errorData.error || "Error al procesar");
+      // 2. Si se aprueba, crear constancias para CADA actividad inscrita
+      if (accion === "aprobar") {
+        for (const act of actividades) {
+          await fetch("/api/constancias", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              numeroControl: aluctr,
+              actividadId: act.id,
+              actividadNombre: act.acodes, // Usando tu campo acodes
+              periodo: "2026-1",
+            }),
+          });
+        }
       }
-      return res.json();
     },
-    onSuccess: (data, variables) => {
-      // Limpiamos caché para que el alumno desaparezca de pendientes
+    onSuccess: () => {
       queryClient.invalidateQueries(["inscripciones"]);
-
-      // Cerramos ficha y limpiamos mensaje
       setSeleccionada(null);
-      setMotivoRechazo("");
-
-      const esRechazo = variables.data.accion === "rechazar";
-      alert(esRechazo ? "❌ Documento Rechazado" : "✅ Documento Aprobado");
+      alert("Proceso completado exitosamente");
     },
-    onError: (error) => {
-      alert("Hubo un problema: " + error.message);
-    },
-  });
-
-  const solicitudesFiltradas = solicitudes.filter((s) => {
-    if (filtroEstado === "todas") return true;
-    if (filtroEstado === "pendiente")
-      return s.tipoSangreSolicitado && !s.sangreValidada;
-    return true;
   });
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-4 md:p-8">
+    <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-black flex items-center gap-3 tracking-tight">
-            <div className="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-200">
-              <Activity size={28} />
-            </div>
-            Validación de Documentos
+        <header className="flex justify-between items-center mb-10">
+          <h1 className="text-2xl font-black flex items-center gap-3 italic">
+            <ShieldCheck className="text-blue-600" size={32} /> PANEL DE CONTROL
           </h1>
+          <div className="flex bg-white rounded-2xl p-1 shadow-sm border">
+            {["todas", "pendiente"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFiltroEstado(f)}
+                className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${filtroEstado === f ? "bg-blue-600 text-white" : "text-slate-400"}`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </header>
 
-        {/* FILTROS (Mantenemos tu estilo original) */}
-        <div className="flex gap-2 bg-slate-200/50 p-1.5 rounded-2xl w-fit mb-8 border border-slate-200 shadow-sm">
-          <button
-            onClick={() => setFiltroEstado("todas")}
-            className={`px-8 py-2.5 rounded-xl text-sm font-black transition-all ${filtroEstado === "todas" ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:bg-slate-200"}`}
-          >
-            Todas
-          </button>
-          <button
-            onClick={() => setFiltroEstado("pendiente")}
-            className={`px-8 py-2.5 rounded-xl text-sm font-black transition-all ${filtroEstado === "pendiente" ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:bg-slate-200"}`}
-          >
-            Pendientes
-          </button>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LISTADO IZQUIERDO */}
-          <div className="lg:col-span-7 space-y-4">
-            {cargandoLista ? (
-              <div className="flex justify-center p-20">
-                <Loader2 className="animate-spin text-blue-600" size={40} />
-              </div>
-            ) : solicitudesFiltradas.length === 0 ? (
-              <div className="p-20 text-center bg-white rounded-[32px] border-4 border-dashed border-slate-100">
-                <Search className="mx-auto text-slate-200 mb-4" size={48} />
-                <p className="text-slate-400 font-bold tracking-tight">
-                  No hay solicitudes pendientes
-                </p>
-              </div>
-            ) : (
-              solicitudesFiltradas.map((s) => (
-                <div
-                  key={s.id}
-                  onClick={() => {
-                    setSeleccionada(s);
-                    setMotivoRechazo("");
-                  }}
-                  className={`group p-5 bg-white rounded-[24px] border-2 transition-all cursor-pointer flex justify-between items-center ${seleccionada?.id === s.id ? "border-blue-500 bg-blue-50/40 shadow-xl" : "border-transparent shadow-sm hover:border-slate-200"}`}
-                >
-                  <div className="flex items-center gap-5">
-                    <div
-                      className={`h-14 w-14 rounded-2xl flex items-center justify-center ${s.sangreValidada ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"}`}
-                    >
-                      <User size={28} />
+          {/* LISTA DE ALUMNOS (DEDUPLICADA) */}
+          <div className="lg:col-span-6 space-y-4">
+            {alumnosAgrupados.map((alumno) => (
+              <div
+                key={alumno.estudianteId}
+                onClick={() => setSeleccionada(alumno)}
+                className={`p-6 rounded-[2rem] bg-white border-2 cursor-pointer transition-all ${seleccionada?.estudianteId === alumno.estudianteId ? "border-blue-600 shadow-xl scale-[1.02]" : "border-transparent shadow-sm"}`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex gap-4">
+                    <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
+                      <User size={24} />
                     </div>
                     <div>
-                      <p className="font-black text-slate-800 text-lg leading-tight uppercase">
-                        {s.estudiante.alunom} {s.estudiante.aluapp}
-                      </p>
-                      <p className="text-xs font-bold text-slate-400 tracking-widest uppercase">
-                        Control: {s.estudianteId}
+                      <h3 className="font-black text-slate-800 uppercase">
+                        {alumno.estudiante?.alunom} {alumno.estudiante?.aluapp}
+                      </h3>
+                      <p className="text-[10px] font-bold text-blue-600 tracking-widest">
+                        {alumno.estudianteId}
                       </p>
                     </div>
                   </div>
-                  <div
-                    className={`px-4 py-2 rounded-xl border-2 font-black text-xs ${s.sangreValidada ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-amber-50 border-amber-200 text-amber-700 shadow-sm"}`}
-                  >
-                    {s.tipoSangreSolicitado || "S/D"}
+                  <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black flex items-center gap-1">
+                    <Layers size={12} /> {alumno.todasLasActividades.length}{" "}
+                    ACTIVIDADES
                   </div>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
 
-          {/* PANEL DE ACCIÓN DERECHO */}
-          <div className="lg:col-span-5">
+          {/* DETALLE Y VALIDACIÓN */}
+          <div className="lg:col-span-6">
             {seleccionada ? (
-              <div className="bg-white rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden sticky top-8 animate-in fade-in slide-in-from-right-4">
-                <div
-                  className={`p-8 text-white ${seleccionada.sangreValidada ? "bg-emerald-600" : "bg-slate-900"}`}
-                >
-                  <h2 className="text-2xl font-black mb-1">Ficha Médica</h2>
-                  <p className="text-xs opacity-70 font-black tracking-widest uppercase">
-                    {seleccionada.estudianteId}
-                  </p>
+              <div className="bg-white rounded-[2.5rem] shadow-2xl border p-8 sticky top-6">
+                <h2 className="text-xl font-black mb-6 uppercase">
+                  Revisión de Documento
+                </h2>
+
+                {/* LISTA DE ACTIVIDADES A LAS QUE SE LES GENERARÁ CONSTANCIA */}
+                <div className="mb-8 space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Actividades a liberar:
+                  </label>
+                  {seleccionada.todasLasActividades.map((act, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
+                    >
+                      <BookOpen size={14} className="text-blue-500" />
+                      <span className="text-xs font-bold text-slate-600 uppercase">
+                        {act.acodes}
+                      </span>
+                    </div>
+                  ))}
                 </div>
 
-                <div className="p-8 space-y-6">
-                  {/* VISOR (Imagen en LongText) */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      Documento Adjunto
-                    </label>
-                    <div className="rounded-2xl border-4 border-slate-50 overflow-hidden bg-slate-100 h-64 flex items-center justify-center">
-                      {seleccionada.comprobanteSangrePDF ? (
-                        <img
-                          src={seleccionada.comprobanteSangrePDF}
-                          className="max-w-full max-h-full object-contain shadow-inner"
-                          alt="Certificado"
-                        />
-                      ) : (
-                        <FileX className="text-slate-200" size={48} />
-                      )}
-                    </div>
-                  </div>
-
-                  {!seleccionada.sangreValidada && (
-                    <>
-                      <div className="space-y-3">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                          <MessageSquare size={12} /> Motivo del rechazo
-                          (Opcional)
-                        </label>
-                        <textarea
-                          value={motivoRechazo}
-                          onChange={(e) => setMotivoRechazo(e.target.value)}
-                          placeholder="Escribe por qué se rechaza para que el alumno lo corrija..."
-                          className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-medium focus:border-blue-500 outline-none transition-all resize-none h-24"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-3">
-                        <button
-                          disabled={actualizarSangreMutation.isPending}
-                          onClick={() =>
-                            actualizarSangreMutation.mutate({
-                              numeroControl: seleccionada.estudianteId,
-                              data: {
-                                accion: "aprobar",
-                                tipoSangre: seleccionada.tipoSangreSolicitado,
-                              },
-                            })
-                          }
-                          className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                          {actualizarSangreMutation.isPending ? (
-                            <Loader2 className="animate-spin" />
-                          ) : (
-                            <CheckCircle size={20} />
-                          )}
-                          APROBAR DOCUMENTO
-                        </button>
-
-                        <button
-                          disabled={actualizarSangreMutation.isPending}
-                          onClick={() => {
-                            if (
-                              confirm(
-                                "¿Rechazar documento? El alumno verá tu motivo.",
-                              )
-                            ) {
-                              actualizarSangreMutation.mutate({
-                                numeroControl: seleccionada.estudianteId,
-                                data: {
-                                  accion: "rechazar",
-                                  mensaje: motivoRechazo,
-                                },
-                              });
-                            }
-                          }}
-                          className="w-full bg-white text-red-600 border-2 border-red-100 py-4 rounded-2xl font-black hover:bg-red-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                          {actualizarSangreMutation.isPending ? (
-                            <Loader2 className="animate-spin" />
-                          ) : (
-                            <XCircle size={20} />
-                          )}
-                          RECHAZAR Y NOTIFICAR
-                        </button>
-                      </div>
-                    </>
+                <div className="bg-slate-100 rounded-3xl h-64 mb-6 flex items-center justify-center overflow-hidden border-4 border-slate-50">
+                  {seleccionada.comprobanteSangrePDF ? (
+                    <img
+                      src={seleccionada.comprobanteSangrePDF}
+                      className="object-contain w-full h-full"
+                      alt="Sangre"
+                    />
+                  ) : (
+                    <FileX size={48} className="text-slate-300" />
                   )}
+                </div>
+
+                <textarea
+                  placeholder="Motivo de rechazo..."
+                  className="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-sm resize-none h-20 outline-none focus:border-blue-500"
+                  value={motivoRechazo}
+                  onChange={(e) => setMotivoRechazo(e.target.value)}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() =>
+                      mutation.mutate({
+                        aluctr: seleccionada.estudianteId,
+                        accion: "aprobar",
+                        actividades: seleccionada.todasLasActividades,
+                      })
+                    }
+                    className="bg-blue-600 text-white py-4 rounded-2xl font-black text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                  >
+                    APROBAR TODO
+                  </button>
+                  <button
+                    onClick={() =>
+                      mutation.mutate({
+                        aluctr: seleccionada.estudianteId,
+                        accion: "rechazar",
+                      })
+                    }
+                    className="bg-red-50 text-red-600 py-4 rounded-2xl font-black text-xs hover:bg-red-100 transition-all"
+                  >
+                    RECHAZAR
+                  </button>
                 </div>
               </div>
             ) : (
-              <div className="h-[400px] border-4 border-dashed border-slate-200 rounded-[48px] flex flex-col items-center justify-center text-slate-300 bg-white/50">
-                <Search size={64} className="mb-4 opacity-20" />
-                <p className="font-black uppercase tracking-widest text-sm text-center px-10">
-                  Selecciona un alumno para revisar
-                </p>
+              <div className="h-96 border-4 border-dashed rounded-[3rem] flex items-center justify-center text-slate-300 font-black uppercase text-sm italic">
+                Selecciona un expediente
               </div>
             )}
           </div>
