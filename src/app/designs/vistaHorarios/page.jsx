@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { FaRunning } from "react-icons/fa";
 import "./horario.css";
-import Navbar from "@/app/components/layout/navbar";
+
 import Footer from "@/app/components/layout/footer";
 
 export default function HorariosActividades() {
@@ -50,7 +50,7 @@ export default function HorariosActividades() {
           act.horario &&
           act.horario.dias &&
           Array.isArray(act.horario.dias) &&
-          act.horario.dias.length > 0
+          act.horario.dias.length > 0,
       );
 
       setActividades(conHorario);
@@ -70,14 +70,14 @@ export default function HorariosActividades() {
       resultado = resultado.filter(
         (act) =>
           act.aconco?.toLowerCase().includes(filtroTexto.toLowerCase()) ||
-          act.aticve?.toLowerCase().includes(filtroTexto.toLowerCase())
+          act.aticve?.toLowerCase().includes(filtroTexto.toLowerCase()),
       );
     }
 
     // Filtrar por día
     if (filtroDia !== "todos") {
       resultado = resultado.filter(
-        (act) => act.horario?.dias && act.horario.dias.includes(filtroDia)
+        (act) => act.horario?.dias && act.horario.dias.includes(filtroDia),
       );
     }
 
@@ -87,7 +87,6 @@ export default function HorariosActividades() {
   if (loading) {
     return (
       <div className="horarios-page">
-        <Navbar />
         <div className="horarios-loading">
           <div className="horarios-spinner"></div>
           <p>Cargando horarios...</p>
@@ -98,8 +97,6 @@ export default function HorariosActividades() {
 
   return (
     <div className="horarios-page">
-      <Navbar />
-
       <main className="horarios-main">
         <div className="horarios-header">
           <div className="horarios-header-content">

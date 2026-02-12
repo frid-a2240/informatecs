@@ -9,17 +9,17 @@ import { BookOpen, Inbox } from "lucide-react";
  */
 const Card = ({ item, isSelected, onClick }) => (
   <div
-    className={`card ${isSelected ? "selected" : ""}`}
+    className={`ofertas-card ${isSelected ? "selected" : ""}`}
     onClick={() => onClick(item)}
   >
-    <div className="card-header">
-      <BookOpen className="icon" /> Asignatura
+    <div className="ofertas-card-header">
+      <BookOpen className="ofertas-icon" /> Asignatura
     </div>
     <h3>{item.actividad.aconco}</h3>
-    <p className="description">
+    <p className="ofertas-description">
       Descubre más sobre esta actividad y sus beneficios.
     </p>
-    <div className="card-footer">
+    <div className="ofertas-card-footer">
       <span>
         <Inbox /> {item.actividad.acodes}
       </span>

@@ -101,7 +101,6 @@ const ActividadForm = ({
   return (
     <div style={modalOverlayStyle}>
       <div style={modalContentStyle}>
-        {/* Header */}
         <div style={headerStyle}>
           <h3 style={{ fontSize: "1.25rem", fontWeight: 600 }}>
             Inscripción: {selectedSport?.name}
@@ -111,7 +110,6 @@ const ActividadForm = ({
           </button>
         </div>
 
-        {/* Barra de Progreso */}
         <div style={{ padding: "0 1.5rem", marginTop: "1rem" }}>
           <div style={progressBarStyle}>
             <div
@@ -127,7 +125,6 @@ const ActividadForm = ({
         </div>
 
         <div style={{ padding: "1.5rem" }}>
-          {/* PASO 0: PROPÓSITO */}
           {currentStep === 0 && (
             <div className="animate-fade-in">
               <label style={labelStyle}>

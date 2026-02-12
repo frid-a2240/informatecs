@@ -28,7 +28,7 @@ const Page = () => {
         if (jsonData.noticias?.length > 0) {
           // Ordenar por fecha descendente
           const sortedNews = jsonData.noticias.sort(
-            (a, b) => new Date(b.fecha) - new Date(a.fecha)
+            (a, b) => new Date(b.fecha) - new Date(a.fecha),
           );
           setData(sortedNews);
         } else {
@@ -82,8 +82,7 @@ const Page = () => {
         descripcion:
           "Felicitamos a los estudiantes Albatros que lograron primeros lugares en las Olimpiadas del Conocimiento. La ceremonia será el lunes 2 de diciembre.",
         fecha: "2024-12-02",
-        imagen:
-          "https://images.unsplash.com/photo-1614028674026-a65e31bfd27c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+        imagen: "",
       },
       {
         id: 5,
@@ -114,7 +113,6 @@ const Page = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="loading-container">
           <p>Cargando noticias...</p>
         </div>
@@ -128,28 +126,23 @@ const Page = () => {
   // ==============================
   return (
     <>
-      <Navbar />
-
-      {/* ===== ENCABEZADO ===== */}
       <header className="news-header">
         <div className="news-title-container">
-
           <h1 className="news-page-title">¡Noticias Albatros!</h1>
-
         </div>
       </header>
 
-      <main className="content-container">
+      <main className="news-content-container">
         {data.length === 0 ? (
-          <div className="empty-state">
+          <div className="news-empty-state">
             <p>No hay noticias disponibles en este momento.</p>
           </div>
         ) : (
           <div className="news-grid">
             {data.map((element) => (
-              <article key={element.id} className="event-block">
+              <article key={element.id} className="news-event-block">
                 {element.imagen && (
-                  <div className="event-image-container">
+                  <div className="news-event-image-container">
                     <img
                       src={element.imagen}
                       alt={element.titulo}
@@ -158,8 +151,8 @@ const Page = () => {
                     />
                   </div>
                 )}
-                <div className="event-content">
-                  <h2 className="title">{element.titulo}</h2>
+                <div className="news-event-content">
+                  <h2 className="news-title">{element.titulo}</h2>
                   <p className="description">{element.descripcion}</p>
                   {element.fecha && (
                     <p className="date">{formatDate(element.fecha)}</p>

@@ -8,13 +8,11 @@ import "./styles/intramurocalendario.css";
 import "./styles/form.css";
 
 // 2. Layout Global (Usando el alias @ correctamente)
-import Navbar from "@/app/components/layout/navbar";
+
 import Footer from "@/app/components/layout/footer";
 import IntramurosCalendar from "./componentes/IntramurosCalendar";
 import IntramurosList from "./componentes/intramuroslist";
 import IntramurosResults from "./componentes/IntramurosResul";
-
-
 
 const IntramurosPage = () => {
   // Estado para la sección activa: 'calendario', 'actividades', 'contacto', 'resultados'
@@ -181,7 +179,6 @@ const IntramurosPage = () => {
 
   return (
     <div className="intramuros-page-container">
-      <Navbar />
       <div className="header-section">
         <div className="header-content-wrapper">
           <h1 className="main-title">

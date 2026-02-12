@@ -175,7 +175,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* SECCIÓN DE TARJETAS */}
         <section className="category-cards-section" data-aos="fade-up">
           <h2 className="section-title">Participa en nuestras actividades!</h2>
 
@@ -196,7 +195,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Cultura */}
             <div className="card-item">
               <img
                 src="/imagenes/albatrocatrin.png"
@@ -212,7 +210,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Clubs */}
             <div className="card-item">
               <img
                 src="/imagenes/albatrobanda.png"
@@ -228,7 +225,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Voluntariado */}
             <div className="card-item">
               <img
                 src="/imagenes/voluntariado.png"
@@ -244,7 +240,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Talleres */}
             <div className="card-item">
               <img
                 src="/imagenes/albatroreally.png"
@@ -260,7 +255,6 @@ const HomePage = () => {
               </div>
             </div>
 
-            {/* Eventos */}
             <div className="card-item">
               <img
                 src="/imagenes/eventos.png"
@@ -278,7 +272,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* SECCIÓN DE ACTIVIDADES EXTRAESCOLARES */}
         <section className="activities-section">
           <h2>¡Activa tu Experiencia ITE!</h2>
 
@@ -322,7 +315,6 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* SECCIÓN DE ENCUESTA / QR */}
         <section className="activities-section">
           <h2>Actividades de tu interés</h2>
 
@@ -335,9 +327,9 @@ const HomePage = () => {
 
           <p className="qr-text">
             Si estás navegando desde una computadora, escanea el código QR para
-            responder la encuesta desde tu celular. <br />
-            Si estás en tu celular, puedes contestarla directamente con el
-            botón.
+            responder la encuesta desde tu celular o haz clic en el boton para
+            abrir
+            <br />
           </p>
 
           <img
@@ -346,16 +338,17 @@ const HomePage = () => {
             className="qr-image"
           />
 
-          <button
-            className="hero-btn"
-            onClick={() => window.open(formUrl, "_blank")}
-          >
-            Contestar encuesta
-          </button>
-
           <small>
             Encuesta dirigida únicamente a aspirantes de nuevo ingreso
           </small>
+          <div>
+            <button
+              className="hero-btn"
+              onClick={() => window.open(formUrl, "_blank")}
+            >
+              Contestar encuesta
+            </button>
+          </div>
         </section>
 
         <Footer />

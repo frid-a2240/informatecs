@@ -60,43 +60,35 @@ export default function App() {
 
   if (showForm && formSport) {
     return (
-      <div className="dashboard-container">
-        <main className="dashboard-main">
-          <div className="header-with-mascot">
-            <div className="header-content">
+      <div className="ofertas-dashboard-container">
+        <main className="ofertas-dashboard-main">
+          <div className="ofertas-header-with-mascot">
+            <div className="ofertas-header-content">
               <h1>Ofertas del Semestre</h1>
-              <p className="subtitle">
+              <p className="ofertas-subtitle">
                 Explora las actividades disponibles y regístrate fácilmente
               </p>
 
-              <div className="steps-indicator">
-                <div className="step completed">
-                  <div className="step-number">1</div>
-                  <div className="step-label">Seleccionar actividad</div>
+              <div className="ofertas-steps-indicator">
+                <div className="ofertas-step completed">
+                  <div className="ofertas-step-number">1</div>
+                  <div className="ofertas-step-label">
+                    Seleccionar actividad
+                  </div>
                 </div>
-                <div className="step-line completed"></div>
-                <div className="step active">
-                  <div className="step-number">2</div>
-                  <div className="step-label">Llenar formulario</div>
+                <div className="ofertas-step-line completed"></div>
+                <div className="ofertas-step active">
+                  <div className="ofertas-step-number">2</div>
+                  <div className="ofertas-step-label">Llenar formulario</div>
                 </div>
-                <div className="step-line"></div>
-                <div className="step">
-                  <div className="step-number">3</div>
-                  <div className="step-label">Confirmar inscripción</div>
+                <div className="ofertas-step-line"></div>
+                <div className="ofertas-step">
+                  <div className="ofertas-step-number">3</div>
+                  <div className="ofertas-step-label">
+                    Confirmar inscripción
+                  </div>
                 </div>
               </div>
-            </div>
-            <div>
-              <Image
-                src="/imagenes/eventos.png"
-                alt="Mascota Albatros"
-                width={200}
-                height={200}
-                priority
-                style={{
-                  height: "auto",
-                }}
-              />
             </div>
           </div>
 
@@ -117,29 +109,31 @@ export default function App() {
      VISTA PRINCIPAL (PASO 1)
      =============================== */
   return (
-    <div className="dashboard-container">
-      <main className="dashboard-main">
-        <div className="header-with-mascot">
-          <div className="header-content">
+    <div className="ofertas-dashboard-container">
+      <main className="ofertas-dashboard-main">
+        <div className="ofertas-header-with-mascot">
+          <div className="ofertas-header-content">
             <h1>Ofertas del Semestre</h1>
-            <p className="subtitle">
+            <p className="ofertas-subtitle">
               Explora las actividades disponibles y regístrate fácilmente
             </p>
 
-            <div className="steps-indicator">
-              <div className="step active">
-                <div className="step-number">1</div>
-                <div className="step-label">Seleccionar actividad</div>
+            <div className="ofertas-steps-indicator">
+              <div className="ofertas-step active">
+                <div className="ofertas-step-number">1</div>
+                <div className="ofertas-step-label">Seleccionar actividad</div>
               </div>
-              <div className="step-line"></div>
-              <div className="step">
-                <div className="step-number">2</div>
-                <div className="step-label">Llenar formulario</div>
+              <div className="ofertas-step-line completed"></div>
+              <div className="ofertas-step">
+                <div className="ofertas-step-number">2</div>
+                <div className="ofertas-step-label">Llenar formulario</div>
               </div>
-              <div className="step-line"></div>
-              <div className="step">
-                <div className="step-number">3</div>
-                <div className="step-label">Confirmar en Mis Inscripciones</div>
+              <div className="ofertas-step-line"></div>
+              <div className="ofertas-step">
+                <div className="ofertas-step-number">3</div>
+                <div className="ofertas-step-label">
+                  Confirmar en Mis Inscripciones
+                </div>
               </div>
             </div>
           </div>
@@ -159,15 +153,15 @@ export default function App() {
         ) : error ? (
           <p>Error: {error}</p>
         ) : ofertas.length > 0 ? (
-          <div className="carousel-container">
+          <div className="ofertas-carousel-container">
             <button
-              className="carousel-btn left"
+              className="ofertas-carousel-btn left"
               onClick={() => scrollCarousel("left")}
             >
               <ChevronLeft />
             </button>
 
-            <div ref={carouselRef} className="carousel">
+            <div ref={carouselRef} className="ofertas-carousel">
               {ofertas.map((item) => (
                 <Card
                   key={item.id}
@@ -179,7 +173,7 @@ export default function App() {
             </div>
 
             <button
-              className="carousel-btn right"
+              className="ofertas-carousel-btn right"
               onClick={() => scrollCarousel("right")}
             >
               <ChevronRight />
