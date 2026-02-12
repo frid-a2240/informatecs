@@ -92,8 +92,7 @@ export default function App() {
                 alt="Mascota Albatros"
                 width={200}
                 height={200}
-                priority={true}
-                loading="eager"
+                priority
                 style={{
                   height: "auto",
                 }}

@@ -50,10 +50,11 @@ export default function AdminSidebar() {
       label: "Gestionar Eventos",
     },
     {
-      href: "/designs/menuadmin/vistaIntramuros",
+      href: "/designs/menuadmin/AprobarSolicitudes",
       icon: <FaStar />,
-      label: "Intramuros",
+      label: "Aprobar Solicitudes",
     },
+
     {
       href: "/designs/menuadmin/vistaInscripcionesAdmin",
       icon: <FiFileText />,
@@ -69,7 +70,11 @@ export default function AdminSidebar() {
       icon: <FiFile />,
       label: "Constancias",
     },
-   
+    {
+      href: "/designs/menuadmin/vistaIntramuros",
+      icon: <FaStar />,
+      label: "Intramuros",
+    },
     {
       href: "/designs/menuadmin/publicaciones",
       icon: <Edit />,

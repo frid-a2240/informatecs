@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 
-
-
 // Función para generar folio único
 function generarFolio() {
   const año = new Date().getFullYear();
@@ -25,7 +23,7 @@ function generarCodigoVerificacion(folio, numeroControl) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    
+
     const {
       numeroControl,
       nombreCompleto,
@@ -40,10 +38,16 @@ export async function POST(request) {
     } = body;
 
     // Validaciones
-    if (!numeroControl || !nombreCompleto || !actividadId || !periodo || !acreditacion) {
+    if (
+      !numeroControl ||
+      !nombreCompleto ||
+      !actividadId ||
+      !periodo ||
+      !acreditacion
+    ) {
       return NextResponse.json(
         { error: "Faltan campos obligatorios" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -55,7 +59,7 @@ export async function POST(request) {
     do {
       folio = generarFolio();
       codigoVerificacion = generarCodigoVerificacion(folio, numeroControl);
-      
+
       // Verificar que no existan
       const existente = await prisma.constancias.findFirst({
         where: {
@@ -64,14 +68,14 @@ export async function POST(request) {
       });
 
       if (!existente) break;
-      
+
       intentos++;
     } while (intentos < maxIntentos);
 
     if (intentos >= maxIntentos) {
       return NextResponse.json(
         { error: "No se pudo generar un folio único" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -108,7 +112,7 @@ export async function POST(request) {
     console.error("❌ Error al crear constancia:", error);
     return NextResponse.json(
       { error: "Error al crear constancia", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -133,7 +137,7 @@ export async function GET(request) {
       if (!constancia) {
         return NextResponse.json(
           { error: "Constancia no encontrada" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -168,7 +172,7 @@ export async function GET(request) {
     console.error("❌ Error al obtener constancias:", error);
     return NextResponse.json(
       { error: "Error al obtener constancias", details: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
