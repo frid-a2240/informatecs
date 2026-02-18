@@ -18,7 +18,6 @@
 
 /* Contenedor Principal - Centrado y fondo */
 .perfil-main-page-container {
-  background: linear-gradient(135deg, #f8faff 0%, #eef4ff 100%);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -96,8 +95,9 @@
 }
 
 .perfil-welcome-title {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
   color: var(--ite-blue-dark);
+
   font-weight: 800;
   margin: 0 0 10px 0;
   line-height: 1.2;
@@ -160,8 +160,8 @@
 .perfil-card-title {
   font-size: 1.3rem;
   color: var(--ite-blue-dark);
+  font-weight: 800;
   margin: 0;
-  font-weight: 700;
 }
 
 /* ============================================

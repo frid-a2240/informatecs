@@ -33,40 +33,67 @@ export default function App() {
   const { carouselRef, scrollCarousel } = useCarousel(408);
 
   /* ===============================
-     REGISTRAR ACTIVIDAD
+     LÓGICA DE SEMESTRE APLICADA
      =============================== */
+  const obtenerSemestreValido = () => {
+    // Aplicamos la misma prioridad que en el Admon Dashboard
+    const rawSem =
+      studentData?.semestre || studentData?.alusme || studentData?.calnpe;
+    return rawSem ? parseInt(rawSem) : null;
+  };
+
   const handleRegister = (item) => {
-    if (!studentData?.numeroControl) {
+    const numControl = studentData?.numeroControl || studentData?.aluctr;
+
+    if (!numControl) {
       alert("No se pudo obtener el número de control del alumno");
       return;
     }
 
-    iniciarInscripcion(item, studentData.numeroControl); // ✅ CORREGIDO
+    // Al iniciar, inyectamos el semestre detectado en el proceso de inscripción
+    const semestre = obtenerSemestreValido();
+
+    // Pasamos los datos del estudiante extendidos
+    iniciarInscripcion(item, numControl);
     handleClose();
   };
 
   const handleFormSubmit = async (formDataFromChild) => {
-    if (!studentData?.numeroControl) {
+    const numControl = studentData?.numeroControl || studentData?.aluctr;
+
+    if (!numControl) {
       alert("No se pudo obtener el número de control del alumno");
       return;
     }
 
     try {
-      await submitInscripcion(studentData, null, formDataFromChild);
+      // Normalizamos el objeto studentData antes de enviarlo para asegurar que
+      // la API reciba el semestre en el campo que espera
+      const studentDataNormalized = {
+        ...studentData,
+        numeroControl: numControl,
+        semestre: obtenerSemestreValido()?.toString(), // Aseguramos que vaya como string "1"
+      };
+
+      await submitInscripcion(studentDataNormalized, null, formDataFromChild);
     } catch (error) {
       console.error("Error en handleFormSubmit:", error);
     }
   };
 
+  /* ===============================
+     RENDERIZADO DEL FORMULARIO (PASO 2)
+     =============================== */
   if (showForm && formSport) {
     return (
       <div className="ofertas-dashboard-container">
         <main className="ofertas-dashboard-main">
           <div className="ofertas-header-with-mascot">
             <div className="ofertas-header-content">
-              <h1>Ofertas del Semestre</h1>
+              <h1 className="perfil-welcome-title">Ofertas del Semestre</h1>
               <p className="ofertas-subtitle">
-                Explora las actividades disponibles y regístrate fácilmente
+                Estás inscribiéndote como alumno de{" "}
+                {obtenerSemestreValido() || "?"}° semestre
               </p>
 
               <div className="ofertas-steps-indicator">
@@ -99,6 +126,10 @@ export default function App() {
             selectedSport={formSport}
             cancelar={cancelarInscripcion}
             isSubmitting={isSubmitting}
+            // Pasamos el semestre como prop por si el formulario necesita lógica interna
+            currentSemester={obtenerSemestreValido()}
+            // Pasamos sangre si ya existe en el perfil (visto en consola)
+            initialBloodType={studentData?.sangre}
           />
         </main>
       </div>
@@ -149,7 +180,7 @@ export default function App() {
         </div>
 
         {loading ? (
-          <p>Cargando...</p>
+          <div className="loading-container">Cargando ofertas...</div>
         ) : error ? (
           <p>Error: {error}</p>
         ) : ofertas.length > 0 ? (
@@ -160,7 +191,6 @@ export default function App() {
             >
               <ChevronLeft />
             </button>
-
             <div ref={carouselRef} className="ofertas-carousel">
               {ofertas.map((item) => (
                 <Card
@@ -171,7 +201,6 @@ export default function App() {
                 />
               ))}
             </div>
-
             <button
               className="ofertas-carousel-btn right"
               onClick={() => scrollCarousel("right")}

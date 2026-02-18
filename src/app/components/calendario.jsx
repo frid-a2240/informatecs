@@ -1,10 +1,12 @@
 "use client";
 import React, { Fragment } from "react";
-import { Clock, MapPin, Edit2, Trash2 } from "lucide-react";
+// Añadimos MapPin para identificar visualmente el aula
+import { Clock, Edit2, Trash2, MapPin } from "lucide-react";
 
 export const CalendarioView = ({
-  horas,
   diasSemana,
+  horasVisibles,
+  primeraHora,
   getActivityForSlot,
   getActivitySpan,
   onEdit,
@@ -13,7 +15,7 @@ export const CalendarioView = ({
   const getStartRow = (horaInicio) => {
     if (!horaInicio) return 2;
     const [h] = horaInicio.split(":").map(Number);
-    return Math.max(2, h - 7 + 2);
+    return h - primeraHora + 2;
   };
 
   return (
@@ -23,167 +25,147 @@ export const CalendarioView = ({
         style={{
           display: "grid",
           gridTemplateColumns: `80px repeat(${diasSemana.length}, 1fr)`,
-          gridTemplateRows: `auto repeat(${horas.length}, 60px)`,
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          border: "1px solid #e5e7eb",
+          gridTemplateRows: `50px repeat(${horasVisibles.length}, 60px)`,
+          gap: "0",
+          position: "relative",
         }}
       >
-        {/* Cabecera */}
-        <div
-          style={{
-            gridRow: "1",
-            gridColumn: "1",
-            padding: "10px",
-            fontWeight: "bold",
-            borderBottom: "2px solid #eee",
-            textAlign: "center",
-            backgroundColor: "#f9fafb",
-          }}
-        >
+        {/* Cabecera Hora */}
+        <div className="header-hora" style={{ gridColumn: "1", gridRow: "1" }}>
           Hora
         </div>
+
+        {/* Cabecera Días */}
         {diasSemana.map((dia, idx) => (
           <div
             key={dia}
-            style={{
-              gridRow: "1",
-              gridColumn: idx + 2,
-              padding: "10px",
-              textAlign: "center",
-              fontWeight: "bold",
-              borderBottom: "2px solid #eee",
-              backgroundColor: "#f9fafb",
-            }}
+            className="header-dia"
+            style={{ gridColumn: idx + 2, gridRow: "1" }}
           >
             {dia}
           </div>
         ))}
 
-        {/* Filas de horas */}
-        {horas.map((hora, idx) => (
+        {/* Eje Y: Horas */}
+        {horasVisibles.map((hora, idx) => (
           <div
             key={hora}
-            style={{
-              gridRow: idx + 2,
-              gridColumn: "1",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "0.85rem",
-              color: "#6b7280",
-              borderRight: "1px solid #eee",
-              borderBottom: "1px solid #f3f4f6",
-            }}
-          >{`${hora}:00`}</div>
+            className="columna-hora"
+            style={{ gridColumn: "1", gridRow: idx + 2 }}
+          >
+            {`${hora}:00`}
+          </div>
         ))}
 
+        {/* Celdas de fondo */}
+        {diasSemana.map((dia, diaIdx) => (
+          <Fragment key={`bg-${dia}`}>
+            {horasVisibles.map((hora, horaIdx) => (
+              <div
+                key={`${dia}-${hora}`}
+                className="celda-fondo"
+                style={{
+                  gridColumn: diaIdx + 2,
+                  gridRow: horaIdx + 2,
+                  border: "1px solid #e5e7eb",
+                  backgroundColor: "white",
+                }}
+              />
+            ))}
+          </Fragment>
+        ))}
+
+        {/* Actividades */}
         {diasSemana.map((dia, diaIdx) => {
           const colIndex = diaIdx + 2;
           return (
-            <Fragment key={dia}>
-              {horas.map((_, hIdx) => (
-                <div
-                  key={hIdx}
-                  style={{
-                    gridRow: hIdx + 2,
-                    gridColumn: colIndex,
-                    borderRight: "1px solid #f3f4f6",
-                    borderBottom: "1px solid #f3f4f6",
-                  }}
-                />
-              ))}
-
-              {horas.map((hora) => {
+            <Fragment key={`activities-${dia}`}>
+              {horasVisibles.map((hora) => {
                 const activity = getActivityForSlot(dia, hora);
 
-                if (activity && activity.horaInicio.startsWith(`${hora}:`)) {
+                if (activity) {
                   const span = getActivitySpan(activity);
                   const startRow = getStartRow(activity.horaInicio);
 
                   return (
                     <div
                       key={activity.id}
+                      className={`actividad ${activity.tipo}`}
                       style={{
-                        backgroundColor: activity.color,
                         gridRow: `${startRow} / span ${span}`,
                         gridColumn: colIndex,
-                        zIndex: 10,
-                        margin: "2px",
+                        backgroundColor: activity.color || "#3b82f6",
+                        border: "1px solid rgba(0,0,0,0.1)",
                         borderRadius: "6px",
-                        padding: "6px",
-                        color: "white",
-                        display: "flex", // Flexbox horizontal
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                        padding: "8px",
+                        margin: "2px",
+                        position: "relative",
+                        zIndex: 10,
                         overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
                       }}
                     >
-                      {/* LADO IZQUIERDO: TEXTO */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="actividad-contenido">
+                        {/* Nombre de la actividad */}
                         <div
+                          className="actividad-nombre"
                           style={{
-                            fontWeight: "bold",
-                            fontSize: "0.75rem",
-                            whiteSpace: "nowrap",
+                            color: "white",
+                            fontWeight: "700",
+                            fontSize: "0.85rem",
+                            marginBottom: "2px",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
                           }}
                         >
                           {activity.nombre}
                         </div>
-                        <div
-                          style={{
-                            fontSize: "0.65rem",
-                            display: "flex",
-                            alignItems: "center",
-                            opacity: 0.9,
-                            marginTop: "2px",
-                          }}
-                        >
-                          <Clock
-                            size={10}
-                            style={{ marginRight: "3px", flexShrink: 0 }}
-                          />
-                          {activity.horaInicio.substring(0, 5)}
-                        </div>
-                        {activity.ubicacion && (
+
+                        {/* SECCIÓN DEL AULA (NUEVA) */}
+                        {activity.aula && (
                           <div
+                            className="actividad-aula"
                             style={{
-                              fontSize: "0.65rem",
+                              color: "rgba(255,255,255,0.95)",
+                              fontSize: "0.75rem",
+                              fontWeight: "500",
                               display: "flex",
                               alignItems: "center",
-                              opacity: 0.9,
+                              gap: "4px",
+                              marginBottom: "2px",
                             }}
                           >
-                            <MapPin
-                              size={10}
-                              style={{ marginRight: "3px", flexShrink: 0 }}
-                            />
-                            <span
-                              style={{
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}
-                            >
-                              {activity.ubicacion}
-                            </span>
+                            <MapPin size={10} />
+                            <span>{activity.aula}</span>
                           </div>
                         )}
+
+                        {/* Horario */}
+                        <div
+                          className="actividad-tiempo"
+                          style={{
+                            color: "rgba(255,255,255,0.85)",
+                            fontSize: "0.7rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          <Clock size={10} />
+                          {activity.horaInicio} - {activity.horaFin}
+                        </div>
                       </div>
 
-                      {/* LADO DERECHO: BOTONES (Solo personales) */}
                       {activity.tipo === "personal" && (
                         <div
+                          className="actividad-acciones"
                           style={{
                             display: "flex",
-                            flexDirection: "column",
                             gap: "4px",
-                            marginLeft: "4px",
-                            flexShrink: 0, // Evita que los botones se escondan
+                            marginTop: "6px",
                           }}
                         >
                           <button
@@ -192,17 +174,17 @@ export const CalendarioView = ({
                               onEdit(activity);
                             }}
                             style={{
-                              background: "white",
+                              background: "rgba(255,255,255,0.2)",
                               border: "none",
-                              borderRadius: "3px",
-                              color: activity.color, // Color del icono igual al de la materia
-                              padding: "4px",
+                              borderRadius: "4px",
+                              padding: "4px 6px",
                               cursor: "pointer",
+                              color: "white",
                               display: "flex",
-                              boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                              alignItems: "center",
                             }}
                           >
-                            <Edit2 size={12} strokeWidth={3} />
+                            <Edit2 size={11} strokeWidth={3} />
                           </button>
                           <button
                             onClick={(e) => {
@@ -210,16 +192,17 @@ export const CalendarioView = ({
                               onDelete(activity.id);
                             }}
                             style={{
-                              background: "rgba(0,0,0,0.2)",
+                              background: "rgba(255,255,255,0.2)",
                               border: "none",
-                              borderRadius: "3px",
-                              color: "white",
-                              padding: "4px",
+                              borderRadius: "4px",
+                              padding: "4px 6px",
                               cursor: "pointer",
+                              color: "white",
                               display: "flex",
+                              alignItems: "center",
                             }}
                           >
-                            <Trash2 size={12} />
+                            <Trash2 size={11} />
                           </button>
                         </div>
                       )}

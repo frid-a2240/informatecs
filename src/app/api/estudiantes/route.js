@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from '@/lib/prisma';
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-
 
 export async function POST(req) {
   try {
@@ -22,7 +21,7 @@ export async function POST(req) {
     if (!estudiante) {
       return NextResponse.json(
         { message: "Matrícula no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +52,7 @@ export async function POST(req) {
     if (!passwordMatch) {
       return NextResponse.json(
         { message: "Contraseña incorrecta" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -80,9 +79,9 @@ export async function POST(req) {
         estudiante.alusex === 1
           ? "Masculino"
           : estudiante.alusex === 2
-          ? "Femenino"
-          : "No especificado",
-      semestre: inscripciones[0]?.calnpe // 🔥 CAMBIO: acceder desde inscripciones[0]
+            ? "Femenino"
+            : "No especificado",
+      semestre: inscripciones[0]?.calnpe
         ? inscripciones[0].calnpe.toString()
         : "No asignado",
       carrera: carrera?.carnom || "Sin carrera asignada",
@@ -103,7 +102,7 @@ export async function POST(req) {
     console.error("❌ Error en login:", error);
     return NextResponse.json(
       { message: "Error interno del servidor", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

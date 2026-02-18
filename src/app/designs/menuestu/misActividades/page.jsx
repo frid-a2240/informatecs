@@ -1,185 +1,50 @@
 "use client";
 
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useMemo,
-  useCallback,
-} from "react";
-import html2canvas from "html2canvas";
-import {
-  Calendar,
-  List,
-  Grid,
-  Printer,
-  Plus,
-  Download,
-  AlertCircle,
-  RefreshCw,
-} from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Calendar, List, Plus, Download, RefreshCw } from "lucide-react";
 
-// Sub-componentes
+// --- IMPORTACIONES DE COMPONENTES ---
 import BloodTypeValidator from "@/app/components/blood";
-import { CalendarioView } from "@/app/components/calendario";
-import { ListaView } from "@/app/components/ListaActividades";
 import { ActividadModal } from "@/app/components/ActividadModal";
+import OfferModal from "@/app/components/offterModal";
 
-// Estilos
+// --- HOOKS Y ESTILOS ---
+import { useHorarioData } from "@/app/components/hooks/useHorarioData";
 import "@/styles/alumno/horario.css";
+import { MateriasDrawer } from "@/app/components/materiasdrawer";
+import { CalendarioView } from "@/app/components/calendario";
 
-/**
- * Componente Principal: Mis Actividades (Horario Inteligente)
- * Gestiona la visualización de materias, actividades personales y validación de sangre.
- */
 export default function HorarioInteligente() {
   const calendarRef = useRef(null);
 
-  // --- ESTADOS ---
-  const [inscripciones, setInscripciones] = useState([]);
-  const [actividadesPersonales, setActividadesPersonales] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [studentData, setStudentData] = useState(null);
-  const [view, setView] = useState("horario"); // "horario" | "lista"
+  const {
+    loading,
+    studentData,
+    inscripciones,
+    actividadesPersonales,
+    setActividadesPersonales,
+    allActivities,
+    agrupadasParaLista,
+    horasVisibles,
+    primeraHora,
+    loadData,
+  } = useHorarioData();
+
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showMateriasDrawer, setShowMateriasDrawer] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
-  const [expanded, setExpanded] = useState(null);
+  const [editingDay, setEditingDay] = useState(null);
 
   const [formData, setFormData] = useState({
     nombre: "",
     dias: [],
-    horaInicio: "",
-    horaFin: "",
+    horaInicio: "08:00",
+    horaFin: "09:00",
     ubicacion: "",
-    color: "#1b396a",
+    color: "#3b82f6",
   });
 
-  // --- FUNCIÓN DE CARGA DE DATOS ---
-  // Se usa useCallback para evitar que la función se recree en cada render
-  const loadData = useCallback(async (numeroControl) => {
-    if (!numeroControl) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/inscripciones?aluctr=${numeroControl}`);
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setInscripciones(data);
-      }
-    } catch (err) {
-      console.error("❌ Error al cargar inscripciones:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // --- EFECTOS INICIALES ---
-  useEffect(() => {
-    const stored = localStorage.getItem("studentData");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setStudentData(parsed);
-      loadData(parsed.numeroControl);
-    } else {
-      setLoading(false);
-    }
-
-    const personalStored = localStorage.getItem("actividadesPersonales");
-    if (personalStored) setActividadesPersonales(JSON.parse(personalStored));
-  }, [loadData]);
-
-  // --- MANEJADORES DE SANGRE ---
-  const handleBloodUploadSuccess = () => {
-    // Cuando el documento se sube con éxito, refrescamos los datos del alumno
-    if (studentData?.numeroControl) {
-      loadData(studentData.numeroControl);
-    }
-  };
-
-  // --- LÓGICA DE ACTIVIDADES (useMemo) ---
-  const allActivities = useMemo(() => {
-    const inscritasMapped = inscripciones.flatMap((insc) => {
-      const act = insc.actividad || insc;
-      const horario = act?.horario;
-      if (!horario || !horario.dias) return [];
-
-      const diasArray = Array.isArray(horario.dias)
-        ? horario.dias
-        : [horario.dias];
-
-      return diasArray.map((dia) => ({
-        id: `insc-${insc.id || Math.random()}-${dia}`,
-        nombre: act.aconco || act.nombre || "Materia",
-        dia: dia,
-        horaInicio: horario.horaInicio || "07:00",
-        horaFin: horario.horaFin || "08:00",
-        ubicacion: horario.salon || "Por asignar",
-        color: "#1b396a",
-        tipo: "inscrita",
-      }));
-    });
-
-    const personalesMapped = actividadesPersonales.map((act) => ({
-      ...act,
-      tipo: "personal",
-    }));
-
-    return [...inscritasMapped, ...personalesMapped];
-  }, [inscripciones, actividadesPersonales]);
-
-  // --- MANEJADORES DE MODAL Y ACTIVIDADES ---
-  const resetModal = () => {
-    setShowModal(false);
-    setEditingActivity(null);
-    setFormData({
-      nombre: "",
-      dias: [],
-      horaInicio: "",
-      horaFin: "",
-      ubicacion: "",
-      color: "#1b396a",
-    });
-  };
-
-  const handleSubmitActivity = (e) => {
-    e.preventDefault();
-    if (formData.dias.length === 0) return alert("Selecciona al menos un día");
-
-    const nuevasActividades = formData.dias.map((dia) => ({
-      ...formData,
-      id: `pers-${Date.now()}-${dia}`,
-      dia: dia,
-      tipo: "personal",
-    }));
-
-    let updatedList;
-    if (editingActivity) {
-      const baseFiltrada = actividadesPersonales.filter(
-        (act) =>
-          act.nombre.toLowerCase() !== editingActivity.nombre.toLowerCase(),
-      );
-      updatedList = [...baseFiltrada, ...nuevasActividades];
-    } else {
-      updatedList = [...actividadesPersonales, ...nuevasActividades];
-    }
-
-    setActividadesPersonales(updatedList);
-    localStorage.setItem("actividadesPersonales", JSON.stringify(updatedList));
-    resetModal();
-  };
-
-  const handleDownloadImage = async () => {
-    if (!calendarRef.current) return;
-    const canvas = await html2canvas(calendarRef.current, {
-      scale: 2,
-      backgroundColor: "#f4f7f9",
-    });
-    const link = document.createElement("a");
-    link.download = `Horario_${studentData?.numeroControl || "Alumno"}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-  };
-
-  // Configuración de tabla
   const diasSemana = [
     "Lunes",
     "Martes",
@@ -188,42 +53,212 @@ export default function HorarioInteligente() {
     "Viernes",
     "Sábado",
   ];
-  const horas = Array.from({ length: 14 }, (_, i) => i + 7); // 7 AM a 8 PM
+  const coloresPaleta = [
+    "#3b82f6",
+    "#ef4444",
+    "#10b981",
+    "#f59e0b",
+    "#8b5cf6",
+    "#f472b6",
+    "#1e293b",
+  ];
+
+  useEffect(() => {
+    if (studentData?.numeroControl) {
+      const key = `actividades_${studentData.numeroControl}`;
+      const guardadas = localStorage.getItem(key);
+      setActividadesPersonales(guardadas ? JSON.parse(guardadas) : []);
+    }
+  }, [studentData?.numeroControl, setActividadesPersonales]);
+
+  const guardarEnStorage = (nuevaLista) => {
+    setActividadesPersonales(nuevaLista);
+    if (studentData?.numeroControl) {
+      localStorage.setItem(
+        `actividades_${studentData.numeroControl}`,
+        JSON.stringify(nuevaLista),
+      );
+    }
+  };
+
+  // --- LÓGICA DE DESCARGA (RESTAURADA) ---
+  const handleDownloadImage = async () => {
+    if (typeof window === "undefined" || !calendarRef.current) return;
+    try {
+      const domtoimage = (await import("dom-to-image-more")).default;
+      const original = calendarRef.current;
+      const wrapper = document.createElement("div");
+      Object.assign(wrapper.style, {
+        position: "fixed",
+        left: "-5000px",
+        top: "0",
+        width: "1400px",
+        backgroundColor: "white",
+        zIndex: "-1",
+      });
+
+      const clone = original.cloneNode(true);
+      const styleReset = document.createElement("style");
+      styleReset.innerHTML = `* { outline: none !important; box-shadow: none !important; border: none !important; } table, th, td { border: 1px solid #e2e8f0 !important; }`;
+      clone.appendChild(styleReset);
+      clone
+        .querySelectorAll(".btn-action-calendar, button")
+        .forEach((btn) => btn.remove());
+
+      const header = document.createElement("div");
+      header.style.cssText = `width: 100%; padding: 30px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid #fe9e10; background-color: white;`;
+      header.innerHTML = `
+        <div>
+          <h1 style="margin:0;color:#1b396a;font-size:38px;font-weight:900;">HORARIO</h1>
+          <p style="margin:5px 0 0 0;color:#fe9e10;font-size:18px;font-weight:700;">${studentData?.carrera || "ESTUDIANTE"}</p>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:24px;color:#333;font-weight:800;">${studentData?.nombreCompleto || "MI HORARIO"}</div>
+          <div style="font-size:18px;color:#666;">No. Control: ${studentData?.numeroControl || "S/N"}</div>
+        </div>
+      `;
+      wrapper.appendChild(header);
+      const container = document.createElement("div");
+      container.style.padding = "20px 40px";
+      container.appendChild(clone);
+      wrapper.appendChild(container);
+      document.body.appendChild(wrapper);
+
+      await new Promise((r) => setTimeout(r, 600));
+      const dataUrl = await domtoimage.toPng(wrapper, {
+        width: 1400,
+        height: wrapper.offsetHeight,
+      });
+      const link = document.createElement("a");
+      link.download = `Horario_${studentData?.numeroControl || "Personal"}.png`;
+      link.href = dataUrl;
+      link.click();
+      document.body.removeChild(wrapper);
+    } catch (error) {
+      console.error("Error al descargar:", error);
+    }
+  };
+
+  const handleSubmitActivity = (dataOrEvent) => {
+    let finalData = dataOrEvent.target ? { ...formData } : dataOrEvent;
+    if (dataOrEvent.target) dataOrEvent.preventDefault();
+    if (!finalData.nombre || finalData.dias.length === 0) return;
+
+    const nuevasSesiones = finalData.dias.map((dia) => ({
+      id: `pers-${finalData.nombre}-${dia}-${Date.now()}`,
+      nombre: finalData.nombre,
+      ubicacion: finalData.ubicacion,
+      color: finalData.color,
+      dia,
+      horaInicio:
+        finalData.horariosEspeciales?.[dia]?.horaInicio || finalData.horaInicio,
+      horaFin:
+        finalData.horariosEspeciales?.[dia]?.horaFin || finalData.horaFin,
+      horariosEspeciales: finalData.horariosEspeciales || null,
+    }));
+
+    const listaActualizada = editingActivity
+      ? [
+          ...actividadesPersonales.filter(
+            (a) => a.nombre !== editingActivity.nombre,
+          ),
+          ...nuevasSesiones,
+        ]
+      : [...actividadesPersonales, ...nuevasSesiones];
+
+    guardarEnStorage(listaActualizada);
+    handleCloseModal();
+  };
+
+  const handleSaveEditDay = (actividadActualizada) => {
+    if (!editingDay || !editingActivity) return;
+    const nuevaLista = actividadesPersonales.map((act) => {
+      if (act.nombre === editingActivity.nombre && act.dia === editingDay) {
+        return {
+          ...act,
+          horariosEspeciales: {
+            ...(act.horariosEspeciales || {}),
+            ...(actividadActualizada.horariosEspeciales || {}),
+          },
+        };
+      }
+      return act;
+    });
+    guardarEnStorage(nuevaLista);
+    setShowEditModal(false);
+    setEditingActivity(null);
+    setEditingDay(null);
+  };
+
+  const handleDeleteTotal = (nombre) => {
+    if (confirm(`¿Eliminar todas las sesiones de "${nombre}"?`)) {
+      guardarEnStorage(
+        actividadesPersonales.filter((a) => a.nombre !== nombre),
+      );
+    }
+  };
+
+  const handleRemoveDay = (id, dia) => {
+    if (confirm(`¿Quitar la sesión del día ${dia}?`)) {
+      guardarEnStorage(actividadesPersonales.filter((a) => a.id !== id));
+    }
+  };
+
+  const handleEditDay = (actividad, dia) => {
+    setEditingActivity(actividad);
+    setEditingDay(dia);
+    setShowEditModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingActivity(null);
+    setFormData({
+      nombre: "",
+      dias: [],
+      horaInicio: "08:00",
+      horaFin: "09:00",
+      ubicacion: "",
+      color: "#3b82f6",
+    });
+  };
 
   return (
     <div className="horario-page">
       <header className="horario-header">
-        <div className="header-content">
-          <div className="header-left">
-            <Calendar size={40} color="#fe9e10" />
+        <div className="horario-header-content">
+          <div className="horario-header-left">
+            <Calendar size={50} color="#fe9e10" strokeWidth={2.5} />
             <div>
-              <h1>Mis Actividades</h1>
-              <p className="header-subtitle">
-                {inscripciones.length} inscritas •{" "}
-                {new Set(actividadesPersonales.map((a) => a.nombre)).size}{" "}
-                personales
+              <h1 className="horario-welcome-title">Mi Horario</h1>
+              <p className="horario-header-subtitle">
+                {inscripciones.length} materias inscritas
               </p>
             </div>
           </div>
-          <div className="header-actions">
+
+          <div className="horario-header-actions">
             <button
-              className="btn-secondary"
-              onClick={() => setView(view === "horario" ? "lista" : "horario")}
+              className="horario-btn-secondary"
+              onClick={() => setShowMateriasDrawer(true)}
             >
-              {view === "horario" ? <List size={18} /> : <Grid size={18} />}
-              <span className="hide-mobile">
-                {view === "horario" ? " Lista" : " Horario"}
-              </span>
+              <List size={20} />
+              <span className="horario-hide-mobile"> Ver Lista</span>
             </button>
+
             <button
-              className="btn-secondary"
+              className="horario-btn-secondary"
               onClick={handleDownloadImage}
-              title="Descargar Imagen"
             >
-              <Download size={18} />
+              <Download size={20} />
             </button>
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
-              <Plus size={18} /> <span>Agregar Clase</span>
+
+            <button
+              className="horario-btn-primary"
+              onClick={() => setShowModal(true)}
+            >
+              <Plus size={20} />
+              <span>Agregar Clase</span>
             </button>
           </div>
         </div>
@@ -235,96 +270,93 @@ export default function HorarioInteligente() {
       >
         <BloodTypeValidator
           numeroControl={studentData?.numeroControl}
-          onUploadSuccess={handleBloodUploadSuccess}
+          onUploadSuccess={() => loadData(studentData.numeroControl)}
         />
       </div>
 
       <main className="horario-main">
         {loading ? (
-          <div className="loading-state">
-            <RefreshCw className="animate-spin" size={32} />
-            <p>Sincronizando tus actividades...</p>
+          <div className="horario-loading-state">
+            <RefreshCw className="horario-animate-spin" size={40} />
           </div>
-        ) : allActivities.length === 0 ? (
-          <div className="empty-state">
-            <AlertCircle size={64} color="#cbd5e1" />
-            <h3>No hay clases registradas</h3>
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
-              Agregar Actividad
-            </button>
-          </div>
-        ) : view === "horario" ? (
-          <div ref={calendarRef} className="calendario-container">
+        ) : (
+          <div ref={calendarRef} className="horario-calendario-container">
             <CalendarioView
-              horas={horas}
               diasSemana={diasSemana}
+              horasVisibles={horasVisibles}
+              primeraHora={primeraHora}
               getActivityForSlot={(dia, hora) =>
-                allActivities.find((act) => {
-                  if (act.dia !== dia) return false;
-                  const [start] = act.horaInicio.split(":").map(Number);
-                  const [end] = act.horaFin.split(":").map(Number);
-                  return hora >= start && hora < end;
-                })
+                allActivities.find(
+                  (act) => act.dia === dia && parseInt(act.horaInicio) === hora,
+                )
               }
               getActivitySpan={(act) => {
-                const [start] = act.horaInicio.split(":").map(Number);
-                const [end] = act.horaFin.split(":").map(Number);
-                return Math.max(1, end - start);
+                const [hI] = act.horaInicio.split(":").map(Number);
+                const [hF] = act.horaFin.split(":").map(Number);
+                return Math.max(1, hF - hI);
               }}
               onEdit={(act) => {
-                setEditingActivity(act);
-                const sesiones = actividadesPersonales.filter(
+                const original = agrupadasParaLista.find(
                   (a) => a.nombre === act.nombre,
                 );
-                setFormData({ ...act, dias: sesiones.map((s) => s.dia) });
+                setEditingActivity(original || act);
+                setFormData({
+                  nombre: original?.nombre || act.nombre,
+                  dias: original?.diasPresentes || [act.dia],
+                  horaInicio: original?.horaInicio || act.horaInicio,
+                  horaFin: original?.horaFin || act.horaFin,
+                  ubicacion: original?.ubicacion || "",
+                  color: original?.color || act.color,
+                  horariosEspeciales: original?.horariosEspeciales || {},
+                });
                 setShowModal(true);
               }}
-              onDelete={(act) => {
-                if (confirm("¿Eliminar todas las sesiones?")) {
-                  const updated = actividadesPersonales.filter(
-                    (a) => a.nombre !== act.nombre,
-                  );
-                  setActividadesPersonales(updated);
-                  localStorage.setItem(
-                    "actividadesPersonales",
-                    JSON.stringify(updated),
-                  );
-                }
+              onDelete={(id) => {
+                const act = allActivities.find((a) => a.id === id);
+                if (act) handleDeleteTotal(act.nombre);
               }}
             />
           </div>
-        ) : (
-          <ListaView
-            inscripciones={inscripciones}
-            actividadesPersonales={actividadesPersonales}
-            expanded={expanded}
-            toggleExpand={(idx) => setExpanded(expanded === idx ? null : idx)}
-            onEdit={(act) => {}}
-            onDelete={(act) => {}}
-          />
         )}
       </main>
 
+      {showMateriasDrawer && (
+        <MateriasDrawer
+          inscripciones={inscripciones}
+          actividadesPersonales={agrupadasParaLista}
+          onEdit={handleEditDay}
+          onDelete={handleDeleteTotal}
+          onRemoveDay={handleRemoveDay}
+          onClose={() => setShowMateriasDrawer(false)}
+        />
+      )}
+
       <ActividadModal
         show={showModal}
-        onClose={resetModal}
+        onClose={handleCloseModal}
         onSubmit={handleSubmitActivity}
         formData={formData}
         onChange={(e) =>
           setFormData({ ...formData, [e.target.name]: e.target.value })
         }
         onColorSelect={(color) => setFormData({ ...formData, color })}
-        colors={[
-          "#1b396a",
-          "#fe9e10",
-          "#8eafef",
-          "#54be62",
-          "#9110b9",
-          "#e94aaf",
-        ]}
+        colors={coloresPaleta}
         dias={diasSemana}
         isEditing={!!editingActivity}
       />
+
+      {showEditModal && (
+        <OfferModal
+          item={editingActivity}
+          diaAEditar={editingDay}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingActivity(null);
+            setEditingDay(null);
+          }}
+          onSave={handleSaveEditDay}
+        />
+      )}
     </div>
   );
 }

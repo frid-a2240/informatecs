@@ -21,14 +21,14 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
-  
+
   // ✅ UN SOLO MODAL PARA TODO
   const [modalAgregar, setModalAgregar] = useState(null);
   const [busquedaMaestro, setBusquedaMaestro] = useState("");
   const [maestrosEncontrados, setMaestrosEncontrados] = useState([]);
   const [buscandoMaestro, setBuscandoMaestro] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  
+
   // ✅ FORMULARIO UNIFICADO
   const [formulario, setFormulario] = useState({
     dias: [],
@@ -60,7 +60,7 @@ const AdminPanel = () => {
       const actividades = await response.json();
       setTodasActividades(actividades);
     } catch (error) {
-      console.error(error); 
+      console.error(error);
       alert("Error de conexión o al cargar actividades");
     } finally {
       setLoading(false);
@@ -70,7 +70,7 @@ const AdminPanel = () => {
   // ✅ ABRIR MODAL CON DATOS PRECARGADOS
   const abrirModalAgregar = (actividad) => {
     setModalAgregar(actividad);
-    
+
     // Precargar datos si ya existen
     setFormulario({
       dias: actividad.horario?.dias || [],
@@ -78,11 +78,11 @@ const AdminPanel = () => {
       horaFin: actividad.horario?.horaFin || "",
       salon: actividad.horario?.salon || "",
       maestroId: actividad.maestroId || null,
-      maestroNombre: actividad.maestro 
+      maestroNombre: actividad.maestro
         ? `${actividad.maestro.pernom} ${actividad.maestro.perapp} ${actividad.maestro.perapm}`.trim()
         : "",
     });
-    
+
     setBusquedaMaestro("");
     setMaestrosEncontrados([]);
   };
@@ -106,7 +106,7 @@ const AdminPanel = () => {
     try {
       setBuscandoMaestro(true);
       const response = await fetch(
-        `/api/maestros-buscar?q=${encodeURIComponent(query)}`
+        `/api/maestros-buscar?q=${encodeURIComponent(query)}`,
       );
       const maestros = await response.json();
       setMaestrosEncontrados(maestros);
@@ -204,19 +204,21 @@ const AdminPanel = () => {
           salon: formulario.salon,
         },
         maestroId: formulario.maestroId,
-        maestro: formulario.maestroId ? {
-          percve: formulario.maestroId,
-          pernom: formulario.maestroNombre.split(' ')[0] || '',
-          perapp: formulario.maestroNombre.split(' ')[1] || '',
-          perapm: formulario.maestroNombre.split(' ')[2] || '',
-        } : null,
+        maestro: formulario.maestroId
+          ? {
+              percve: formulario.maestroId,
+              pernom: formulario.maestroNombre.split(" ")[0] || "",
+              perapp: formulario.maestroNombre.split(" ")[1] || "",
+              perapm: formulario.maestroNombre.split(" ")[2] || "",
+            }
+          : null,
       };
 
       // 4. Actualizar en el catálogo
       setTodasActividades((prev) =>
         prev.map((act) =>
-          act.id === modalAgregar.id ? actividadActualizada : act
-        )
+          act.id === modalAgregar.id ? actividadActualizada : act,
+        ),
       );
 
       // 5. Agregar a oferta si no está ya
@@ -226,7 +228,7 @@ const AdminPanel = () => {
 
       alert("✅ Actividad configurada y agregada a la oferta");
       setModalAgregar(null);
-      
+
       // Recargar para asegurar datos actualizados
       await cargarActividades();
     } catch (error) {
@@ -239,7 +241,7 @@ const AdminPanel = () => {
 
   const quitarDeOferta = (actividadId) => {
     setActividadesOfertadas(
-      actividadesOfertadas.filter((act) => act.id !== actividadId)
+      actividadesOfertadas.filter((act) => act.id !== actividadId),
     );
   };
 
@@ -281,7 +283,7 @@ const AdminPanel = () => {
   const actividadesFiltradas = todasActividades.filter((act) =>
     (act.aconco ?? act.aticve ?? "")
       .toLowerCase()
-      .includes(busqueda.toLowerCase())
+      .includes(busqueda.toLowerCase()),
   );
 
   if (loading) {
@@ -306,10 +308,11 @@ const AdminPanel = () => {
               <div>
                 <h3>➕ Configurar y Agregar Actividad</h3>
                 <p className="modal-subtitle">
-                  {modalAgregar.aconco || modalAgregar.aticve} — Código: {modalAgregar.aticve}
+                  {modalAgregar.aconco || modalAgregar.aticve} — Código:{" "}
+                  {modalAgregar.aticve}
                 </p>
               </div>
-              <button 
+              <button
                 className="btn-close"
                 onClick={() => setModalAgregar(null)}
               >
@@ -320,15 +323,19 @@ const AdminPanel = () => {
             <div className="modal-body">
               {/* SECCIÓN HORARIO */}
               <div className="seccion-form">
-                <h4><Clock size={20} /> Horario</h4>
-                
+                <h4>
+                  <Clock size={20} /> Horario
+                </h4>
+
                 <label>Días de la semana:</label>
                 <div className="dias-grid">
                   {diasSemana.map((dia) => (
                     <button
                       key={dia}
                       type="button"
-                      className={formulario.dias.includes(dia) ? "dia activo" : "dia"}
+                      className={
+                        formulario.dias.includes(dia) ? "dia activo" : "dia"
+                      }
                       onClick={() => toggleDia(dia)}
                     >
                       {dia}
@@ -343,7 +350,10 @@ const AdminPanel = () => {
                       type="time"
                       value={formulario.horaInicio}
                       onChange={(e) =>
-                        setFormulario({ ...formulario, horaInicio: e.target.value })
+                        setFormulario({
+                          ...formulario,
+                          horaInicio: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -354,7 +364,10 @@ const AdminPanel = () => {
                       type="time"
                       value={formulario.horaFin}
                       onChange={(e) =>
-                        setFormulario({ ...formulario, horaFin: e.target.value })
+                        setFormulario({
+                          ...formulario,
+                          horaFin: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -373,7 +386,9 @@ const AdminPanel = () => {
 
               {/* SECCIÓN MAESTRO */}
               <div className="seccion-form">
-                <h4><User size={20} /> Maestro</h4>
+                <h4>
+                  <User size={20} /> Maestro
+                </h4>
 
                 {formulario.maestroId ? (
                   <div className="maestro-seleccionado">
@@ -405,7 +420,9 @@ const AdminPanel = () => {
                       placeholder="Ej: 88 o César Noel"
                     />
 
-                    {buscandoMaestro && <p className="texto-cargando">Buscando...</p>}
+                    {buscandoMaestro && (
+                      <p className="texto-cargando">Buscando...</p>
+                    )}
 
                     {maestrosEncontrados.length > 0 && (
                       <div className="lista-maestros">
@@ -458,13 +475,16 @@ const AdminPanel = () => {
       {/* ✅ MODAL VER MAESTRO (Para el badge clickeable) */}
       {modalVerMaestro && (
         <div className="modal-overlay" onClick={() => setModalVerMaestro(null)}>
-          <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content modal-small"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3>👨‍🏫 Maestro Asignado</h3>
             <p className="materia-modal-title">
               {modalVerMaestro.aconco || modalVerMaestro.aticve}
             </p>
             <p className="codigo-modal">Código: {modalVerMaestro.aticve}</p>
-            
+
             {modalVerMaestro.maestro ? (
               <div className="maestro-info-box">
                 <div className="maestro-avatar">
@@ -472,15 +492,23 @@ const AdminPanel = () => {
                 </div>
                 <div className="maestro-detalles">
                   <h4>
-                    {modalVerMaestro.maestro.pernom} {modalVerMaestro.maestro.perapp}{" "}
+                    {modalVerMaestro.maestro.pernom}{" "}
+                    {modalVerMaestro.maestro.perapp}{" "}
                     {modalVerMaestro.maestro.perapm}
                   </h4>
-                  <p><strong>ID:</strong> {modalVerMaestro.maestro.percve}</p>
+                  <p>
+                    <strong>ID:</strong> {modalVerMaestro.maestro.percve}
+                  </p>
                   {modalVerMaestro.maestro.perdce && (
-                    <p><strong>Email:</strong> {modalVerMaestro.maestro.perdce}</p>
+                    <p>
+                      <strong>Email:</strong> {modalVerMaestro.maestro.perdce}
+                    </p>
                   )}
                   {modalVerMaestro.maestro.perdep && (
-                    <p><strong>Departamento:</strong> {modalVerMaestro.maestro.perdep}</p>
+                    <p>
+                      <strong>Departamento:</strong>{" "}
+                      {modalVerMaestro.maestro.perdep}
+                    </p>
                   )}
                 </div>
               </div>
@@ -503,7 +531,10 @@ const AdminPanel = () => {
       {/* HEADER */}
       <div className="card header-card">
         <h2>Gestionar Actividades</h2>
-        <p>Configura y selecciona las actividades que deseas ofertar este semestre</p>
+        <p>
+          Configura y selecciona las actividades que deseas ofertar este
+          semestre
+        </p>
       </div>
 
       <div className="grid-2">
@@ -527,14 +558,14 @@ const AdminPanel = () => {
             ) : (
               actividadesFiltradas.map((actividad) => {
                 const agregada = actividadesOfertadas.find(
-                  (act) => act.id === actividad.id
+                  (act) => act.id === actividad.id,
                 );
                 return (
                   <div key={actividad.id} className="actividad-item">
                     <div className="actividad-info">
                       <h4>{actividad.aconco || actividad.aticve}</h4>
                       <p>Código: {actividad.aticve}</p>
-                      
+
                       <div className="meta">
                         <span>{actividad.acocre} créditos</span>
                         <span>{actividad.acohrs} hrs</span>
@@ -542,7 +573,7 @@ const AdminPanel = () => {
                           <span className="con-horario">✓ Horario</span>
                         )}
                         {actividad.maestroId && (
-                          <span 
+                          <span
                             className="con-maestro clickeable"
                             onClick={(e) => {
                               e.stopPropagation();
@@ -555,7 +586,7 @@ const AdminPanel = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     {/* ✅ UN SOLO BOTÓN */}
                     <button
                       className={agregada ? "btn-agregado" : "btn-configurar"}
@@ -612,17 +643,20 @@ const AdminPanel = () => {
                   {actividad.horario && (
                     <p className="detalle-horario">
                       <Clock size={14} /> {actividad.horario.dias.join(", ")} •{" "}
-                      {actividad.horario.horaInicio} - {actividad.horario.horaFin}
-                      {actividad.horario.salon && ` • ${actividad.horario.salon}`}
+                      {actividad.horario.horaInicio} -{" "}
+                      {actividad.horario.horaFin}
+                      {actividad.horario.salon &&
+                        ` • ${actividad.horario.salon}`}
                     </p>
                   )}
                   {actividad.maestro && (
                     <p className="detalle-maestro">
-                      <User size={14} /> {actividad.maestro.pernom} {actividad.maestro.perapp}
+                      <User size={14} /> {actividad.maestro.pernom}{" "}
+                      {actividad.maestro.perapp}
                     </p>
                   )}
                 </div>
-                <button 
+                <button
                   className="btn-eliminar"
                   onClick={() => quitarDeOferta(actividad.id)}
                 >

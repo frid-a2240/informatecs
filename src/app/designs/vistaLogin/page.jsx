@@ -114,7 +114,7 @@ const LoginPage = () => {
     handleUpdatePassword(e, matricula, newPassword);
   };
 
- // ----------------------
+  // ----------------------
   // Funciones de envío MAESTROS
   // ----------------------
   const onTeacherSubmit = (e) => {
@@ -126,8 +126,7 @@ const LoginPage = () => {
 
   const onTeacherRegisterSubmit = (e) => {
     e.preventDefault();
-    if (!teacherId || !password)
-      return setError("Escribe ID de maestro");
+    if (!teacherId || !password) return setError("Escribe ID de maestro");
     if (password !== "profe123")
       return setError('La contraseña para registro debe ser "profe123"');
     handleMaestroRegister(e, teacherId);
@@ -170,21 +169,25 @@ const LoginPage = () => {
           // Datos básicos
           nombreCompleto: studentData.nombreCompleto || fullName || "",
           numeroControl: studentData.numeroControl || studentData.aluctr || "",
-          
+
           // Información Personal (mapeada de tu esquema Prisma)
           ubicacion: studentData.ubicacion || studentData.aluciu || "",
           fotoUrl: studentData.fotoUrl || studentData.alufac || "",
-          fechaNacimiento: studentData.fechaNacimiento || studentData.alunac || "",
+          fechaNacimiento:
+            studentData.fechaNacimiento || studentData.alunac || "",
           rfc: studentData.rfc || studentData.alurfc || "",
           curp: studentData.curp || studentData.alucur || "",
           telefono: studentData.telefono || studentData.alute1 || "",
           email: studentData.email || studentData.alumai || "",
           sexo: studentData.sexo || "",
-          
-          
-          sangre: studentData.sangre || studentData.alutsa || "No disponible", 
-          creditosAprobados: studentData.creditosAprobados || studentData.calcac || studentData.aluegr || 0,
-          
+
+          sangre: studentData.sangre || studentData.alutsa || "No disponible",
+          creditosAprobados:
+            studentData.creditosAprobados ||
+            studentData.calcac ||
+            studentData.aluegr ||
+            0,
+
           // Información Académica
           carrera: studentData.carrera || "Sin carrera asignada",
           carreraId: studentData.carreraId || studentData.carcve || "N/A",
@@ -194,16 +197,16 @@ const LoginPage = () => {
 
         // Guardamos en localStorage para que el Dashboard lo lea
         localStorage.setItem("studentData", JSON.stringify(cleanedData));
-        
-        console.log("✅ Datos preparados para el perfil:", cleanedData);
+
+        //console.log("✅ Datos preparados para el perfil:", cleanedData);
 
         // Redirección al menú de estudiantes
         internalRouter.push(
-          `/designs/menuestu?name=${encodeURIComponent(fullName || cleanedData.nombreCompleto)}`
+          `/designs/menuestu?name=${encodeURIComponent(fullName || cleanedData.nombreCompleto)}`,
         );
       }
     }, [internalRouter, fullName, studentData]);
-  }
+  };
   const RedirectAfterMaestroLogin = ({ fullName, maestroData }) => {
     const internalRouter = useRouter(); // Usar internalRouter para evitar confusión
 
@@ -212,7 +215,7 @@ const LoginPage = () => {
         localStorage.setItem("maestroData", JSON.stringify(maestroData));
         console.log("✅ Datos del maestro guardados:", maestroData);
         internalRouter.push(
-          `/designs/menumaestros?name=${encodeURIComponent(fullName)}`
+          `/designs/menumaestros?name=${encodeURIComponent(fullName)}`,
         );
       }
     }, [internalRouter, fullName, maestroData]);
@@ -247,12 +250,14 @@ const LoginPage = () => {
         onSubmit={onRegisterSubmit}
       />
     ),
+    // ESTE ES EL PASO QUE SIGUE AL REGISTRO EXITOSO
     askEmail: (
       <AskEmailForm email={email} setEmail={setEmail} onSubmit={onSendCode} />
     ),
     verify: (
       <VerifyCodeForm code={code} setCode={setCode} onSubmit={onVerifyCode} />
     ),
+
     update: (
       <UpdatePasswordForm
         newPassword={newPassword}
@@ -260,6 +265,8 @@ const LoginPage = () => {
         onSubmit={onUpdatePassword}
       />
     ),
+
+    // Solo se llega aquí DESPUÉS de cambiar la contraseña en 'update'
     success: (
       <RedirectAfterLogin fullName={fullName} studentData={studentData} />
     ),

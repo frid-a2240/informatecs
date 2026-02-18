@@ -3,23 +3,28 @@
   --yellow-accent: #fe9e10;
   --blue-hover: #8eafef;
   --text-dark: #333333;
-  --bg-light: linear-gradient(
-    to left,
-    rgba(8, 94, 222, 0.07),
-    rgba(8, 94, 222, 0)
-  );
+  --act-primary: #1b396a;
+  --act-primary-dark: #142a50;
   --white: #ffffff;
-  font-family: "Noto Sans", sans-serif;
+
+  --ite-text: #4a5568;
+  --ite-blue-dark: #1b396a;
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+
+  font-family: "Montserrat", sans-serif;
 }
 
-/* ============================================================
-   BASE STYLES
-   ============================================================ */
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.ofertas-dashboard-main {
+  flex: 1;
+  transition: all 0.3s ease;
+  padding: 2rem 1rem;
+  max-width: 1200px; /* Un poco más ancho para dar respiro */
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra todo el contenido verticalmente */
 }
 
 .ofertas-icon {
@@ -31,23 +36,6 @@
 }
 
 /* --- Contenedores principales --- */
-.ofertas-dashboard-container {
-  min-height: 100vh;
-  background: var(--white);
-  display: flex;
-  flex-direction: column;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.ofertas-dashboard-main {
-  flex: 1;
-  transition: all 0.3s ease;
-  padding: 1rem;
-  max-width: 1120px;
-  margin: 0 auto;
-  width: 100%;
-}
 
 .ofertas-with-sidebar {
   margin-left: 0;
@@ -98,6 +86,7 @@
 .ofertas-mascota-container img {
   width: clamp(120px, 30vw, 200px);
   max-width: 200px;
+  pad: 2rem;
   height: auto !important;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
@@ -124,7 +113,7 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 1.5rem;
-  padding: 1.5rem 0.5rem;
+  padding: 1rem 0.5rem;
   border-radius: 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -187,22 +176,13 @@
   font-weight: bold;
 }
 
-.ofertas-step-label {
-  font-size: 0.7rem;
-  color: #9ca3af;
-  font-weight: 500;
-  text-align: center;
-  max-width: 80px;
-  line-height: 1.3;
-}
-
 .ofertas-step.active .ofertas-step-label {
   color: #3b82f6;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 .ofertas-step-line {
-  width: 40px;
+  width: 0px;
   height: 3px;
   background-color: #e5e7eb;
   margin: 0 0.25rem;
@@ -247,6 +227,7 @@
   border: 3px solid var(--blue-primary);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
@@ -450,8 +431,8 @@
 }
 
 .ofertas-step-number {
-  width: 38px;
-  height: 38px;
+  width: 50px;
+  height: 60px;
   border-radius: 50%;
   background-color: #e5e7eb;
   color: #9ca3af;
@@ -487,20 +468,15 @@
 }
 
 .ofertas-step-label {
-  font-size: 0.7rem;
+  font-size: 1rem;
   color: #9ca3af;
   font-weight: 500;
   text-align: center;
-  max-width: 80px;
-  line-height: 1.3;
-  word-wrap: break-word;
+  max-width: 100px; /* Evita el corte de "Seleccion-ar" */
+  line-height: 1.2;
+  margin-top: 10px;
+  word-wrap: normal;
 }
-
-.ofertas-step.active .ofertas-step-label {
-  color: #3b82f6;
-  font-weight: 600;
-}
-
 .ofertas-step.completed .ofertas-step-label {
   color: #64748b;
   font-weight: 500;

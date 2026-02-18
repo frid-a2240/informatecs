@@ -17,7 +17,6 @@ const OfferModal = ({ item, onClose, onRegister }) => (
       >
         <X size={24} />
       </button>
-
       {item.actividad.image && (
         <img
           src={item.actividad.image}
@@ -25,9 +24,7 @@ const OfferModal = ({ item, onClose, onRegister }) => (
           className="ofertas-modal-img"
         />
       )}
-
       <h1 className="ofertas-modal-h1">{item.actividad.aconco}</h1>
-
       <div className="ofertas-modal-content">
         <p className="ofertas-description">
           Esta actividad forma parte de la oferta del semestre. Conoce sus
@@ -55,8 +52,11 @@ const OfferModal = ({ item, onClose, onRegister }) => (
           </div>
         </div>
       </div>
-
-      <button className="ofertas-register-btn" onClick={() => onRegister(item)}>
+      // En OfferModal, el botón debe quedar así:
+      <button
+        className="ofertas-register-btn"
+        onClick={() => onRegister(item)} // Pasa el objeto de la oferta seleccionado
+      >
         Registrarme en esta oferta
       </button>
     </div>

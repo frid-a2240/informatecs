@@ -9,7 +9,7 @@
   --act-primary: #1b396a;
   --act-primary-dark: #142a50;
   --act-primary-light: #8eafef;
-  
+
   --white: #ffffff;
   font-family: "Montserrat";
 }
@@ -104,7 +104,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) translateY(0) rotate(0deg);
   }
   50% {
@@ -113,7 +114,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
@@ -177,10 +179,10 @@
 }
 
 .indicator-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
- 
+
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -188,7 +190,6 @@
 .indicator-btn:hover {
   transform: translateY(-5px);
   border-color: var(--blue-primary);
- 
 }
 
 .indicator-btn:hover::before {
@@ -196,9 +197,7 @@
 }
 
 .indicator-btn.active {
- 
   border-color: var(--blue-primary);
- 
 }
 
 .indicator-image {
@@ -248,16 +247,16 @@
   animation: slideInRight 0.6s ease 0.2s both;
 }
 
-
 .icon-trophy {
   width: 20px;
   height: 20px;
 }
 
 .welcome-title-enhanced {
-  font-size: 3rem;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+
+  color: var(--ite-blue-dark);
   font-weight: 800;
-  color: #000000;
   line-height: 1.2;
   margin: 0;
   animation: slideInRight 0.6s ease 0.3s both;
@@ -303,10 +302,18 @@
   animation: fadeInUp 0.6s ease both;
 }
 
-.benefit-card:nth-child(1) { animation-delay: 0.5s; }
-.benefit-card:nth-child(2) { animation-delay: 0.6s; }
-.benefit-card:nth-child(3) { animation-delay: 0.7s; }
-.benefit-card:nth-child(4) { animation-delay: 0.8s; }
+.benefit-card:nth-child(1) {
+  animation-delay: 0.5s;
+}
+.benefit-card:nth-child(2) {
+  animation-delay: 0.6s;
+}
+.benefit-card:nth-child(3) {
+  animation-delay: 0.7s;
+}
+.benefit-card:nth-child(4) {
+  animation-delay: 0.8s;
+}
 
 .benefit-card:hover {
   transform: translateY(-5px);
@@ -383,7 +390,7 @@
 }
 
 .cta-button::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: var(--act-primary-dark);
@@ -416,9 +423,6 @@
 .cta-button:hover .arrow-icon {
   transform: translateX(5px);
 }
-
-
-
 
 /* ================================
    RESPONSIVE DESIGN
@@ -513,7 +517,7 @@
     width: 100%;
     justify-content: center;
   }
-  .indicator-btn{
+  .indicator-btn {
     display: none;
   }
 }

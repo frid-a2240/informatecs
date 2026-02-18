@@ -24,18 +24,18 @@ const InscripcionesPanel = () => {
   // ✅ FUNCIÓN PARA VALIDAR (FUERA DE cargarDatos)
   const validarTipoSangre = async (inscripcionId, aluctr) => {
     try {
-      const response = await fetch('/api/admin/validar-sangre', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/validar-sangre", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inscripcionId, aluctr }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.error || 'Error al validar');
+        throw new Error(data.error || "Error al validar");
       }
-      
+
       alert(`✅ ${data.mensaje}`);
       setModalValidarSangre(null);
       await cargarDatos();
@@ -50,30 +50,32 @@ const InscripcionesPanel = () => {
 
       // Cargar actividades ofertadas
       const resOfertas = await fetch("/api/act-disponibles", {
-        cache: 'no-store'
+        cache: "no-store",
       });
       const ofertas = await resOfertas.json();
 
       // Cargar inscripciones
       const resInscripciones = await fetch("/api/inscripciones", {
-        cache: 'no-store'
+        cache: "no-store",
       });
-      
+
       if (!resInscripciones.ok) {
-        console.error("❌ Error al cargar inscripciones");
+        console.error(
+          "❌ Error HTTP al cargar inscripciones:",
+          resInscripciones.status,
+        );
         setActividadesOfertadas(Array.isArray(ofertas) ? ofertas : []);
         setInscripciones({});
         return;
       }
-      
-      const todasInscripciones = await resInscripciones.json();
 
-      // ✅ Validación crítica
-      if (!Array.isArray(todasInscripciones)) {
-        console.error("❌ todasInscripciones no es array:", typeof todasInscripciones);
-        setActividadesOfertadas(Array.isArray(ofertas) ? ofertas : []);
-        setInscripciones({});
-        return;
+      const raw = await resInscripciones.json();
+
+      // ✅ Normalizar: el API puede devolver array, objeto con error, o null
+      const todasInscripciones = Array.isArray(raw) ? raw : [];
+
+      if (!Array.isArray(raw)) {
+        console.warn("⚠️ Respuesta inesperada del API inscripciones:", raw);
       }
 
       console.log("📊 Inscripciones cargadas:", todasInscripciones.length);
@@ -92,7 +94,6 @@ const InscripcionesPanel = () => {
 
       setActividadesOfertadas(Array.isArray(ofertas) ? ofertas : []);
       setInscripciones(inscripcionesPorActividad);
-      
     } catch (error) {
       console.error("❌ Error al cargar datos:", error);
       setActividadesOfertadas([]);
@@ -108,7 +109,10 @@ const InscripcionesPanel = () => {
       const primeraInscripcion = Object.values(inscripciones)[0][0];
       console.log("✅ Ejemplo de inscripción:", primeraInscripcion);
       console.log("✅ Estudiante:", primeraInscripcion?.estudiante);
-      console.log("✅ Semestre (aluare):", primeraInscripcion?.estudiante?.calnpe);
+      console.log(
+        "✅ Semestre (calnpe):",
+        primeraInscripcion?.estudiante?.calnpe,
+      );
       console.log("✅ Sexo:", primeraInscripcion?.estudiante?.alusex);
       console.log("✅ Actividad:", primeraInscripcion?.actividad?.aticve);
       console.log("✅ Propósito:", primeraInscripcion?.formularioData?.purpose);
@@ -117,7 +121,7 @@ const InscripcionesPanel = () => {
 
   const toggleActividad = (actividadId) => {
     setActividadExpandida(
-      actividadExpandida === actividadId ? null : actividadId
+      actividadExpandida === actividadId ? null : actividadId,
     );
   };
 
@@ -134,11 +138,16 @@ const InscripcionesPanel = () => {
 
     const mapeo = {
       creditos: { texto: "Créditos", color: "bg-blue-100 text-blue-700" },
-      servicio_social: { texto: "Servicio Social", color: "bg-green-100 text-green-700" },
+      servicio_social: {
+        texto: "Servicio Social",
+        color: "bg-green-100 text-green-700",
+      },
       por_gusto: { texto: "Por Gusto", color: "bg-purple-100 text-purple-700" },
     };
 
-    return mapeo[purpose] || { texto: purpose, color: "bg-gray-100 text-gray-700" };
+    return (
+      mapeo[purpose] || { texto: purpose, color: "bg-gray-100 text-gray-700" }
+    );
   };
 
   const obtenerTipoActividad = (codigo, nombreActividad, descripcion) => {
@@ -151,10 +160,27 @@ const InscripcionesPanel = () => {
     if (codigoUpper === "D") return "DEPORTIVA";
 
     const palabrasDeportivas = [
-      "FUTBOL", "SOCCER", "VOLEIBOL", "VOLLEYBALL", "BEISBOL", "BASEBALL",
-      "SOFTBOL", "SOFTBALL", "BASQUETBOL", "BASKETBALL", "ATLETISMO PISTA",
-      "ATLETISMO CAMPO", "NATACION", "SWIMMING", "TENIS DE MESA", "TENIS ",
-      " TENIS", "TENNIS", "AJEDREZ", "CHESS", "ACTIVIDAD DEPORTIVA",
+      "FUTBOL",
+      "SOCCER",
+      "VOLEIBOL",
+      "VOLLEYBALL",
+      "BEISBOL",
+      "BASEBALL",
+      "SOFTBOL",
+      "SOFTBALL",
+      "BASQUETBOL",
+      "BASKETBALL",
+      "ATLETISMO PISTA",
+      "ATLETISMO CAMPO",
+      "NATACION",
+      "SWIMMING",
+      "TENIS DE MESA",
+      "TENIS ",
+      " TENIS",
+      "TENNIS",
+      "AJEDREZ",
+      "CHESS",
+      "ACTIVIDAD DEPORTIVA",
       "EVENTO DEPORTIVO",
     ];
 
@@ -163,10 +189,22 @@ const InscripcionesPanel = () => {
     }
 
     const palabrasExcluir = [
-      "TUTORIA", "TUTORIAS", "TALLER TALENTO", "TICS", "TECNOLOGIA",
-      "CONGRESO GENERAL", "INVESTIGACION", "RALLY LATINOAMERICANO",
-      "RALLY CB", "RALLY DE CIENCIAS", "ENCUENTRO NACIONAL", "ARGOS",
-      "CLUB TECNOLOGICO", "EVENTO EXTERNO", "CONCURSO CB", "ANFEI",
+      "TUTORIA",
+      "TUTORIAS",
+      "TALLER TALENTO",
+      "TICS",
+      "TECNOLOGIA",
+      "CONGRESO GENERAL",
+      "INVESTIGACION",
+      "RALLY LATINOAMERICANO",
+      "RALLY CB",
+      "RALLY DE CIENCIAS",
+      "ENCUENTRO NACIONAL",
+      "ARGOS",
+      "CLUB TECNOLOGICO",
+      "EVENTO EXTERNO",
+      "CONCURSO CB",
+      "ANFEI",
       "MOOCS DEPORTIVOS",
     ];
 
@@ -175,8 +213,13 @@ const InscripcionesPanel = () => {
     }
 
     const palabrasCivicas = [
-      "ACT CIVICAS", "ACTIVIDAD CIVICA", "ACTIVIDADES CIVICAS", "ESCOLTA",
-      "CENTRO DE ACOPIO", "CARRERA ALBATROS", "COLILLATON",
+      "ACT CIVICAS",
+      "ACTIVIDAD CIVICA",
+      "ACTIVIDADES CIVICAS",
+      "ESCOLTA",
+      "CENTRO DE ACOPIO",
+      "CARRERA ALBATROS",
+      "COLILLATON",
     ];
 
     for (let palabra of palabrasCivicas) {
@@ -184,9 +227,17 @@ const InscripcionesPanel = () => {
     }
 
     const palabrasCulturales = [
-      "ACT CULTURALES", "ACT ARTISTICAS", "MUSICA", "DANZA FOLCLORICA",
-      "DANZA FOLKLORICA", "ARTES VISUALES", "ALTAR DE MUERTOS",
-      "CLUB DE LECTURA", "CATRINES", "CATRINAS", "BANDA DE GUERRA",
+      "ACT CULTURALES",
+      "ACT ARTISTICAS",
+      "MUSICA",
+      "DANZA FOLCLORICA",
+      "DANZA FOLKLORICA",
+      "ARTES VISUALES",
+      "ALTAR DE MUERTOS",
+      "CLUB DE LECTURA",
+      "CATRINES",
+      "CATRINAS",
+      "BANDA DE GUERRA",
       "MOOCS CULTURALES",
     ];
 
@@ -210,7 +261,7 @@ const InscripcionesPanel = () => {
     const tipoActividad = obtenerTipoActividad(
       oferta.actividad?.aticve,
       oferta.actividad?.aconco,
-      oferta.actividad?.acodes
+      oferta.actividad?.acodes,
     );
     const cumpleTipo =
       !filtroTipoActividad || tipoActividad === filtroTipoActividad;
@@ -220,8 +271,7 @@ const InscripcionesPanel = () => {
     if (filtroSemestre || filtroSexo || filtroProposito) {
       const inscritos = inscripciones[oferta.actividadId] || [];
       const tieneInscripcionesValidas = inscritos.some((inscripcion) => {
-        const semestreEstudiante =
-          inscripcion.estudiante?.calnpe?.toString();
+        const semestreEstudiante = inscripcion.estudiante?.calnpe?.toString();
         const sexoEstudiante = inscripcion.estudiante?.alusex;
         const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -266,12 +316,11 @@ const InscripcionesPanel = () => {
       const tipoActividad = obtenerTipoActividad(
         oferta.actividad?.aticve,
         oferta.actividad?.aconco,
-        oferta.actividad?.acodes
+        oferta.actividad?.acodes,
       );
 
       const inscritosFiltrados = inscritos.filter((inscripcion) => {
-        const semestreEstudiante =
-          inscripcion.estudiante?.calnpe?.toString();
+        const semestreEstudiante = inscripcion.estudiante?.calnpe?.toString();
         const sexoEstudiante = inscripcion.estudiante?.alusex;
         const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -293,8 +342,7 @@ const InscripcionesPanel = () => {
       inscritosFiltrados.forEach((inscripcion) => {
         const numeroControl = inscripcion.estudiante?.aluctr;
         const sexo = inscripcion.estudiante?.alusex;
-        const semestre =
-          inscripcion.estudiante?.calnpe?.toString() || "N/A";
+        const semestre = inscripcion.estudiante?.calnpe?.toString() || "N/A";
         const proposito = inscripcion.formularioData?.purpose;
 
         if (numeroControl) {
@@ -347,7 +395,7 @@ const InscripcionesPanel = () => {
       Object.values(inscripciones)
         .flat()
         .map((i) => i.estudiante?.calnpe)
-        .filter((sem) => sem !== null && sem !== undefined)
+        .filter((sem) => sem !== null && sem !== undefined),
     ),
   ].sort((a, b) => Number(a) - Number(b));
 
@@ -586,9 +634,6 @@ const InscripcionesPanel = () => {
           )}
         </div>
 
-        {/* Lista de actividades con tabla de estudiantes... */}
-        {/* (El resto del código de la tabla es igual, solo continúa desde aquí) */}
-        
         <div className="space-y-3">
           {actividadesFiltradas.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
@@ -599,7 +644,7 @@ const InscripcionesPanel = () => {
               const inscritos = inscripciones[oferta.actividadId] || [];
               const inscritosFiltrados = inscritos.filter((inscripcion) => {
                 const semestreEstudiante =
-                  inscripcion.estudiante?.calnpe?.toString(); 
+                  inscripcion.estudiante?.calnpe?.toString();
                 const sexoEstudiante = inscripcion.estudiante?.alusex;
                 const propositoEstudiante = inscripcion.formularioData?.purpose;
 
@@ -619,7 +664,7 @@ const InscripcionesPanel = () => {
               const tipoActividad = obtenerTipoActividad(
                 oferta.actividad?.aticve,
                 oferta.actividad?.aconco,
-                oferta.actividad?.acodes
+                oferta.actividad?.acodes,
               );
 
               return (
@@ -643,10 +688,10 @@ const InscripcionesPanel = () => {
                             tipoActividad === "CIVICA"
                               ? "bg-blue-100 text-blue-700"
                               : tipoActividad === "CULTURAL"
-                              ? "bg-purple-100 text-purple-700"
-                              : tipoActividad === "DEPORTIVA"
-                              ? "bg-orange-100 text-orange-700"
-                              : "bg-gray-100 text-gray-700"
+                                ? "bg-purple-100 text-purple-700"
+                                : tipoActividad === "DEPORTIVA"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {tipoActividad}
@@ -720,33 +765,31 @@ const InscripcionesPanel = () => {
                                 }`.trim();
 
                                 const propositoInfo = formatearProposito(
-                                  inscripcion.formularioData?.purpose
+                                  inscripcion.formularioData?.purpose,
                                 );
-                                
-                                
 
                                 return (
                                   <tr key={idx} className="hover:bg-gray-50">
                                     <td className="px-4 py-3 text-sm text-gray-900">
                                       {inscripcion.estudiante.aluctr}
                                     </td>
-                                    
+
                                     <td className="px-4 py-3 text-sm text-gray-900">
                                       {nombreCompleto || "Sin nombre"}
                                     </td>
-                                    
+
                                     <td className="px-4 py-3 text-sm text-gray-600">
-                                      {inscripcion.estudiante?.calnpe|| "N/A"}
+                                      {inscripcion.estudiante?.calnpe || "N/A"}
                                     </td>
-                                    
+
                                     <td className="px-4 py-3 text-sm text-gray-600">
                                       {inscripcion.estudiante?.alusex === 1
                                         ? "Masculino"
                                         : inscripcion.estudiante?.alusex === 2
-                                        ? "Femenino"
-                                        : "N/A"}
+                                          ? "Femenino"
+                                          : "N/A"}
                                     </td>
-                                    
+
                                     <td className="px-4 py-3 text-sm">
                                       <span
                                         className={`px-2 py-1 rounded text-xs font-medium ${propositoInfo.color}`}
@@ -754,55 +797,62 @@ const InscripcionesPanel = () => {
                                         {propositoInfo.texto}
                                       </span>
                                     </td>
-                                    
-                                    {/* ✅ 6. TIPO DE SANGRE - LÓGICA CORREGIDA */}
-    <td className="px-4 py-3 text-sm">
-      {(() => {
-        const tipoSangreActual = inscripcion.estudiante?.alutsa;
-        const tipoSangreSolicitado = inscripcion.tipoSangreSolicitado;
-        const sangreValidada = inscripcion.sangreValidada;
-        
-        // ✅ PRIORIDAD 1: Si hay solicitud pendiente (REVISAR PRIMERO)
-        if (tipoSangreSolicitado && !sangreValidada) {
-          return (
-            <div className="flex flex-col gap-1">
-              {/* Mostrar tipo actual si existe */}
-              {tipoSangreActual && (
-                <span className="px-2 py-1 rounded bg-gray-100 text-gray-500 text-xs">
-                  Actual: {tipoSangreActual}
-                </span>
-              )}
-              {/* Botón de validación */}
-              <button
-                onClick={() => setModalValidarSangre(inscripcion)}
-                className="px-3 py-1 rounded bg-yellow-500 text-white text-xs font-bold hover:bg-yellow-600 transition-colors"
-              >
-                ⚠️ VALIDAR {tipoSangreSolicitado}
-              </button>
-            </div>
-          );
-        }
-        
-        // ✅ PRIORIDAD 2: Si tiene tipo de sangre validado (y no hay solicitud pendiente)
-        if (tipoSangreActual) {
-          return (
-            <span className="px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-medium">
-              🩸 {tipoSangreActual}
-            </span>
-          );
-        }
-        
-        // ✅ PRIORIDAD 3: Sin tipo de sangre ni solicitud
-        return (
-          <span className="px-2 py-1 rounded bg-gray-100 text-gray-500 text-xs font-medium">
-            Sin registro
-          </span>
-        );
-      })()}
-    </td>
-                                    
+
+                                    <td className="px-4 py-3 text-sm">
+                                      {(() => {
+                                        const tipoSangreActual =
+                                          inscripcion.estudiante?.alutsa;
+                                        const tipoSangreSolicitado =
+                                          inscripcion.tipoSangreSolicitado;
+                                        const sangreValidada =
+                                          inscripcion.sangreValidada;
+
+                                        if (
+                                          tipoSangreSolicitado &&
+                                          !sangreValidada
+                                        ) {
+                                          return (
+                                            <div className="flex flex-col gap-1">
+                                              {tipoSangreActual && (
+                                                <span className="px-2 py-1 rounded bg-gray-100 text-gray-500 text-xs">
+                                                  Actual: {tipoSangreActual}
+                                                </span>
+                                              )}
+                                              <button
+                                                onClick={() =>
+                                                  setModalValidarSangre(
+                                                    inscripcion,
+                                                  )
+                                                }
+                                                className="px-3 py-1 rounded bg-yellow-500 text-white text-xs font-bold hover:bg-yellow-600 transition-colors"
+                                              >
+                                                ⚠️ VALIDAR{" "}
+                                                {tipoSangreSolicitado}
+                                              </button>
+                                            </div>
+                                          );
+                                        }
+
+                                        if (tipoSangreActual) {
+                                          return (
+                                            <span className="px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-medium">
+                                              🩸 {tipoSangreActual}
+                                            </span>
+                                          );
+                                        }
+
+                                        return (
+                                          <span className="px-2 py-1 rounded bg-gray-100 text-gray-500 text-xs font-medium">
+                                            Sin registro
+                                          </span>
+                                        );
+                                      })()}
+                                    </td>
+
                                     <td className="px-4 py-3 text-sm text-gray-600">
-                                      {new Date(inscripcion.fechaInscripcion).toLocaleDateString()}
+                                      {new Date(
+                                        inscripcion.fechaInscripcion,
+                                      ).toLocaleDateString()}
                                     </td>
                                   </tr>
                                 );
@@ -823,12 +873,15 @@ const InscripcionesPanel = () => {
         {modalValidarSangre && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-auto shadow-2xl">
-              {/* Header */}
               <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="text-2xl font-bold">🩸 Validar Tipo de Sangre</h3>
-                    <p className="text-red-100 text-sm mt-1">Revisa el comprobante antes de aprobar</p>
+                    <h3 className="text-2xl font-bold">
+                      🩸 Validar Tipo de Sangre
+                    </h3>
+                    <p className="text-red-100 text-sm mt-1">
+                      Revisa el comprobante antes de aprobar
+                    </p>
                   </div>
                   <button
                     onClick={() => setModalValidarSangre(null)}
@@ -839,9 +892,7 @@ const InscripcionesPanel = () => {
                 </div>
               </div>
 
-              {/* Body */}
               <div className="p-6 space-y-6">
-                {/* Información del estudiante */}
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
                   <h4 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
                     👤 Datos del Estudiante
@@ -862,9 +913,10 @@ const InscripcionesPanel = () => {
                   </div>
                 </div>
 
-                {/* Tipo de sangre seleccionado */}
                 <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded text-center">
-                  <h4 className="font-bold text-red-900 mb-3">Tipo de sangre seleccionado por el estudiante:</h4>
+                  <h4 className="font-bold text-red-900 mb-3">
+                    Tipo de sangre seleccionado por el estudiante:
+                  </h4>
                   <div className="bg-white inline-block px-8 py-4 rounded-lg shadow-md">
                     <p className="text-5xl font-black text-red-600">
                       {modalValidarSangre.tipoSangreSolicitado}
@@ -872,18 +924,21 @@ const InscripcionesPanel = () => {
                   </div>
                 </div>
 
-                {/* Comprobante */}
                 <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                   <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
                     📄 Comprobante Subido
                   </h4>
                   <p className="text-sm text-gray-600 mb-4">
-                    Archivo: <span className="font-medium">{modalValidarSangre.nombreArchivoSangre}</span>
+                    Archivo:{" "}
+                    <span className="font-medium">
+                      {modalValidarSangre.nombreArchivoSangre}
+                    </span>
                   </p>
-                  
-                  {/* Previsualización */}
+
                   <div className="bg-white p-2 rounded border">
-                    {modalValidarSangre.comprobanteSangrePDF?.startsWith('data:application/pdf') ? (
+                    {modalValidarSangre.comprobanteSangrePDF?.startsWith(
+                      "data:application/pdf",
+                    ) ? (
                       <iframe
                         src={modalValidarSangre.comprobanteSangrePDF}
                         className="w-full h-[500px] border-0 rounded"
@@ -908,7 +963,6 @@ const InscripcionesPanel = () => {
                 </div>
               </div>
 
-              {/* Footer */}
               <div className="bg-gray-50 p-6 border-t flex gap-4 justify-end">
                 <button
                   onClick={() => setModalValidarSangre(null)}
@@ -918,8 +972,15 @@ const InscripcionesPanel = () => {
                 </button>
                 <button
                   onClick={() => {
-                    if (confirm(`¿Confirmas que el tipo de sangre ${modalValidarSangre.tipoSangreSolicitado} coincide con el comprobante?\n\nEsto actualizará el registro del estudiante.`)) {
-                      validarTipoSangre(modalValidarSangre.id, modalValidarSangre.estudiante.aluctr);
+                    if (
+                      confirm(
+                        `¿Confirmas que el tipo de sangre ${modalValidarSangre.tipoSangreSolicitado} coincide con el comprobante?\n\nEsto actualizará el registro del estudiante.`,
+                      )
+                    ) {
+                      validarTipoSangre(
+                        modalValidarSangre.id,
+                        modalValidarSangre.estudiante.aluctr,
+                      );
                     }
                   }}
                   className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-bold shadow-lg"

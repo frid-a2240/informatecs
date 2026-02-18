@@ -25,7 +25,7 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
       } else if (res.status === 403 && data.requiresVerification) {
         // No se permite el acceso si no está verificado
         setError(
-          "Tu cuenta no ha sido verificada. Usa la pestaña 'Registro' para verificarla."
+          "Tu cuenta no ha sido verificada. Usa la pestaña 'Registro' para verificarla.",
         );
       } else {
         setError(data.message || "Error desconocido");
@@ -39,10 +39,14 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
   // ========================================
   // REGISTRO (Pestaña Registro)
   // ========================================
+  // src/components/hooks/useAuthHandlers.js
+
   async function handleRegister(e, matricula) {
     e.preventDefault();
     setError("");
     try {
+      // ⚠️ Importante: Asegúrate de que el endpoint sea el de login
+      // porque estamos validando si puede entrar con la genérica
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,34 +54,24 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
       });
 
       const data = await res.json();
-      console.log("📥 Respuesta registro:", data);
-      console.log("📊 Status:", res.status);
 
-      // ✅ Si status es 403 y requiere verificación → ir a askEmail
-      if (res.status === 403 && data.requiresVerification) {
-        console.log("✅ Redirigiendo a askEmail");
+      // 1. Caso: El servidor confirma que requiere verificar (403 o 200)
+      if (data.requiresVerification || res.status === 403) {
         setStep("askEmail");
         return;
       }
 
-      // ✅ Si status es 200 y requiere verificación → ir a askEmail
-      if (res.ok && data.requiresVerification) {
-        console.log("✅ Redirigiendo a askEmail");
+      // 2. Caso: El login fue exitoso con 123456 pero NO activó requiresVerification
+      // Forzamos el cambio de contraseña de todos modos por seguridad
+      if (res.ok) {
         setStep("askEmail");
         return;
       }
 
-      // ⚠️ Si status es 200 pero NO requiere verificación → cuenta ya verificada
-      if (res.ok && !data.requiresVerification) {
-        setError(
-          "Esta cuenta ya está verificada. Inicia sesión en la pestaña 'Estudiantes' con tu contraseña."
-        );
-        return;
-      }
-
-      // ❌ Cualquier otro error
-      setError(data.message || "Error en el registro");
-
+      // 3. Caso: Error (ej. la matrícula no existe en la base de datos)
+      setError(
+        data.message || "La matrícula no es válida para registro inicial.",
+      );
     } catch (error) {
       console.error("❌ Error en registro:", error);
       setError("Error al conectar con el servidor");
@@ -97,7 +91,7 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
         body: JSON.stringify({ matricula, correo: email }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Código enviado");
         setStep("verify");
@@ -123,7 +117,7 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
         body: JSON.stringify({ matricula, code }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Código verificado");
         setStep("update");
@@ -149,10 +143,10 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
         body: JSON.stringify({ matricula, newPassword }),
       });
       const data = await res.json();
-      
+
       if (res.ok) {
         console.log("✅ Contraseña actualizada, haciendo login...");
-        
+
         // Hacer login automáticamente con la nueva contraseña
         const loginRes = await fetch("/api/auth/login", {
           method: "POST",
@@ -167,7 +161,9 @@ export function useAuth(setStep, setFullName, setError, setStudentData) {
           setStudentData(loginData.estudiante);
           setStep("success");
         } else {
-          setError("Contraseña actualizada. Inicia sesión en la pestaña 'Estudiantes'.");
+          setError(
+            "Contraseña actualizada. Inicia sesión en la pestaña 'Estudiantes'.",
+          );
         }
       } else {
         setError(data.message || "Error actualizando la contraseña");

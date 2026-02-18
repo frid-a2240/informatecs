@@ -1,5 +1,8 @@
-import React from "react";
-import { X } from "lucide-react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { X, Clock, MapPin, Palette, Calendar } from "lucide-react";
 
 export const ActividadModal = ({
   show,
@@ -12,38 +15,102 @@ export const ActividadModal = ({
   dias,
   isEditing,
 }) => {
-  if (!show) return null;
+  const [horariosIndividuales, setHorariosIndividuales] = useState({});
+  const [modoHorario, setModoHorario] = useState("mismo");
+  const [mounted, setMounted] = useState(false);
 
-  // Manejador para los botones de los días
-  const handleDiaToggle = (diaSeleccionado) => {
-    const diasActuales = formData.dias || [];
-    const nuevosDias = diasActuales.includes(diaSeleccionado)
-      ? diasActuales.filter((d) => d !== diaSeleccionado)
-      : [...diasActuales, diaSeleccionado];
+  // 1. Efecto corregido: Dependencias estables para evitar el error de "changed size"
+  useEffect(() => {
+    setMounted(true);
+    if (show) {
+      document.body.style.overflow = "hidden";
 
-    // Mantenemos la estructura de evento que espera tu page.jsx
-    onChange({
-      target: {
-        name: "dias",
-        value: nuevosDias,
-      },
-    });
+      // Verificamos si la actividad viene con horarios por día
+      if (isEditing && formData?.horariosEspeciales) {
+        setHorariosIndividuales(formData.horariosEspeciales);
+        setModoHorario("individual");
+      } else {
+        setHorariosIndividuales({});
+        setModoHorario("mismo");
+      }
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [show, isEditing, formData]); // Solo dependemos del objeto formData completo
+
+  if (!show || !mounted) return null;
+
+  // 2. Manejo de selección de días con limpieza de horarios
+  const handleDiaToggle = (dia) => {
+    const currentDias = formData.dias || [];
+    const isRemoving = currentDias.includes(dia);
+    let newDias;
+
+    if (isRemoving) {
+      newDias = currentDias.filter((d) => d !== dia);
+      // Limpiar el horario del día eliminado
+      const nuevosHorarios = { ...horariosIndividuales };
+      delete nuevosHorarios[dia];
+      setHorariosIndividuales(nuevosHorarios);
+    } else {
+      newDias = [...new Set([...currentDias, dia])];
+      // Si estamos en modo individual, pre-poblar el nuevo día con el horario base
+      if (modoHorario === "individual") {
+        setHorariosIndividuales((prev) => ({
+          ...prev,
+          [dia]: {
+            horaInicio: formData.horaInicio || "08:00",
+            horaFin: formData.horaFin || "09:00",
+          },
+        }));
+      }
+    }
+    onChange({ target: { name: "dias", value: newDias } });
   };
 
-  return (
+  const handleHorarioIndividual = (dia, campo, valor) => {
+    setHorariosIndividuales((prev) => ({
+      ...prev,
+      [dia]: {
+        ...(prev[dia] || {
+          horaInicio: formData.horaInicio,
+          horaFin: formData.horaFin,
+        }),
+        [campo]: valor,
+      },
+    }));
+  };
+
+  const handleSubmitWithHorarios = (e) => {
+    e.preventDefault();
+    if (modoHorario === "individual") {
+      // Enviamos el objeto de horarios individuales al padre
+      onSubmit({
+        ...formData,
+        horariosEspeciales: horariosIndividuales,
+      });
+    } else {
+      onSubmit({
+        ...formData,
+        horariosEspeciales: null, // Limpiar especiales si elige "mismo horario"
+      });
+    }
+  };
+
+  const modalContent = (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          {/* Si editamos, mostramos el nombre de la materia para mayor claridad */}
-          <h2>
-            {isEditing ? `Editando: ${formData.nombre}` : "Nueva Actividad"}
-          </h2>
+        <div
+          className="modal-header"
+          style={{ backgroundColor: formData.color || "#3b82f6" }}
+        >
+          <h2>{isEditing ? "Editar" : "Nueva"} Actividad</h2>
           <button className="btn-close" onClick={onClose}>
             <X size={24} />
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="modal-form">
+        <form onSubmit={handleSubmitWithHorarios} className="modal-body">
           <div className="form-group">
             <label>Nombre de la actividad</label>
             <input
@@ -51,123 +118,169 @@ export const ActividadModal = ({
               name="nombre"
               value={formData.nombre}
               onChange={onChange}
-              placeholder="Ej: Desarrollo Web"
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Días asignados</label>
-            <div
-              className="dias-selector"
-              style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}
-            >
-              {dias.map((dia) => {
-                const isSelected = formData.dias?.includes(dia);
-                return (
-                  <button
-                    key={dia}
-                    type="button"
-                    className={`btn-dia ${isSelected ? "active" : ""}`}
-                    onClick={() => handleDiaToggle(dia)}
-                    style={{
-                      padding: "8px 12px",
-                      borderRadius: "6px",
-                      border: "1px solid #e5e7eb",
-                      backgroundColor: isSelected ? formData.color : "white",
-                      color: isSelected ? "white" : "#374151",
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    {dia.substring(0, 3)}
-                  </button>
-                );
-              })}
+            <label>
+              <Calendar size={16} /> Días de la semana
+            </label>
+            <div className="dias-grid">
+              {dias.map((dia) => (
+                <button
+                  key={dia}
+                  type="button"
+                  className={`dia-btn ${formData.dias?.includes(dia) ? "active" : ""}`}
+                  onClick={() => handleDiaToggle(dia)}
+                >
+                  {dia.substring(0, 3)}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="form-row">
+          {formData.dias?.length > 0 && (
             <div className="form-group">
-              <label>Hora inicio</label>
-              <input
-                type="time"
-                name="horaInicio"
-                value={formData.horaInicio}
-                onChange={onChange}
-                required
-              />
+              <label>Modo de horario</label>
+              <div className="horario-mode-selector">
+                <button
+                  type="button"
+                  className={`mode-btn ${modoHorario === "mismo" ? "active" : ""}`}
+                  onClick={() => setModoHorario("mismo")}
+                >
+                  Mismo horario
+                </button>
+                <button
+                  type="button"
+                  className={`mode-btn ${modoHorario === "individual" ? "active" : ""}`}
+                  onClick={() => {
+                    // Poblar todos los días seleccionados con el horario actual si se cambia a modo individual
+                    const init = {};
+                    formData.dias.forEach((d) => {
+                      init[d] = horariosIndividuales[d] || {
+                        horaInicio: formData.horaInicio,
+                        horaFin: formData.horaFin,
+                      };
+                    });
+                    setHorariosIndividuales(init);
+                    setModoHorario("individual");
+                  }}
+                >
+                  Individual por día
+                </button>
+              </div>
             </div>
-            <div className="form-group">
-              <label>Hora fin</label>
-              <input
-                type="time"
-                name="horaFin"
-                value={formData.horaFin}
-                onChange={onChange}
-                required
-              />
+          )}
+
+          {modoHorario === "mismo" ? (
+            <div className="form-row">
+              <div className="form-group">
+                <label>
+                  <Clock size={16} /> Inicio
+                </label>
+                <input
+                  type="time"
+                  name="horaInicio"
+                  value={formData.horaInicio}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>
+                  <Clock size={16} /> Fin
+                </label>
+                <input
+                  type="time"
+                  name="horaFin"
+                  value={formData.horaFin}
+                  onChange={onChange}
+                  required
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="horarios-individuales">
+              <p className="info-text">Configura el horario para cada día:</p>
+              {formData.dias?.map((dia) => (
+                <div key={dia} className="horario-dia-config">
+                  <span className="dia-label-mini">{dia}</span>
+                  <div className="horario-inputs">
+                    <input
+                      type="time"
+                      value={
+                        horariosIndividuales[dia]?.horaInicio ||
+                        formData.horaInicio
+                      }
+                      onChange={(e) =>
+                        handleHorarioIndividual(
+                          dia,
+                          "horaInicio",
+                          e.target.value,
+                        )
+                      }
+                      required
+                    />
+                    <span className="sep">-</span>
+                    <input
+                      type="time"
+                      value={
+                        horariosIndividuales[dia]?.horaFin || formData.horaFin
+                      }
+                      onChange={(e) =>
+                        handleHorarioIndividual(dia, "horaFin", e.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="form-group">
-            <label>Ubicación / Salón</label>
+            <label>
+              <MapPin size={16} /> Ubicación
+            </label>
             <input
               type="text"
               name="ubicacion"
               value={formData.ubicacion}
               onChange={onChange}
-              placeholder="Ej: Laboratorio 102"
+              placeholder="Opcional"
             />
           </div>
 
           <div className="form-group">
-            <label>Color de etiqueta</label>
-            <div
-              className="color-picker"
-              style={{ display: "flex", gap: "10px" }}
-            >
-              {colors.map((color) => (
+            <label>
+              <Palette size={16} /> Color
+            </label>
+            <div className="color-grid">
+              {colors.map((c) => (
                 <button
-                  key={color}
+                  key={c}
                   type="button"
-                  className={`color-option ${formData.color === color ? "selected" : ""}`}
-                  style={{
-                    backgroundColor: color,
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "50%",
-                    border:
-                      formData.color === color
-                        ? "3px solid #000"
-                        : "1px solid #ddd",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => onColorSelect(color)}
+                  className={`color-btn ${formData.color === c ? "active" : ""}`}
+                  style={{ backgroundColor: c }}
+                  onClick={() => onColorSelect(c)}
                 />
               ))}
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="btn-submit"
-            disabled={formData.dias?.length === 0}
-            style={{
-              marginTop: "20px",
-              backgroundColor: "#1b396a",
-              color: "white",
-              padding: "12px",
-              borderRadius: "8px",
-              fontWeight: "bold",
-              cursor: formData.dias?.length === 0 ? "not-allowed" : "pointer",
-              opacity: formData.dias?.length === 0 ? 0.5 : 1,
-            }}
-          >
-            {isEditing ? "Actualizar todos los días" : "Agregar Actividad"}
-          </button>
+          <div className="modal-footer">
+            <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancelar
+            </button>
+            <button type="submit" className="btn-submit">
+              {isEditing ? "Actualizar" : "Agregar"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

@@ -7,13 +7,17 @@ import {
   ExternalLink,
   Search,
   Loader2,
-  UserCircle,
+  LogOut,
+  Calendar,
+  CheckCircle2,
+  Filter,
 } from "lucide-react";
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
 
 // IMPORTANTE: Asegúrate de que esta ruta sea la correcta hacia tu componente PDF
 import { ConstanciaPDF } from "@/app/components/Constancias";
+import "@/styles/alumno/cons.css";
 
 export default function MisConstancias() {
   const [constancias, setConstancias] = useState([]);
@@ -116,156 +120,160 @@ export default function MisConstancias() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-blue-600" size={40} />
-          <p className="text-slate-600 font-medium">Validando identidad...</p>
+      <div className="loading-screen">
+        <div className="loading-content">
+          <div className="spinner"></div>
+          <p className="loading-text">Validando identidad...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Barra Superior */}
-        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-          <div className="flex gap-4 items-center">
-            <img
-              src="/imagenes/itelogo.png"
-              className="h-10 w-auto"
-              alt="Logo ITE"
-            />
-            <div className="hidden md:block h-8 w-[1px] bg-slate-200"></div>
-            <img
-              src="/imagenes/tecnlogo.png"
-              className="hidden md:block h-8 w-auto"
-              alt="TecNM"
-            />
-          </div>
-          <button
-            onClick={cerrarSesion}
-            className="flex items-center gap-2 text-slate-500 hover:text-red-600 font-medium transition-colors text-sm"
-          >
-            Cerrar Sesión
-          </button>
-        </div>
-
-        {/* Header de Perfil */}
-        <div className="bg-slate-900 rounded-3xl p-8 mb-8 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl shadow-slate-200">
-          <div className="flex items-center gap-5">
-            <div className="bg-blue-600 p-4 rounded-2xl">
-              <UserCircle size={40} />
+    <div>
+      <div className="user-banner">
+        <div className="user-banner-container">
+          <div className="user-banner-content">
+            <div className="user-info">
+              <div className="user-details">
+                <h1>Mis Constancias</h1>
+                <p className="user-control">
+                  Número de Control:{" "}
+                  <span className="control-number">{numeroControl}</span>
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold">Mis Constancias</h1>
-              <p className="text-slate-400">
-                Alumno: <span className="text-blue-400">{numeroControl}</span>
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <div className="text-center px-6 py-2 bg-slate-800 rounded-xl border border-slate-700">
-              <p className="text-2xl font-bold">{constancias.length}</p>
-              <p className="text-[10px] uppercase text-slate-400 font-bold">
-                Emitidas
-              </p>
+            <div className="stats-card">
+              <div className="stats-number">{constancias.length}</div>
+              <div className="stats-label">constancias</div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Buscador y Filtros */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="md:col-span-3 relative">
-            <Search
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              size={20}
-            />
-            <input
-              type="text"
-              placeholder="Buscar por nombre de actividad o folio..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl border-none shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
-            />
+      <div className="main-container">
+        {/* Barra de búsqueda y filtros */}
+        <div className="search-filters-card">
+          <div className="filters-grid">
+            {/* Campo de búsqueda */}
+            <div className="input-wrapper">
+              <Search className="input-icon" size={20} />
+              <input
+                type="text"
+                placeholder="Buscar por actividad o folio..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="search-input"
+              />
+            </div>
+
+            {/* Filtro de año */}
+            <div className="input-wrapper">
+              <Filter className="input-icon" size={20} />
+              <select
+                value={filtroAnio}
+                onChange={(e) => setFiltroAnio(e.target.value)}
+                className="filter-select"
+              >
+                <option value="">Todos los años</option>
+                {aniosDisponibles.map((anio) => (
+                  <option key={anio} value={anio}>
+                    {anio}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <select
-            value={filtroAnio}
-            onChange={(e) => setFiltroAnio(e.target.value)}
-            className="w-full px-6 py-4 bg-white rounded-2xl border-none shadow-sm font-bold text-slate-600 focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
-          >
-            <option value="">Todos los años</option>
-            {aniosDisponibles.map((anio) => (
-              <option key={anio} value={anio}>
-                {anio}
-              </option>
-            ))}
-          </select>
+
+          {/* Contador de resultados */}
+          <div className="results-counter">
+            Mostrando{" "}
+            <span className="highlight">{constanciasFiltradas.length}</span> de{" "}
+            <span className="highlight">{constancias.length}</span> constancias
+          </div>
         </div>
 
-        {/* Lista de Constancias */}
-        <div className="space-y-4">
+        {/* Lista de constancias */}
+        <div className="constancias-list">
           {constanciasFiltradas.length > 0 ? (
             constanciasFiltradas.map((c) => (
-              <div
-                key={c.id}
-                className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all group"
-              >
-                <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
-                  <div className="flex-1 w-full">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-1 rounded-md uppercase">
-                        Válida
-                      </span>
-                      <span className="text-slate-400 text-xs font-mono">
-                        Folio: {c.folio}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-blue-600 transition-colors">
-                      {c.actividadNombre}
-                    </h3>
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <div className="flex items-center gap-2 text-slate-500">
-                        <Award size={16} /> <span>{c.acreditacion}</span>
+              <div key={c.id} className="constancia-card">
+                <div className="constancia-content">
+                  <div className="constancia-layout">
+                    {/* Información de la constancia */}
+                    <div className="constancia-info">
+                      {/* Header con badge y folio */}
+                      <div className="constancia-header">
+                        <div className="badge-valid">
+                          <CheckCircle2 size={14} />
+                          <span>Válida</span>
+                        </div>
+                        <span className="badge-folio">Folio: {c.folio}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-500">
-                        <FileText size={16} />{" "}
-                        <span className="text-xs">{c.periodo}</span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-3 w-full md:w-auto">
-                    <button
-                      onClick={() => manejarDescarga(c)}
-                      disabled={descargandoId === c.id}
-                      className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all disabled:bg-slate-200"
-                    >
-                      {descargandoId === c.id ? (
-                        <Loader2 className="animate-spin" size={20} />
-                      ) : (
-                        <Download size={20} />
-                      )}
-                      PDF
-                    </button>
-                    <a
-                      href={`/verificar/${c.folio}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center p-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all"
-                    >
-                      <ExternalLink size={20} />
-                    </a>
+                      {/* Título */}
+                      <h3 className="constancia-title">{c.actividadNombre}</h3>
+
+                      {/* Detalles */}
+                      <div className="constancia-details">
+                        <div className="detail-item">
+                          <Award size={18} className="detail-icon" />
+                          <span>{c.acreditacion}</span>
+                        </div>
+                        <div className="detail-item">
+                          <Calendar size={18} className="detail-icon" />
+                          <span>{c.periodo}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botones de acción */}
+                    <div className="action-buttons">
+                      <button
+                        onClick={() => manejarDescarga(c)}
+                        disabled={descargandoId === c.id}
+                        className="btn-primary"
+                      >
+                        {descargandoId === c.id ? (
+                          <>
+                            <Loader2 className="animate-spin" size={20} />
+                            <span>Generando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Download size={20} />
+                            <span>Descargar PDF</span>
+                          </>
+                        )}
+                      </button>
+                      <a
+                        href={`/verificar/${c.folio}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary"
+                        title="Verificar constancia"
+                      >
+                        <ExternalLink size={20} />
+                        <span className="hidden-tablet">Verificar</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             ))
           ) : (
-            <div className="bg-white rounded-3xl p-20 text-center border border-dashed border-slate-200">
-              <FileText className="mx-auto text-slate-200 mb-4" size={60} />
-              <p className="text-slate-400 font-medium">
-                No se encontraron constancias emitidas para tu cuenta.
-              </p>
+            <div className="empty-state">
+              <div className="empty-state-content">
+                <div className="empty-icon-wrapper">
+                  <FileText className="empty-icon" size={40} />
+                </div>
+                <h3 className="empty-title">No se encontraron constancias</h3>
+                <p className="empty-description">
+                  {busqueda || filtroAnio
+                    ? "Intenta ajustar los filtros de búsqueda para ver más resultados"
+                    : "No hay constancias emitidas para tu cuenta en este momento"}
+                </p>
+              </div>
             </div>
           )}
         </div>

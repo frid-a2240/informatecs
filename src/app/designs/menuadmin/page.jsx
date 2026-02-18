@@ -3,10 +3,8 @@ import React, { useState, useEffect } from "react";
 import {
   Calendar,
   Users,
-  CheckCircle,
   TrendingUp,
   Award,
-  Clock,
   GraduationCap,
 } from "lucide-react";
 import {
@@ -19,9 +17,212 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
+
+const CSS = `
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --blue-primary:  #1b396a;
+  --blue-dark:     #142a50;
+  --blue-hover:    #8eafef;
+  --blue-light:    #e8eef8;
+  --blue-mid:      #c8d8f0;
+  --yellow-accent: #fe9e10;
+  --yellow-dark:   #d4800a;
+  --yellow-light:  #fff4e0;
+  --white:         #ffffff;
+  --text-dark:     #333333;
+  --txt2:          #5a6a85;
+  --txt3:          #9aaabe;
+  --bg:            #f0f4fb;
+  --card:          #ffffff;
+  --card2:         #f5f8ff;
+  --brd:           #dce5f5;
+  --sh-sm: 0 1px 4px rgba(27,57,106,.07);
+  --sh-md: 0 4px 20px rgba(27,57,106,.12);
+  --sh-lg: 0 10px 40px rgba(27,57,106,.16);
+  --r-sm:10px; --r-md:16px; --r-lg:22px; --r-xl:28px;
+  --g-primary: linear-gradient(135deg,#2d5ba8,#1b396a);
+  --g-yellow:  linear-gradient(135deg,#ffbe57,#fe9e10);
+  --g-hover:   linear-gradient(135deg,#b8cef6,#8eafef);
+  --g-dark:    linear-gradient(135deg,#2d5ba8,#142a50);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+.db{
+  font-family:'Montserrat',sans-serif;
+  color:var(--text-dark);min-height:100vh;
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse at 8% 55%,rgba(142,175,239,.13) 0%,transparent 55%),
+    radial-gradient(ellipse at 92% 12%,rgba(254,158,16,.08) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 92%,rgba(27,57,106,.06) 0%,transparent 50%);
+  padding:2rem 2.5rem;
+}
+.db-main{max-width:1300px;margin:0 auto;display:flex;flex-direction:column;gap:1.75rem;}
+
+.db-loading{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);font-family:'Montserrat',sans-serif;
+}
+.db-spinner-wrap{text-align:center;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.db-spinner{
+  width:52px;height:52px;border-radius:50%;
+  border:4px solid var(--blue-mid);border-top-color:var(--blue-primary);
+  animation:db-spin .75s linear infinite;
+}
+@keyframes db-spin{to{transform:rotate(360deg);}}
+.db-loading p{color:var(--txt2);font-size:.9375rem;font-weight:500;}
+
+.db-header{
+  background:transparent;
+  padding:.5rem 0 .25rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1.5rem;
+}
+.db-header-date{font-size:.75rem;color:var(--txt3);margin-bottom:.35rem;letter-spacing:.4px;font-weight:600;text-transform:uppercase;}
+.db-header h2{font-size:1.875rem;font-weight:800;color:var(--blue-primary);letter-spacing:-.5px;margin-bottom:.3rem;}
+.db-header p{color:var(--txt2);font-size:.875rem;font-weight:500;}
+.db-header-logo{
+  width:72px;height:72px;object-fit:contain;flex-shrink:0;
+  background:var(--card);border-radius:var(--r-md);padding:.5rem;
+  border:1px solid var(--brd);box-shadow:var(--sh-sm);
+}
+
+.db-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
+.db-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem;}
+
+.db-stat{
+  background:var(--card);border-radius:var(--r-lg);
+  padding:1.5rem 1.75rem;border:1px solid var(--brd);
+  box-shadow:var(--sh-sm);
+  transition:box-shadow .25s,transform .25s;
+  display:flex;flex-direction:column;gap:.5rem;
+  position:relative;overflow:hidden;
+}
+.db-stat:hover{box-shadow:var(--sh-md);transform:translateY(-3px);}
+.db-stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;
+}
+.db-stat.s-primary::before { background:var(--g-primary); }
+.db-stat.s-yellow::before  { background:var(--g-yellow); }
+.db-stat.s-hover::before   { background:var(--g-hover); }
+.db-stat.s-dark::before    { background:var(--g-dark); }
+
+.db-stat-icon{
+  width:42px;height:42px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;margin-bottom:.25rem;
+}
+.ic-primary { background:var(--blue-light);  color:var(--blue-primary); }
+.ic-yellow  { background:var(--yellow-light); color:var(--yellow-dark); }
+.ic-hover   { background:#eaf0fb;             color:#3a6bbf; }
+.ic-dark    { background:var(--blue-light);   color:var(--blue-dark); }
+
+.db-stat-val{font-size:2.125rem;font-weight:800;color:var(--blue-primary);line-height:1;}
+.db-stat-lbl{font-size:.8rem;font-weight:600;color:var(--txt2);}
+.db-stat-sub{font-size:.75rem;color:var(--txt3);margin-top:.1rem;font-weight:500;}
+
+.db-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+.db-chart-card{
+  background:var(--card);border-radius:var(--r-xl);
+  padding:1.75rem 2rem;border:1px solid var(--brd);
+  box-shadow:var(--sh-sm);transition:box-shadow .25s;
+}
+.db-chart-card:hover{box-shadow:var(--sh-md);}
+
+.db-chart-title{display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;}
+.db-chart-title h3{font-size:.9375rem;font-weight:700;color:var(--blue-primary);}
+.db-chart-icon{
+  width:32px;height:32px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+.db-donut-wrap{display:flex;align-items:center;gap:1.5rem;}
+.db-legend{display:flex;flex-direction:column;gap:.625rem;flex:1;}
+.db-legend-item{display:flex;align-items:center;gap:.5rem;}
+.db-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.db-legend-label{font-size:.78rem;color:var(--txt2);font-weight:600;flex:1;}
+.db-legend-val{font-size:.8125rem;font-weight:800;color:var(--blue-primary);}
+
+.db-total-box{
+  margin-top:1rem;padding:.875rem 1rem;
+  background:var(--blue-light);border-radius:var(--r-sm);border:1px solid var(--blue-mid);
+}
+.db-total-box .tbl{font-size:.72rem;color:var(--txt2);margin-bottom:.2rem;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+.db-total-box .tbv{font-size:1.375rem;font-weight:800;color:var(--blue-primary);}
+.db-total-box .tbs{font-size:.72rem;color:var(--txt3);font-weight:500;}
+
+.db-tip{
+  background:var(--white);border:1.5px solid var(--brd);border-radius:var(--r-sm);
+  padding:.625rem 1rem;box-shadow:var(--sh-md);
+  font-family:'Montserrat',sans-serif;font-size:.8rem;
+}
+.db-tip-label{font-weight:700;color:var(--blue-primary);margin-bottom:.2rem;}
+.db-tip-val{color:var(--txt2);font-weight:500;}
+
+@media(max-width:1024px){
+  .db-grid-4{grid-template-columns:repeat(2,1fr);}
+  .db-charts-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .db{padding:1rem;}
+  .db-grid-4,.db-grid-2,.db-charts-grid{grid-template-columns:1fr;}
+  .db-header{flex-direction:column;align-items:flex-start;}
+  .db-header h2{font-size:1.375rem;}
+  .db-donut-wrap{flex-direction:column;}
+}
+`;
+
+const C_TIPO = ["#1b396a", "#8eafef", "#fe9e10", "#c8d8f0"];
+const C_SEXO = ["#1b396a", "#fe9e10"];
+const C_GROUP = ["#1b396a", "#8eafef"];
+const BAR_COL = "#8eafef";
+
+const Tip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="db-tip">
+      <p className="db-tip-label">{label ?? payload[0]?.name}</p>
+      <p className="db-tip-val">{payload[0]?.value} estudiantes</p>
+    </div>
+  );
+};
+
+const Donut = ({ data, colors, height = 190 }) => (
+  <ResponsiveContainer width={height} height={height}>
+    <PieChart>
+      <Pie
+        data={data}
+        cx="50%"
+        cy="50%"
+        innerRadius={height * 0.27}
+        outerRadius={height * 0.43}
+        paddingAngle={3}
+        dataKey="cantidad"
+        strokeWidth={0}
+      >
+        {data.map((_, i) => (
+          <Cell key={i} fill={colors[i % colors.length]} />
+        ))}
+      </Pie>
+      <Tooltip
+        contentStyle={{
+          background: "#fff",
+          border: "1.5px solid #dce5f5",
+          borderRadius: 10,
+          fontFamily: "Montserrat",
+          fontSize: 12,
+          boxShadow: "0 4px 20px rgba(27,57,106,.12)",
+        }}
+        formatter={(v, n) => [v, n]}
+      />
+    </PieChart>
+  </ResponsiveContainer>
+);
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -33,530 +234,426 @@ const AdminDashboard = () => {
     primerSemestre: 0,
     segundoSemestreEnAdelante: 0,
   });
-
-  const [dataPorTipo, setDataPorTipo] = useState([]);
-  const [dataPorSexo, setDataPorSexo] = useState([]);
-  const [dataPorSemestre, setDataPorSemestre] = useState([]);
-  const [dataSemestreAgrupado, setDataSemestreAgrupado] = useState([]);
+  const [dataTipo, setDataTipo] = useState([]);
+  const [dataSexo, setDataSexo] = useState([]);
+  const [dataSem, setDataSem] = useState([]);
+  const [dataGroup, setDataGroup] = useState([]);
 
   useEffect(() => {
-    cargarEstadisticas();
+    cargar();
   }, []);
 
-  // Función para obtener tipo de actividad
-  const obtenerTipoActividad = (codigo, nombreActividad, descripcion) => {
-    const codigoUpper = (codigo || "").toUpperCase().trim();
-    const nombreUpper = (nombreActividad || "").toUpperCase();
-    const descripcionUpper = (descripcion || "").toUpperCase();
-    const textoCompleto = `${nombreUpper} ${descripcionUpper}`;
-
-    if (codigoUpper === "D") return "DEPORTIVA";
-
-    const palabrasDeportivas = [
-      "FUTBOL", "SOCCER", "VOLEIBOL", "VOLLEYBALL", "BEISBOL", "BASEBALL",
-      "SOFTBOL", "SOFTBALL", "BASQUETBOL", "BASKETBALL",
-      "ATLETISMO", "NATACION", "SWIMMING", "TENIS", "TENNIS", "AJEDREZ", "CHESS"
-    ];
-
-    for (let palabra of palabrasDeportivas) {
-      if (textoCompleto.includes(palabra)) return "DEPORTIVA";
-    }
-
-    const palabrasExcluir = [
-      "TUTORIA", "TALLER TALENTO", "TICS", "TECNOLOGIA",
-      "CONGRESO", "INVESTIGACION", "RALLY"
-    ];
-
-    for (let palabra of palabrasExcluir) {
-      if (textoCompleto.includes(palabra)) return "OTRA";
-    }
-
-    const palabrasCivicas = [
-      "ACT CIVICAS", "ACTIVIDAD CIVICA", "ESCOLTA", 
-      "CENTRO DE ACOPIO", "CARRERA ALBATROS"
-    ];
-
-    for (let palabra of palabrasCivicas) {
-      if (textoCompleto.includes(palabra)) return "CIVICA";
-    }
-
-    const palabrasCulturales = [
-      "ACT CULTURALES", "ACT ARTISTICAS", "MUSICA", "DANZA",
-      "ARTES VISUALES", "ALTAR", "CLUB DE LECTURA", "BANDA DE GUERRA"
-    ];
-
-    for (let palabra of palabrasCulturales) {
-      if (textoCompleto.includes(palabra)) return "CULTURAL";
-    }
-
-    if (codigoUpper === "C") return "CULTURAL";
-
+  const obtenerTipo = (cod, nom, des) => {
+    const up = `${nom || ""} ${des || ""}`.toUpperCase();
+    if ((cod || "").toUpperCase() === "D") return "DEPORTIVA";
+    if (
+      [
+        "FUTBOL",
+        "SOCCER",
+        "VOLEIBOL",
+        "VOLLEYBALL",
+        "BEISBOL",
+        "BASEBALL",
+        "SOFTBOL",
+        "SOFTBALL",
+        "BASQUETBOL",
+        "BASKETBALL",
+        "ATLETISMO",
+        "NATACION",
+        "SWIMMING",
+        "TENIS",
+        "TENNIS",
+        "AJEDREZ",
+        "CHESS",
+      ].some((p) => up.includes(p))
+    )
+      return "DEPORTIVA";
+    if (
+      [
+        "TUTORIA",
+        "TALLER TALENTO",
+        "TICS",
+        "TECNOLOGIA",
+        "CONGRESO",
+        "INVESTIGACION",
+        "RALLY",
+      ].some((p) => up.includes(p))
+    )
+      return "OTRA";
+    if (
+      [
+        "ACT CIVICAS",
+        "ACTIVIDAD CIVICA",
+        "ESCOLTA",
+        "CENTRO DE ACOPIO",
+        "CARRERA ALBATROS",
+      ].some((p) => up.includes(p))
+    )
+      return "CIVICA";
+    if (
+      [
+        "ACT CULTURALES",
+        "ACT ARTISTICAS",
+        "MUSICA",
+        "DANZA",
+        "ARTES VISUALES",
+        "ALTAR",
+        "CLUB DE LECTURA",
+        "BANDA DE GUERRA",
+      ].some((p) => up.includes(p))
+    )
+      return "CULTURAL";
+    if ((cod || "").toUpperCase() === "C") return "CULTURAL";
     return "OTRA";
   };
 
-  const cargarEstadisticas = async () => {
+  const cargar = async () => {
+    const df = {
+      totalActividades: 0,
+      totalEstudiantes: 0,
+      totalHombres: 0,
+      totalMujeres: 0,
+      primerSemestre: 0,
+      segundoSemestreEnAdelante: 0,
+    };
     try {
       setLoading(true);
 
-      // Cargar actividades ofertadas
-      const resOfertas = await fetch("/api/act-disponibles", {
-        cache: "no-store",
-      });
-
-      // ✅ Verificar respuesta HTTP
-      if (!resOfertas.ok) {
-        console.error("❌ Error HTTP en ofertas:", resOfertas.status);
-        throw new Error(`Error HTTP: ${resOfertas.status}`);
-      }
-
-      const ofertas = await resOfertas.json();
-
-      // ✅ VALIDACIÓN: Verificar que ofertas sea un array
+      const r1 = await fetch("/api/act-disponibles", { cache: "no-store" });
+      if (!r1.ok) throw new Error("Error al cargar actividades");
+      const ofertas = await r1.json();
       if (!Array.isArray(ofertas)) {
-        console.error("❌ ofertas no es array:", ofertas);
-        // Establecer valores por defecto
-        setStats({
-          totalActividades: 0,
-          totalEstudiantes: 0,
-          totalHombres: 0,
-          totalMujeres: 0,
-          primerSemestre: 0,
-          segundoSemestreEnAdelante: 0,
-        });
-        setDataPorTipo([]);
-        setDataPorSexo([]);
-        setDataPorSemestre([]);
-        setDataSemestreAgrupado([]);
+        setStats(df);
         return;
       }
 
-      // Cargar inscripciones
-      const resInscripciones = await fetch("/api/inscripciones", {
-        cache: "no-store",
-      });
+      const r2 = await fetch("/api/inscripciones", { cache: "no-store" });
 
-      //  Verificar respuesta HTTP
-      if (!resInscripciones.ok) {
-        console.error("❌ Error HTTP en inscripciones:", resInscripciones.status);
-        throw new Error(`Error HTTP: ${resInscripciones.status}`);
+      // ✅ NO lanzar error — normalizar a array vacío si falla
+      const raw = r2.ok ? await r2.json() : [];
+      if (!r2.ok) {
+        console.warn(
+          "⚠️ API inscripciones respondió:",
+          r2.status,
+          "— mostrando solo actividades",
+        );
       }
+      const ins = Array.isArray(raw) ? raw : [];
+      console.log("📊 Inscripciones cargadas:", ins.length);
 
-      const todasInscripciones = await resInscripciones.json();
-
-      //  VALIDACIÓN: Verificar que inscripciones sea un array
-      if (!Array.isArray(todasInscripciones)) {
-        console.error("❌ todasInscripciones no es array:", todasInscripciones);
-        // Establecer estadísticas solo con ofertas (sin inscripciones)
-        setStats({
-          totalActividades: ofertas.length,
-          totalEstudiantes: 0,
-          totalHombres: 0,
-          totalMujeres: 0,
-          primerSemestre: 0,
-          segundoSemestreEnAdelante: 0,
-        });
-        setDataPorTipo([
-          { tipo: "Cívicas", cantidad: 0, color: "#3b82f6" },
-          { tipo: "Culturales", cantidad: 0, color: "#8b5cf6" },
-          { tipo: "Deportivas", cantidad: 0, color: "#f59e0b" },
-          { tipo: "Otras", cantidad: 0, color: "#6b7280" },
-        ]);
-        setDataPorSexo([
-          { sexo: "Hombres", cantidad: 0, color: "#3b82f6" },
-          { sexo: "Mujeres", cantidad: 0, color: "#ec4899" },
-        ]);
-        setDataPorSemestre([]);
-        setDataSemestreAgrupado([]);
-        return;
-      }
-
-      console.log(` Cargadas ${ofertas.length} ofertas y ${todasInscripciones.length} inscripciones`);
-
-      // Agrupar inscripciones por actividad
-      const inscripcionesPorActividad = {};
-      todasInscripciones.forEach((inscripcion) => {
-        const actId = inscripcion?.actividadId;
-        if (actId) {
-          if (!inscripcionesPorActividad[actId]) {
-            inscripcionesPorActividad[actId] = [];
-          }
-          inscripcionesPorActividad[actId].push(inscripcion);
+      const insPorAct = {};
+      ins.forEach((i) => {
+        const id = i?.actividadId;
+        if (id) {
+          insPorAct[id] = insPorAct[id] || [];
+          insPorAct[id].push(i);
         }
       });
 
-      // Calcular estadísticas
-      const estudiantesUnicos = new Set();
-      const estudiantesUnicosPorSexo = { M: new Set(), F: new Set() };
-      const actividadesPorTipo = {
+      const aT = {
         CIVICA: new Set(),
         CULTURAL: new Set(),
         DEPORTIVA: new Set(),
         OTRA: new Set(),
       };
-
-      let porSemestre = {};
-      let estudiantesContados = new Set(); //  Para evitar contar el mismo estudiante dos veces
-      let contadorPrimerSemestre = 0;
-      let contadorSegundoEnAdelante = 0;
-
-      //  Ahora es seguro usar forEach porque validamos que es array
-      ofertas.forEach((oferta) => {
-        const inscritos = inscripcionesPorActividad[oferta.actividadId] || [];
-        const tipoActividad = obtenerTipoActividad(
-          oferta.actividad?.aticve,
-          oferta.actividad?.aconco,
-          oferta.actividad?.acodes
+      ofertas.forEach((o) => {
+        const lista = insPorAct[o.actividadId] || [];
+        const tipo = obtenerTipo(
+          o.actividad?.aticve,
+          o.actividad?.aconco,
+          o.actividad?.acodes,
         );
-
-        if (inscritos.length > 0) {
-          actividadesPorTipo[tipoActividad].add(oferta.actividadId);
-        }
-
-        inscritos.forEach((inscripcion) => {
-          const numeroControl = inscripcion.estudiante?.aluctr;
-          const sexo = inscripcion.estudiante?.alusex;
-          const semestre = inscripcion.estudiante?.inscripciones?.calnpe?.toString() || "N/A";
-
-          if (numeroControl) {
-            estudiantesUnicos.add(numeroControl);
-
-            if (sexo === 1) {
-              estudiantesUnicosPorSexo.M.add(numeroControl);
-            } else if (sexo === 2) {
-              estudiantesUnicosPorSexo.F.add(numeroControl);
-            }
-
-            //  Contar por semestre (solo una vez por estudiante)
-            const claveEstudiante = `${numeroControl}-${semestre}`;
-            if (!estudiantesContados.has(claveEstudiante)) {
-              estudiantesContados.add(claveEstudiante);
-              porSemestre[semestre] = (porSemestre[semestre] || 0) + 1;
-
-              // Contar 1er semestre vs 2do en adelante
-              const semestreNum = parseInt(semestre);
-              if (semestre === "1" || semestreNum === 1) {
-                contadorPrimerSemestre++;
-              } else if (semestreNum >= 2 && !isNaN(semestreNum)) {
-                contadorSegundoEnAdelante++;
-              }
-            }
-          }
-        });
+        if (lista.length) aT[tipo].add(o.actividadId);
       });
 
-      // Preparar datos para gráficas
-      const dataActividades = [
-        { tipo: "Cívicas", cantidad: actividadesPorTipo.CIVICA.size, color: "#3b82f6" },
-        { tipo: "Culturales", cantidad: actividadesPorTipo.CULTURAL.size, color: "#8b5cf6" },
-        { tipo: "Deportivas", cantidad: actividadesPorTipo.DEPORTIVA.size, color: "#f59e0b" },
-        { tipo: "Otras", cantidad: actividadesPorTipo.OTRA.size, color: "#6b7280" },
-      ];
+      // Deduplicar estudiantes por aluctr
+      const estudiantesMap = new Map();
+      ins.forEach((i) => {
+        const ctrl = i.estudiante?.aluctr;
+        if (!ctrl) return;
+        if (!estudiantesMap.has(ctrl)) {
+          const sexo = i.estudiante?.alusex;
+          // ✅ calnpe primero — igual que login/perfil
+          const semRaw = i.estudiante?.calnpe ?? i.estudiante?.alusme;
+          const sem = semRaw != null ? semRaw.toString() : "N/A";
+          estudiantesMap.set(ctrl, { sexo, sem });
+        }
+      });
 
-      const dataSexo = [
-        { sexo: "Hombres", cantidad: estudiantesUnicosPorSexo.M.size, color: "#3b82f6" },
-        { sexo: "Mujeres", cantidad: estudiantesUnicosPorSexo.F.size, color: "#ec4899" },
-      ];
+      const uAll = new Set();
+      const uSexo = { M: new Set(), F: new Set() };
+      let porSem = {},
+        prim = 0,
+        seg = 0;
 
-      // Datos de semestre individual (1,2,3,4,5,6)
-      const semestreData = Object.entries(porSemestre)
-        .filter(([key]) => !key.includes("-") && !isNaN(parseInt(key)))
-        .map(([sem, count]) => ({
-          semestre: `${sem}°`,
-          cantidad: count,
-        }))
-        .sort((a, b) => parseInt(a.semestre) - parseInt(b.semestre));
-
-      // Datos agrupados: 1er semestre vs 2do+
-      const semestreAgrupado = [
-        { grupo: "1er Semestre", cantidad: contadorPrimerSemestre, color: "#8b5cf6" },
-        { grupo: "2do Semestre+", cantidad: contadorSegundoEnAdelante, color: "#14b8a6" },
-      ];
+      estudiantesMap.forEach(({ sexo, sem }, ctrl) => {
+        uAll.add(ctrl);
+        if (sexo === 1) uSexo.M.add(ctrl);
+        else if (sexo === 2) uSexo.F.add(ctrl);
+        if (sem !== "N/A") {
+          porSem[sem] = (porSem[sem] || 0) + 1;
+          const n = parseInt(sem);
+          if (n === 1) prim++;
+          else if (n >= 2 && !isNaN(n)) seg++;
+        }
+      });
 
       setStats({
         totalActividades: ofertas.length,
-        totalEstudiantes: estudiantesUnicos.size,
-        totalHombres: estudiantesUnicosPorSexo.M.size,
-        totalMujeres: estudiantesUnicosPorSexo.F.size,
-        primerSemestre: contadorPrimerSemestre,
-        segundoSemestreEnAdelante: contadorSegundoEnAdelante,
+        totalEstudiantes: uAll.size,
+        totalHombres: uSexo.M.size,
+        totalMujeres: uSexo.F.size,
+        primerSemestre: prim,
+        segundoSemestreEnAdelante: seg,
       });
-
-      setDataPorTipo(dataActividades);
-      setDataPorSexo(dataSexo);
-      setDataPorSemestre(semestreData);
-      setDataSemestreAgrupado(semestreAgrupado);
-
-    } catch (error) {
-      console.error("❌ Error al cargar estadísticas:", error);
-      // ✅ Establecer valores seguros en caso de error
-      setStats({
-        totalActividades: 0,
-        totalEstudiantes: 0,
-        totalHombres: 0,
-        totalMujeres: 0,
-        primerSemestre: 0,
-        segundoSemestreEnAdelante: 0,
-      });
-      setDataPorTipo([
-        { tipo: "Cívicas", cantidad: 0, color: "#3b82f6" },
-        { tipo: "Culturales", cantidad: 0, color: "#8b5cf6" },
-        { tipo: "Deportivas", cantidad: 0, color: "#f59e0b" },
-        { tipo: "Otras", cantidad: 0, color: "#6b7280" },
+      setDataTipo([
+        { nombre: "Cívicas", cantidad: aT.CIVICA.size },
+        { nombre: "Culturales", cantidad: aT.CULTURAL.size },
+        { nombre: "Deportivas", cantidad: aT.DEPORTIVA.size },
+        { nombre: "Otras", cantidad: aT.OTRA.size },
       ]);
-      setDataPorSexo([
-        { sexo: "Hombres", cantidad: 0, color: "#3b82f6" },
-        { sexo: "Mujeres", cantidad: 0, color: "#ec4899" },
+      setDataSexo([
+        { nombre: "Hombres", cantidad: uSexo.M.size },
+        { nombre: "Mujeres", cantidad: uSexo.F.size },
       ]);
-      setDataPorSemestre([]);
-      setDataSemestreAgrupado([]);
+      setDataSem(
+        Object.entries(porSem)
+          .filter(([k]) => !k.includes("-") && !isNaN(parseInt(k)))
+          .map(([s, c]) => ({ semestre: `${s}°`, cantidad: c }))
+          .sort((a, b) => parseInt(a.semestre) - parseInt(b.semestre)),
+      );
+      setDataGroup([
+        { nombre: "1er Semestre", cantidad: prim },
+        { nombre: "2do Semestre+", cantidad: seg },
+      ]);
+    } catch (e) {
+      console.error("❌ Error en cargar:", e);
+      setStats(df);
     } finally {
       setLoading(false);
     }
   };
 
-
-  if (loading) {
+  if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Cargando estadísticas...</p>
+      <div className="db-loading">
+        <style>{CSS}</style>
+        <div className="db-spinner-wrap">
+          <div className="db-spinner" />
+          <p>Cargando estadísticas...</p>
         </div>
       </div>
     );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 p-6">
-      <main className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-xl p-8 mb-6 flex items-center justify-between">
+    <div className="db">
+      <style>{CSS}</style>
+      <main className="db-main">
+        <div className="db-header">
           <div>
-            <p className="text-sm text-blue-100 mb-2">
+            <p className="db-header-date">
               {new Date().toLocaleDateString("es-MX", {
                 day: "numeric",
                 month: "long",
                 year: "numeric",
               })}
             </p>
-            <h2 className="text-3xl font-bold text-white mb-2">
-              Estadísticas de Inscripciones
-            </h2>
-            <p className="text-blue-100">
-              Datos en tiempo real de actividades extraescolares
-            </p>
+            <h2>Estadísticas de Inscripciones</h2>
+            <p>Datos en tiempo real · Actividades extraescolares</p>
           </div>
           <img
             src="/imagenes/logosin.gif"
             alt="Logo"
-            className="w-24 h-24 object-contain bg-white/10 rounded-xl p-2"
+            className="db-header-logo"
           />
         </div>
 
-        {/* Cards de métricas principales */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <Calendar className="w-6 h-6 text-blue-600" />
-              </div>
+        <div className="db-grid-4">
+          <div className="db-stat s-primary">
+            <div className="db-stat-icon ic-primary">
+              <Calendar size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.totalActividades}
-            </div>
-            <div className="text-gray-600 text-sm">Actividades Ofertadas</div>
+            <div className="db-stat-val">{stats.totalActividades}</div>
+            <div className="db-stat-lbl">Actividades Ofertadas</div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-emerald-500 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-emerald-100 p-3 rounded-lg">
-                <Users className="w-6 h-6 text-emerald-600" />
-              </div>
+          <div className="db-stat s-yellow">
+            <div className="db-stat-icon ic-yellow">
+              <Users size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.totalEstudiantes}
-            </div>
-            <div className="text-gray-600 text-sm">Total Estudiantes Inscritos</div>
+            <div className="db-stat-val">{stats.totalEstudiantes}</div>
+            <div className="db-stat-lbl">Total Inscritos</div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-400 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <Users className="w-6 h-6 text-blue-400" />
-              </div>
+          <div className="db-stat s-hover">
+            <div className="db-stat-icon ic-hover">
+              <Users size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.totalHombres}
-            </div>
-            <div className="text-gray-600 text-sm">Hombres</div>
+            <div className="db-stat-val">{stats.totalHombres}</div>
+            <div className="db-stat-lbl">Hombres</div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-pink-500 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-pink-100 p-3 rounded-lg">
-                <Users className="w-6 h-6 text-pink-600" />
-              </div>
+          <div className="db-stat s-dark">
+            <div className="db-stat-icon ic-dark">
+              <Users size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.totalMujeres}
-            </div>
-            <div className="text-gray-600 text-sm">Mujeres</div>
+            <div className="db-stat-val">{stats.totalMujeres}</div>
+            <div className="db-stat-lbl">Mujeres</div>
           </div>
         </div>
 
-        {/* NUEVAS Cards de semestre */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <GraduationCap className="w-6 h-6 text-purple-600" />
-              </div>
+        <div className="db-grid-2">
+          <div className="db-stat s-primary">
+            <div className="db-stat-icon ic-primary">
+              <GraduationCap size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.primerSemestre}
-            </div>
-            <div className="text-gray-600 text-sm">Estudiantes 1er Semestre</div>
-            <p className="text-xs text-gray-500 mt-2">Alumnos inscritos únicamente</p>
+            <div className="db-stat-val">{stats.primerSemestre}</div>
+            <div className="db-stat-lbl">Estudiantes 1er Semestre</div>
+            <div className="db-stat-sub">Alumnos de nuevo ingreso</div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-teal-500 hover:shadow-xl transition-all hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-teal-100 p-3 rounded-lg">
-                <GraduationCap className="w-6 h-6 text-teal-600" />
-              </div>
+          <div className="db-stat s-yellow">
+            <div className="db-stat-icon ic-yellow">
+              <GraduationCap size={20} />
             </div>
-            <div className="text-3xl font-bold text-gray-900 mb-1">
-              {stats.segundoSemestreEnAdelante}
-            </div>
-            <div className="text-gray-600 text-sm">Estudiantes 2do Semestre+</div>
-            <p className="text-xs text-gray-500 mt-2">Del 2° al 12° semestre</p>
+            <div className="db-stat-val">{stats.segundoSemestreEnAdelante}</div>
+            <div className="db-stat-lbl">Estudiantes 2do Semestre+</div>
+            <div className="db-stat-sub">Del 2° al 12° semestre</div>
           </div>
         </div>
 
-        {/* Gráficas principales */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Actividades por Tipo */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-500">
-            <div className="flex items-center gap-2 mb-4">
-              <Award className="w-5 h-5 text-blue-600" />
-              <h3 className="text-xl font-bold text-gray-900">
-                Actividades por Tipo
-              </h3>
+        <div className="db-charts-grid">
+          <div className="db-chart-card">
+            <div className="db-chart-title">
+              <div className="db-chart-icon ic-primary">
+                <Award size={16} />
+              </div>
+              <h3>Actividades por Tipo</h3>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dataPorTipo}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="tipo" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid #3b82f6",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                  }}
+            <div className="db-donut-wrap">
+              <Donut
+                data={dataTipo.map((d) => ({ ...d, name: d.nombre }))}
+                colors={C_TIPO}
+              />
+              <div className="db-legend">
+                {dataTipo.map((d, i) => (
+                  <div key={i} className="db-legend-item">
+                    <div
+                      className="db-legend-dot"
+                      style={{ background: C_TIPO[i] }}
+                    />
+                    <span className="db-legend-label">{d.nombre}</span>
+                    <span className="db-legend-val">{d.cantidad}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="db-chart-card">
+            <div className="db-chart-title">
+              <div className="db-chart-icon ic-yellow">
+                <Users size={16} />
+              </div>
+              <h3>Estudiantes por Género</h3>
+            </div>
+            <div className="db-donut-wrap">
+              <Donut
+                data={dataSexo.map((d) => ({ ...d, name: d.nombre }))}
+                colors={C_SEXO}
+              />
+              <div className="db-legend">
+                {dataSexo.map((d, i) => (
+                  <div key={i} className="db-legend-item">
+                    <div
+                      className="db-legend-dot"
+                      style={{ background: C_SEXO[i] }}
+                    />
+                    <span className="db-legend-label">{d.nombre}</span>
+                    <span className="db-legend-val">{d.cantidad}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="db-charts-grid">
+          <div className="db-chart-card">
+            <div className="db-chart-title">
+              <div className="db-chart-icon ic-hover">
+                <GraduationCap size={16} />
+              </div>
+              <h3>Estudiantes por Semestre</h3>
+            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart
+                data={dataSem}
+                barCategoryGap="38%"
+                margin={{ top: 4, right: 4, left: -16, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#dce5f5"
+                  vertical={false}
                 />
-                <Bar dataKey="cantidad" radius={[8, 8, 0, 0]}>
-                  {dataPorTipo.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
+                <XAxis
+                  dataKey="semestre"
+                  tick={{
+                    fontSize: 11,
+                    fill: "#5a6a85",
+                    fontFamily: "Montserrat",
+                    fontWeight: 600,
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  tick={{
+                    fontSize: 10,
+                    fill: "#9aaabe",
+                    fontFamily: "Montserrat",
+                  }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  content={<Tip />}
+                  cursor={{ fill: "rgba(27,57,106,.05)" }}
+                />
+                <Bar dataKey="cantidad" fill={BAR_COL} radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Estudiantes por Sexo */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-pink-500">
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-pink-600" />
-              <h3 className="text-xl font-bold text-gray-900">
-                Estudiantes por Género
-              </h3>
+          <div className="db-chart-card">
+            <div className="db-chart-title">
+              <div className="db-chart-icon ic-primary">
+                <TrendingUp size={16} />
+              </div>
+              <h3>1er Semestre vs 2do+</h3>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={dataPorSexo}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ sexo, cantidad }) => `${sexo}: ${cantidad}`}
-                  outerRadius={100}
-                  dataKey="cantidad"
-                >
-                  {dataPorSexo.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid #ec4899",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Gráficas de semestre */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Estudiantes por Semestre (Individual) */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-purple-500">
-            <div className="flex items-center gap-2 mb-4">
-              <GraduationCap className="w-5 h-5 text-purple-600" />
-              <h3 className="text-xl font-bold text-gray-900">
-                Estudiantes por Semestre
-              </h3>
+            <div className="db-donut-wrap">
+              <Donut
+                data={dataGroup.map((d) => ({ ...d, name: d.nombre }))}
+                colors={C_GROUP}
+              />
+              <div className="db-legend">
+                {dataGroup.map((d, i) => (
+                  <div key={i} className="db-legend-item">
+                    <div
+                      className="db-legend-dot"
+                      style={{ background: C_GROUP[i] }}
+                    />
+                    <span className="db-legend-label">{d.nombre}</span>
+                    <span className="db-legend-val">{d.cantidad}</span>
+                  </div>
+                ))}
+                <div className="db-total-box">
+                  <p className="tbl">Total</p>
+                  <p className="tbv">
+                    {dataGroup.reduce((s, d) => s + d.cantidad, 0)}
+                  </p>
+                  <p className="tbs">estudiantes registrados</p>
+                </div>
+              </div>
             </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dataPorSemestre}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="semestre" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid #8b5cf6",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Bar dataKey="cantidad" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* 1er Semestre vs 2do+ (NUEVA GRÁFICA) */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-teal-500">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-teal-600" />
-              <h3 className="text-xl font-bold text-gray-900">
-                1er Semestre vs 2do Semestre+
-              </h3>
-            </div>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={dataSemestreAgrupado}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="grupo" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid #14b8a6",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-                  }}
-                />
-                <Bar dataKey="cantidad" radius={[8, 8, 0, 0]}>
-                  {dataSemestreAgrupado.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
           </div>
         </div>
       </main>
