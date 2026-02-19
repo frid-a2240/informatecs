@@ -22,14 +22,14 @@ const AdminPanel = () => {
   const [publicando, setPublicando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
 
-  // ✅ UN SOLO MODAL PARA TODO
+  // UN SOLO MODAL PARA TODO
   const [modalAgregar, setModalAgregar] = useState(null);
   const [busquedaMaestro, setBusquedaMaestro] = useState("");
   const [maestrosEncontrados, setMaestrosEncontrados] = useState([]);
   const [buscandoMaestro, setBuscandoMaestro] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  // ✅ FORMULARIO UNIFICADO
+  //  FORMULARIO UNIFICADO
   const [formulario, setFormulario] = useState({
     dias: [],
     horaInicio: "",
@@ -67,7 +67,7 @@ const AdminPanel = () => {
     }
   };
 
-  // ✅ ABRIR MODAL CON DATOS PRECARGADOS
+  //  ABRIR MODAL CON DATOS PRECARGADOS
   const abrirModalAgregar = (actividad) => {
     setModalAgregar(actividad);
 
@@ -96,7 +96,7 @@ const AdminPanel = () => {
     }));
   };
 
-  // ✅ BUSCAR MAESTROS
+  //  BUSCAR MAESTROS
   const buscarMaestros = async (query) => {
     if (query.length < 2) {
       setMaestrosEncontrados([]);
@@ -117,7 +117,7 @@ const AdminPanel = () => {
     }
   };
 
-  // ✅ SELECCIONAR MAESTRO
+  //  SELECCIONAR MAESTRO
   const seleccionarMaestro = (maestro) => {
     setFormulario((prev) => ({
       ...prev,
@@ -128,7 +128,7 @@ const AdminPanel = () => {
     setMaestrosEncontrados([]);
   };
 
-  // ✅ REMOVER MAESTRO SELECCIONADO
+  //  REMOVER MAESTRO SELECCIONADO
   const removerMaestro = () => {
     setFormulario((prev) => ({
       ...prev,
@@ -137,19 +137,19 @@ const AdminPanel = () => {
     }));
   };
 
-  // ✅ GUARDAR TODO Y AGREGAR A OFERTA
+  //  GUARDAR TODO Y AGREGAR A OFERTA
   const guardarYAgregar = async () => {
     // Validaciones básicas
     if (formulario.dias.length === 0) {
-      alert("⚠️ Selecciona al menos un día");
+      alert("Selecciona al menos un día");
       return;
     }
     if (!formulario.horaInicio || !formulario.horaFin) {
-      alert("⚠️ Completa los horarios de inicio y fin");
+      alert(" Completa los horarios de inicio y fin");
       return;
     }
     if (!formulario.maestroId) {
-      if (!confirm("⚠️ No has asignado un maestro. ¿Deseas continuar?")) {
+      if (!confirm(" No has asignado un maestro. ¿Deseas continuar?")) {
         return;
       }
     }
@@ -158,7 +158,7 @@ const AdminPanel = () => {
       setGuardando(true);
 
       // 1. Guardar horario
-      console.log("💾 Guardando horario...");
+      console.log(" Guardando horario...");
       const horarioResponse = await fetch(`/api/horario`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -179,7 +179,7 @@ const AdminPanel = () => {
 
       // 2. Asignar maestro (si fue seleccionado)
       if (formulario.maestroId) {
-        console.log("👨‍🏫 Asignando maestro...");
+        console.log(" Asignando maestro...");
         const maestroResponse = await fetch("/api/asignar-maestros", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -226,14 +226,14 @@ const AdminPanel = () => {
         setActividadesOfertadas((prev) => [...prev, actividadActualizada]);
       }
 
-      alert("✅ Actividad configurada y agregada a la oferta");
+      alert(" Actividad configurada y agregada a la oferta");
       setModalAgregar(null);
 
       // Recargar para asegurar datos actualizados
       await cargarActividades();
     } catch (error) {
-      console.error("❌ Error:", error);
-      alert(`❌ Error: ${error.message}`);
+      console.error(" Error:", error);
+      alert(` Error: ${error.message}`);
     } finally {
       setGuardando(false);
     }
@@ -290,7 +290,6 @@ const AdminPanel = () => {
     return (
       <div className="admin-panel">
         <div className="card loading-card">
-          <Sparkles size={48} className="loading-icon" />
           <h2>Cargando actividades...</h2>
           <p>Preparando el catálogo completo</p>
         </div>
@@ -300,13 +299,12 @@ const AdminPanel = () => {
 
   return (
     <div className="admin-panel">
-      {/* ✅ MODAL UNIFICADO: AGREGAR ACTIVIDAD CON TODO */}
       {modalAgregar && (
         <div className="modal-overlay">
           <div className="modal-content modal-agregar">
             <div className="modal-header">
               <div>
-                <h3>➕ Configurar y Agregar Actividad</h3>
+                <h3> Configurar y Agregar Actividad</h3>
                 <p className="modal-subtitle">
                   {modalAgregar.aconco || modalAgregar.aticve} — Código:{" "}
                   {modalAgregar.aticve}
@@ -321,6 +319,7 @@ const AdminPanel = () => {
             </div>
 
             <div className="modal-body">
+              {" "}
               {/* SECCIÓN HORARIO */}
               <div className="seccion-form">
                 <h4>
@@ -383,8 +382,6 @@ const AdminPanel = () => {
                   placeholder="Ej: Aula 301, Cancha 2"
                 />
               </div>
-
-              {/* SECCIÓN MAESTRO */}
               <div className="seccion-form">
                 <h4>
                   <User size={20} /> Maestro
@@ -472,14 +469,13 @@ const AdminPanel = () => {
         </div>
       )}
 
-      {/* ✅ MODAL VER MAESTRO (Para el badge clickeable) */}
       {modalVerMaestro && (
         <div className="modal-overlay" onClick={() => setModalVerMaestro(null)}>
           <div
             className="modal-content modal-small"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3>👨‍🏫 Maestro Asignado</h3>
+            <h3> Maestro Asignado</h3>
             <p className="materia-modal-title">
               {modalVerMaestro.aconco || modalVerMaestro.aticve}
             </p>

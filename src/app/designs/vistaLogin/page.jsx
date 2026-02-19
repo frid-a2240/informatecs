@@ -149,13 +149,14 @@ const LoginPage = () => {
 
   const onAdminSubmit = (e) => {
     e.preventDefault();
-    if (!adminUser || !adminPassword)
-      return setError("Escribe usuario y contraseña de administrador");
-    if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025")
-      router.push("/designs/menuadmin");
-    else setError("Credenciales de administrador incorrectas");
-  };
+    if (adminUser === "NodalTec" && adminPassword === "eventosadmin2025") {
+      // 1. Guardamos el dato en la "mochila" del navegador
+      localStorage.setItem("adminName", "Juan Carlos Leal Nodal");
 
+      // 2. Nos vamos al dashboard
+      router.push("/designs/menuadmin");
+    }
+  };
   // ----------------------
   // Componente interno de redirección para estudiantes
   // ----------------------
