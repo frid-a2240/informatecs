@@ -3,7 +3,6 @@
    Paleta: --blue-primary #1b396a · --yellow-accent #fe9e10
            --blue-hover #8eafef · Montserrat
 ============================================================ */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
 /* ── Variables (extiende las del proyecto) ──────────────────── */
 :root {
@@ -43,15 +42,6 @@
   --pa-r-xl: 28px;
 
   font-family: "Montserrat", sans-serif;
-}
-
-/* ── Reset ─────────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 /* ── Page wrapper ───────────────────────────────────────────── */
@@ -719,17 +709,20 @@
 /* --- Carrusel --- */
 .ofertas-carousel-container {
   position: relative;
+  width: 100%;
+  max-width: 1100px; /* Ajuste para que quepan 3 cards de ~340px */
+  margin: 0 auto;
+  padding: 0 10px;
 }
 
 .ofertas-carousel {
   display: flex;
-  overflow-x: auto;
+  overflow-x: hidden; /* Cambiado de 'auto' a 'hidden' para que solo se mueva con flechas */
+  scroll-behavior: smooth;
+  gap: 1.5rem;
+  padding: 1rem 0;
   scroll-snap-type: x mandatory;
-  gap: 1rem;
-  padding-bottom: 1rem;
-  scrollbar-width: none;
 }
-
 .ofertas-carousel::-webkit-scrollbar {
   display: none;
 }
@@ -739,15 +732,16 @@
   background: var(--white);
   padding: 1.25rem;
   border-radius: 1.25rem;
-  flex: 0 0 85%;
+  flex: 0 0 calc(33.333% - 1rem);
   min-width: 280px;
   max-width: 350px;
   scroll-snap-align: start;
+  justify-items: center;
   cursor: pointer;
   border: 3px solid var(--blue-primary);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
@@ -820,9 +814,23 @@
 
 /* --- Botones --- */
 .ofertas-carousel-btn {
-  display: none;
-}
+  display: flex !important; /* Forzamos que se vean */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
 
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s;
+}
 .ofertas-register-btn {
   padding: 0.9rem 2rem;
   background: var(--blue-primary);
@@ -834,6 +842,17 @@
   cursor: pointer;
   width: 100%;
   box-shadow: 0 6px 18px rgba(27, 57, 106, 0.25);
+}
+.ofertas-carousel-btn:hover {
+  background: var(--yellow-accent);
+}
+
+.ofertas-carousel-btn.left {
+  left: -25px;
+}
+
+.ofertas-carousel-btn.right {
+  right: -25px;
 }
 
 /* --- Modales --- */

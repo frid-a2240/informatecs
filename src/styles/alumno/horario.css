@@ -1,4 +1,4 @@
-corrige para que se vea bien /* ========================================
+/* ========================================
    VARIABLES & DESIGN TOKENS
    ======================================== */
 :root {
@@ -99,6 +99,8 @@ body {
   font-weight: 800;
   color: var(--blue-primary);
   margin: 0 0 10px 0;
+  align-items: center; /* Centra horizontalmente */
+  text-align: center;
 }
 
 .horario-header-subtitle {
@@ -459,65 +461,6 @@ body {
   font-weight: 700;
   cursor: pointer;
   border-radius: 0.375rem;
-}
-
-/* ========================================
-   ESTADOS Y SPINNRERS
-   ======================================== */
-.horario-spinner {
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 3px solid rgba(27, 57, 106, 0.2);
-  border-top-color: var(--blue-primary);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-@media (max-width: 768px) {
-  .horario-header-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .horario-header-actions {
-    width: 100%;
-    justify-content: space-between;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .horario-hide-mobile {
-    display: none;
-  }
-
-  .calendario-grid {
-    grid-template-columns: 50px repeat(6, minmax(80px, 1fr));
-    min-width: 600px;
-  }
-
-  .horario-welcome-title {
-    font-size: 1.4rem;
-  }
-
-  .horario-table tr {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0.75rem;
-    border-bottom: 1px solid var(--gray-200);
-  }
-
-  .horario-table thead {
-    display: none;
-  }
 }
 
 /* ========================================

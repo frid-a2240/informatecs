@@ -12,27 +12,23 @@ const ActividadForm = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [bloodData, setBloodData] = useState({ status: "loading", data: null });
-  const [fileError, setFileError] = useState("");
 
-  // Definición de todos los pasos
   const steps = [
-    "purpose", // 0
-    "bloodType", // 1
-    "hasCondition", // 2
-    "takesMedication", // 3
-    "hasAllergy", // 4
-    "hasInjury", // 5
-    "hasRestriction", // 6
+    "purpose",
+    "bloodType",
+    "hasCondition",
+    "takesMedication",
+    "hasAllergy",
+    "hasInjury",
+    "hasRestriction",
   ];
 
-  // 1. Verificar estado de sangre al cargar
   useEffect(() => {
     const checkBloodStatus = async () => {
       try {
         const res = await fetch(`/api/sangre?aluctr=${aluctr}`);
         const data = await res.json();
         setBloodData({ status: "ready", data });
-
         if (data.estudiante?.alutsa) {
           setFormData((prev) => ({
             ...prev,
@@ -46,58 +42,96 @@ const ActividadForm = ({
     if (aluctr) checkBloodStatus();
   }, [aluctr, setFormData]);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    setFileError("");
-
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      setFileError("El archivo debe ser un PDF.");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      setFileError("El archivo es demasiado grande (máx 2MB).");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData({
-        ...formData,
-        bloodTypeFile: reader.result,
-        bloodTypeFileName: file.name,
-      });
-    };
-    reader.readAsDataURL(file);
+  const handleToggleQuestion = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [`${field}_toggle`]: value,
+      [field]:
+        value === "No"
+          ? "Ninguna"
+          : prev[field] === "Ninguna"
+            ? ""
+            : prev[field],
+    }));
   };
 
   const handleNext = () => {
     const currentField = steps[currentStep];
 
-    // Validación específica para el paso de sangre
     if (currentField === "bloodType") {
       const isAlreadyValidated = bloodData.data?.estudiante?.alutsa;
-      const hasPendingRequest = bloodData.data?.tieneSolicitudPendiente;
-
-      if (!isAlreadyValidated && !hasPendingRequest) {
+      if (!isAlreadyValidated) {
         if (!formData.bloodType) return alert("Selecciona tu tipo de sangre.");
+        // Validamos que exista el archivo físico, no el base64
         if (!formData.bloodTypeFile)
           return alert("Sube el comprobante en PDF.");
       }
     } else {
-      // Validación general: que no esté vacío
-      if (!formData[currentField] || formData[currentField].trim() === "") {
-        alert(
-          "Por favor completa este campo antes de continuar (puedes poner 'Ninguna' si no aplica).",
-        );
+      const val = formData[currentField];
+      if (!val || val.toString().trim() === "") {
+        alert("Por favor selecciona una opción o completa el campo.");
         return;
       }
     }
-
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
 
-  const handleBack = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
+  const renderMedicalQuestion = (
+    stepIndex,
+    field,
+    label,
+    helper,
+    placeholder,
+  ) => {
+    if (currentStep !== stepIndex) return null;
+    const isYes = formData[`${field}_toggle`] === "Sí";
+
+    return (
+      <div className="animate-fade-in">
+        <label style={labelStyle}>{label}</label>
+        <div
+          style={{
+            ...radioContainerStyle,
+            flexDirection: "row",
+            marginBottom: "1rem",
+          }}
+        >
+          {["No", "Sí"].map((opt) => (
+            <label
+              key={opt}
+              style={{
+                ...radioOptionStyle(formData[`${field}_toggle`] === opt),
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <input
+                type="radio"
+                style={{ display: "none" }}
+                checked={formData[`${field}_toggle`] === opt}
+                onChange={() => handleToggleQuestion(field, opt)}
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+
+        {isYes && (
+          <div className="animate-fade-in">
+            <p style={helperTextStyle}>{helper}</p>
+            <textarea
+              style={textareaStyle}
+              placeholder={placeholder}
+              value={formData[field] === "Ninguna" ? "" : formData[field] || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, [field]: e.target.value })
+              }
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div style={modalOverlayStyle}>
@@ -111,7 +145,6 @@ const ActividadForm = ({
           </button>
         </div>
 
-        {/* Barra de Progreso */}
         <div style={{ padding: "0 1.5rem", marginTop: "1rem" }}>
           <div style={progressBarStyle}>
             <div
@@ -126,35 +159,35 @@ const ActividadForm = ({
           </p>
         </div>
 
-        <div style={{ padding: "1.5rem", minHeight: "250px" }}>
-          {/* PASO 0: PROPÓSITO */}
+        <div style={{ padding: "1.5rem", minHeight: "320px" }}>
           {currentStep === 0 && (
             <div className="animate-fade-in">
               <label style={labelStyle}>
                 1. ¿Cuál es el propósito de tu inscripción?
               </label>
               <div style={radioContainerStyle}>
-                {["creditos", "servicio_social", "por_gusto"].map((val) => (
-                  <label
-                    key={val}
-                    style={radioOptionStyle(formData.purpose === val)}
-                  >
-                    <input
-                      type="radio"
-                      style={{ marginRight: "10px" }}
-                      checked={formData.purpose === val}
-                      onChange={() =>
-                        setFormData({ ...formData, purpose: val })
-                      }
-                    />
-                    {val.replace("_", " ").toUpperCase()}
-                  </label>
-                ))}
+                {["creditos", "servicio_social", "Solamente recreación"].map(
+                  (val) => (
+                    <label
+                      key={val}
+                      style={radioOptionStyle(formData.purpose === val)}
+                    >
+                      <input
+                        type="radio"
+                        style={{ marginRight: "10px" }}
+                        checked={formData.purpose === val}
+                        onChange={() =>
+                          setFormData({ ...formData, purpose: val })
+                        }
+                      />
+                      {val.replace("_", " ").toUpperCase()}
+                    </label>
+                  ),
+                )}
               </div>
             </div>
           )}
 
-          {/* PASO 1: SANGRE */}
           {currentStep === 1 && (
             <div className="animate-fade-in">
               <label style={labelStyle}>2. Información de Tipo de Sangre</label>
@@ -163,19 +196,6 @@ const ActividadForm = ({
                   <p>
                     ✅ Sangre validada:{" "}
                     <strong>{bloodData.data.estudiante.alutsa}</strong>
-                  </p>
-                </div>
-              ) : bloodData.data?.tieneSolicitudPendiente ? (
-                <div style={pendingBoxStyle}>
-                  <p>
-                    ⏳ Validación pendiente:{" "}
-                    <strong>
-                      {bloodData.data.solicitudPendiente.tipoSangreSolicitado}
-                    </strong>
-                  </p>
-                  <p style={{ fontSize: "0.8rem", marginTop: "5px" }}>
-                    Puedes continuar, la inscripción se procesará tras la
-                    validación.
                   </p>
                 </div>
               ) : (
@@ -188,10 +208,10 @@ const ActividadForm = ({
                 >
                   <select
                     value={formData.bloodType || ""}
+                    style={inputStyle}
                     onChange={(e) =>
                       setFormData({ ...formData, bloodType: e.target.value })
                     }
-                    style={inputStyle}
                   >
                     <option value="">Selecciona tipo de sangre...</option>
                     {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
@@ -202,29 +222,35 @@ const ActividadForm = ({
                       ),
                     )}
                   </select>
-                  <div style={uploadBoxStyle}>
-                    <label
-                      style={{
-                        display: "block",
-                        marginBottom: "5px",
-                        fontSize: "0.85rem",
-                      }}
-                    >
-                      Comprobante Oficial (PDF):
-                    </label>
+                  <div style={{ marginTop: "10px" }}>
+                    <p style={{ ...helperTextStyle, marginBottom: "5px" }}>
+                      Subir Comprobante (PDF):
+                    </p>
                     <input
                       type="file"
                       accept=".pdf"
-                      onChange={handleFileChange}
+                      style={inputStyle}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          // GUARDAMOS EL ARCHIVO DIRECTAMENTE, NO EL BASE64
+                          setFormData({
+                            ...formData,
+                            bloodTypeFile: file,
+                            bloodTypeFileName: file.name,
+                          });
+                        }
+                      }}
                     />
-                    {fileError && (
-                      <p style={{ color: "red", fontSize: "0.75rem" }}>
-                        {fileError}
-                      </p>
-                    )}
                     {formData.bloodTypeFileName && (
-                      <p style={{ color: "green", fontSize: "0.75rem" }}>
-                        ✔ {formData.bloodTypeFileName}
+                      <p
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "#3b82f6",
+                          marginTop: "5px",
+                        }}
+                      >
+                        Archivo seleccionado: {formData.bloodTypeFileName}
                       </p>
                     )}
                   </div>
@@ -233,111 +259,47 @@ const ActividadForm = ({
             </div>
           )}
 
-          {/* PASO 2: CONDICIÓN CRÓNICA */}
-          {currentStep === 2 && (
-            <div className="animate-fade-in">
-              <label style={labelStyle}>
-                3. ¿Padeces alguna enfermedad crónica?
-              </label>
-              <p style={helperTextStyle}>
-                Ejemplo: Asma, Diabetes, Epilepsia, o "Ninguna".
-              </p>
-              <textarea
-                style={textareaStyle}
-                placeholder="Escribe aquí tu respuesta..."
-                value={formData.hasCondition || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasCondition: e.target.value })
-                }
-              />
-            </div>
+          {renderMedicalQuestion(
+            2,
+            "hasCondition",
+            "3. ¿Padeces alguna enfermedad crónica?",
+            "Indica cuál (Asma, Diabetes, etc.):",
+            "Describe tu condición...",
           )}
-
-          {/* PASO 3: MEDICAMENTOS */}
-          {currentStep === 3 && (
-            <div className="animate-fade-in">
-              <label style={labelStyle}>
-                4. ¿Tomas algún medicamento actualmente?
-              </label>
-              <p style={helperTextStyle}>
-                Indica el nombre y frecuencia, o "Ninguno".
-              </p>
-              <textarea
-                style={textareaStyle}
-                placeholder="Escribe aquí tu respuesta..."
-                value={formData.takesMedication || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, takesMedication: e.target.value })
-                }
-              />
-            </div>
+          {renderMedicalQuestion(
+            3,
+            "takesMedication",
+            "4. ¿Tomas algún medicamento actualmente?",
+            "Indica nombre y frecuencia:",
+            "Nombre del medicamento...",
           )}
-
-          {/* PASO 4: ALERGIAS */}
-          {currentStep === 4 && (
-            <div className="animate-fade-in">
-              <label style={labelStyle}>5. ¿Eres alérgico a algo?</label>
-              <p style={helperTextStyle}>
-                Medicamentos, alimentos o picaduras, o "Ninguna".
-              </p>
-              <textarea
-                style={textareaStyle}
-                placeholder="Escribe aquí tu respuesta..."
-                value={formData.hasAllergy || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasAllergy: e.target.value })
-                }
-              />
-            </div>
+          {renderMedicalQuestion(
+            4,
+            "hasAllergy",
+            "5. ¿Eres alérgico a algo?",
+            "Medicamentos, alimentos o picaduras:",
+            "Describe tus alergias...",
           )}
-
-          {/* PASO 5: LESIONES */}
-          {currentStep === 5 && (
-            <div className="animate-fade-in">
-              <label style={labelStyle}>
-                6. ¿Tienes alguna lesión reciente o antigua?
-              </label>
-              <p style={helperTextStyle}>
-                Ejemplo: Fracturas, esguinces o cirugías, o "Ninguna".
-              </p>
-              <textarea
-                style={textareaStyle}
-                placeholder="Escribe aquí tu respuesta..."
-                value={formData.hasInjury || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasInjury: e.target.value })
-                }
-              />
-            </div>
+          {renderMedicalQuestion(
+            5,
+            "hasInjury",
+            "6. ¿Tienes alguna lesión reciente o antigua?",
+            "Ejemplo: Fracturas, esguinces o cirugías:",
+            "Describe la lesión...",
           )}
-
-          {/* PASO 6: RESTRICCIONES */}
-          {currentStep === 6 && (
-            <div className="animate-fade-in">
-              <label style={labelStyle}>
-                7. ¿Tienes alguna restricción física para el ejercicio?
-              </label>
-              <p style={helperTextStyle}>
-                Cualquier indicación médica especial, o "Ninguna".
-              </p>
-              <textarea
-                style={textareaStyle}
-                placeholder="Escribe aquí tu respuesta..."
-                value={formData.hasRestriction || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, hasRestriction: e.target.value })
-                }
-              />
-            </div>
+          {renderMedicalQuestion(
+            6,
+            "hasRestriction",
+            "7. ¿Tienes alguna restricción física?",
+            "Cualquier indicación médica especial:",
+            "Describe la restricción...",
           )}
         </div>
 
-        {/* Footer con Botones */}
         <div style={footerStyle}>
           {currentStep > 0 && (
             <button
-              onClick={handleBack}
-              disabled={isSubmitting}
+              onClick={() => setCurrentStep((prev) => prev - 1)}
               style={backButtonStyle}
             >
               Atrás
@@ -349,12 +311,12 @@ const ActividadForm = ({
                 ? handleNext
                 : () => handleFormSubmit(formData)
             }
-            disabled={isSubmitting}
             style={
               currentStep < steps.length - 1
                 ? nextButtonStyle
                 : submitButtonStyle
             }
+            disabled={isSubmitting}
           >
             {isSubmitting
               ? "Enviando..."
@@ -368,26 +330,20 @@ const ActividadForm = ({
   );
 };
 
-// --- ESTILOS ADICIONALES Y ACTUALIZADOS ---
+// ... (Estilos iguales al original)
 const helperTextStyle = {
   fontSize: "0.85rem",
   color: "#6b7280",
   marginBottom: "10px",
 };
-
 const textareaStyle = {
   width: "100%",
-  minHeight: "120px",
+  minHeight: "100px",
   padding: "0.75rem",
   borderRadius: "0.5rem",
   border: "1px solid #d1d5db",
-  fontFamily: "inherit",
-  resize: "none",
-  outline: "none",
   fontSize: "0.95rem",
 };
-
-// Se mantienen los estilos anteriores...
 const modalOverlayStyle = {
   position: "fixed",
   inset: 0,
@@ -396,27 +352,23 @@ const modalOverlayStyle = {
   alignItems: "center",
   justifyContent: "center",
   zIndex: 1000,
-  padding: "1rem",
 };
 const modalContentStyle = {
   backgroundColor: "white",
   borderRadius: "12px",
-  maxWidth: "550px",
+  maxWidth: "500px",
   width: "100%",
-  maxHeight: "90vh",
-  overflow: "auto",
+  overflow: "hidden",
 };
 const headerStyle = {
-  padding: "1.25rem 1.5rem",
+  padding: "1.25rem",
   borderBottom: "1px solid #e5e7eb",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
 };
 const closeButtonStyle = {
   background: "none",
   border: "none",
-  fontSize: "1.2rem",
   cursor: "pointer",
   color: "#9ca3af",
 };
@@ -424,7 +376,6 @@ const progressBarStyle = {
   height: "6px",
   backgroundColor: "#e5e7eb",
   borderRadius: "3px",
-  overflow: "hidden",
 };
 const progressFillStyle = {
   height: "100%",
@@ -436,39 +387,18 @@ const stepTextStyle = {
   marginTop: "8px",
   fontSize: "0.75rem",
   color: "#6b7280",
-  fontWeight: 500,
 };
 const labelStyle = {
   display: "block",
-  marginBottom: "5px",
+  marginBottom: "10px",
   fontWeight: 600,
-  fontSize: "1.05rem",
-  color: "#111827",
+  fontSize: "1rem",
 };
 const inputStyle = {
   width: "100%",
   padding: "0.75rem",
   borderRadius: "0.5rem",
   border: "1px solid #d1d5db",
-};
-const validatedBoxStyle = {
-  padding: "1rem",
-  backgroundColor: "#ecfdf5",
-  border: "1px solid #10b981",
-  borderRadius: "0.5rem",
-  color: "#065f46",
-};
-const pendingBoxStyle = {
-  padding: "1rem",
-  backgroundColor: "#fffbeb",
-  border: "1px solid #f59e0b",
-  borderRadius: "0.5rem",
-  color: "#92400e",
-};
-const uploadBoxStyle = {
-  padding: "0.75rem",
-  border: "2px dashed #e5e7eb",
-  borderRadius: "0.5rem",
 };
 const radioContainerStyle = {
   display: "flex",
@@ -483,10 +413,9 @@ const radioOptionStyle = (selected) => ({
   borderRadius: "0.5rem",
   cursor: "pointer",
   backgroundColor: selected ? "#eff6ff" : "transparent",
-  fontWeight: selected ? 600 : 400,
 });
 const footerStyle = {
-  padding: "1.25rem 1.5rem",
+  padding: "1.25rem",
   borderTop: "1px solid #e5e7eb",
   display: "flex",
   gap: "10px",
@@ -495,28 +424,30 @@ const footerStyle = {
 const backButtonStyle = {
   padding: "0.6rem 1.2rem",
   backgroundColor: "#f3f4f6",
-  border: "none",
   borderRadius: "0.5rem",
-  cursor: "pointer",
-  fontWeight: 500,
+  border: "none",
 };
 const nextButtonStyle = {
   padding: "0.6rem 1.2rem",
   backgroundColor: "#3b82f6",
   color: "white",
-  border: "none",
   borderRadius: "0.5rem",
-  cursor: "pointer",
-  fontWeight: 500,
+  border: "none",
 };
 const submitButtonStyle = {
   padding: "0.6rem 1.2rem",
   backgroundColor: "#10b981",
   color: "white",
-  border: "none",
   borderRadius: "0.5rem",
-  cursor: "pointer",
+  border: "none",
   fontWeight: 600,
+};
+const validatedBoxStyle = {
+  padding: "1rem",
+  backgroundColor: "#ecfdf5",
+  border: "1px solid #10b981",
+  borderRadius: "0.5rem",
+  color: "#065f46",
 };
 
 export default ActividadForm;

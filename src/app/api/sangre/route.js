@@ -126,7 +126,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// 1. OBTENER ESTADO (GET)
+// 1. OBTENER ESTADO (GET) - Determina si el alumno tiene sangre validada o pendiente
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -140,6 +140,7 @@ export async function GET(request) {
       select: { aluctr: true, alutsa: true },
     });
 
+    // Buscamos la inscripción más reciente que tenga un proceso de sangre
     const inscripcion = await prisma.inscripact.findFirst({
       where: { estudianteId: aluctr },
       orderBy: { id: "desc" },
@@ -147,8 +148,12 @@ export async function GET(request) {
 
     return NextResponse.json({
       estudiante,
+      // Se considera pendiente si hay un tipo solicitado y aún no está validado
+      tieneSolicitudPendiente: !!(
+        inscripcion?.tipoSangreSolicitado && !inscripcion?.sangreValidada
+      ),
       solicitudPendiente:
-        inscripcion?.comprobanteSangrePDF && !inscripcion?.sangreValidada
+        inscripcion?.tipoSangreSolicitado && !inscripcion?.sangreValidada
           ? inscripcion
           : null,
       inscripcion: inscripcion || null,
@@ -158,10 +163,9 @@ export async function GET(request) {
   }
 }
 
-// 2. SUBIR DOCUMENTO (POST)
+// 2. SUBIR DOCUMENTO (POST) - Actualiza la inscripción con el archivo
 export async function POST(request) {
   try {
-    // Al usar request.formData() en App Router, Next.js maneja el streaming automáticamente
     const formData = await request.formData();
     const aluctr = formData.get("aluctr");
     const bloodType = formData.get("bloodType");
@@ -171,9 +175,10 @@ export async function POST(request) {
       return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
     }
 
-    // Convertir archivo a Buffer binario
+    // Convertir archivo a Base64 para almacenamiento sencillo o Buffer si prefieres Blob
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    const base64String = `data:${file.type};base64,${buffer.toString("base64")}`;
 
     const inscripcion = await prisma.inscripact.findFirst({
       where: { estudianteId: aluctr },
@@ -187,11 +192,11 @@ export async function POST(request) {
       );
     }
 
-    const actualizado = await prisma.inscripact.update({
+    await prisma.inscripact.update({
       where: { id: inscripcion.id },
       data: {
         tipoSangreSolicitado: bloodType,
-        comprobanteSangrePDF: buffer,
+        comprobanteSangrePDF: base64String, // Guardamos como string para previsualización directa
         nombreArchivoSangre: file.name,
         sangreValidada: false,
         mensajeAdmin: null,
@@ -200,7 +205,7 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("❌ Error en POST:", error);
+    console.error("❌ Error en POST /api/sangre:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 },
@@ -208,31 +213,39 @@ export async function POST(request) {
   }
 }
 
-// 3. ACCIÓN ADMIN (PATCH)
+// 3. ACCIÓN ADMIN (PATCH) - El Panel de Control usa esto para Aprobar/Rechazar
 export async function PATCH(request) {
   try {
-    const { aluctr, accion, tipoSangre, mensaje } = await request.json();
+    const { aluctr, accion, mensaje } = await request.json();
 
+    // Buscamos la inscripción que requiere validación
     const inscripcion = await prisma.inscripact.findFirst({
-      where: { estudianteId: aluctr },
+      where: { estudianteId: aluctr, sangreValidada: false },
       orderBy: { id: "desc" },
     });
 
     if (!inscripcion)
-      return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No se encontró solicitud pendiente" },
+        { status: 404 },
+      );
 
     if (accion === "aprobar") {
+      // Usamos una transacción para asegurar que ambos cambios ocurran
       await prisma.$transaction([
+        // 1. Actualizamos el registro maestro del estudiante
         prisma.estudiantes.update({
           where: { aluctr },
-          data: { alutsa: tipoSangre },
+          data: { alutsa: inscripcion.tipoSangreSolicitado },
         }),
+        // 2. Marcamos la inscripción como validada
         prisma.inscripact.update({
           where: { id: inscripcion.id },
           data: {
             sangreValidada: true,
-            mensajeAdmin: null,
-            comprobanteSangrePDF: null,
+            mensajeAdmin: "Aprobado correctamente",
+            // Opcional: limpiar el PDF para ahorrar espacio tras validar
+            // comprobanteSangrePDF: null,
           },
         }),
       ]);
@@ -240,19 +253,22 @@ export async function PATCH(request) {
       await prisma.inscripact.update({
         where: { id: inscripcion.id },
         data: {
-          comprobanteSangrePDF: null,
+          comprobanteSangrePDF: null, // Forzamos a que suba uno nuevo
           sangreValidada: false,
-          mensajeAdmin:
-            mensaje || "Rechazado: El documento no es legible o es incorrecto.",
+          tipoSangreSolicitado: null,
+          mensajeAdmin: mensaje || "Documento rechazado por el administrador.",
         },
       });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      mensaje: `Expediente ${accion}ado`,
+    });
   } catch (error) {
-    console.error("❌ Error en PATCH:", error);
+    console.error("❌ Error en PATCH /api/sangre:", error);
     return NextResponse.json(
-      { error: "Error en la operación" },
+      { error: "Error en la operación de base de datos" },
       { status: 500 },
     );
   }

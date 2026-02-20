@@ -216,13 +216,15 @@ model inscripact {
   calificacion         Float?
   liberado             Boolean        @default(false)
   formularioData       Json?
-  comprobanteSangrePDF Bytes?
+  comprobanteSangrePDF String?
   nombreArchivoSangre  String?
   sangreValidada       Boolean        @default(false)
   tipoSangreSolicitado String?
   actividad            actividades    @relation(fields: [actividadId], references: [id])
   estudiante           estudiantes    @relation(fields: [estudianteId], references: [aluctr])
   oferta               ofertaSemestre @relation(fields: [ofertaId], references: [id])
+  telefono  String?
+  modalidad String? @default("PRESENCIAL")
 mensajeAdmin         String?
   @@unique([estudianteId, actividadId])
   @@map("inscripciones_actividades")

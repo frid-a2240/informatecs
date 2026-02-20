@@ -67,23 +67,58 @@ export default function App() {
     }
 
     try {
-      // Normalizamos el objeto studentData antes de enviarlo para asegurar que
-      // la API reciba el semestre en el campo que espera
-      const studentDataNormalized = {
-        ...studentData,
-        numeroControl: numControl,
-        semestre: obtenerSemestreValido()?.toString(), // Aseguramos que vaya como string "1"
-      };
+      const data = new FormData();
 
-      await submitInscripcion(studentDataNormalized, null, formDataFromChild);
+      // --- CORRECCIÓN DE IDs ---
+      // 1. El ID de la ACTIVIDAD (Suele estar dentro del objeto actividad o como actividadId)
+      const realActividadId = formSport.actividadId || formSport.actividad?.id;
+
+      // 2. El ID de la OFERTA (Es el ID principal de la tarjeta que seleccionaste)
+      const realOfertaId = formSport.id;
+
+      // Si por alguna razón realActividadId es null, usamos formSport.id como respaldo
+      data.append("aluctr", numControl);
+      data.append("actividadId", realActividadId || formSport.id);
+      data.append("ofertaId", realOfertaId);
+
+      console.log("🚀 ENVIANDO A BD:", {
+        numControl,
+        actividadId: realActividadId || formSport.id,
+        ofertaId: realOfertaId,
+      });
+
+      // 3. Cuestionario
+      data.append("purpose", formDataFromChild.purpose);
+      data.append("bloodType", formDataFromChild.bloodType);
+      data.append("hasCondition", formDataFromChild.hasCondition);
+      data.append("takesMedication", formDataFromChild.takesMedication);
+      data.append("hasAllergy", formDataFromChild.hasAllergy);
+      data.append("hasInjury", formDataFromChild.hasInjury);
+      data.append("hasRestriction", formDataFromChild.hasRestriction);
+
+      // 4. Archivo
+      if (formDataFromChild.bloodTypeFile instanceof File) {
+        data.append("bloodTypeFile", formDataFromChild.bloodTypeFile);
+      }
+
+      const res = await fetch("/api/inscripciones", {
+        method: "POST",
+        body: data,
+      });
+
+      const resultado = await res.json();
+
+      if (!res.ok)
+        throw new Error(resultado.error || "Error al procesar inscripción");
+
+      alert("¡Inscripción exitosa!");
+      cancelarInscripcion();
     } catch (error) {
       console.error("Error en handleFormSubmit:", error);
+      alert(error.message);
     }
   };
 
-  /* ===============================
-     RENDERIZADO DEL FORMULARIO (PASO 2)
-     =============================== */
   if (showForm && formSport) {
     return (
       <div className="ofertas-dashboard-container">
@@ -111,9 +146,7 @@ export default function App() {
                 <div className="ofertas-step-line"></div>
                 <div className="ofertas-step">
                   <div className="ofertas-step-number">3</div>
-                  <div className="ofertas-step-label">
-                    Confirmar inscripción
-                  </div>
+                  <div className="ofertas-step-label">Confirmar</div>
                 </div>
               </div>
             </div>
@@ -163,7 +196,7 @@ export default function App() {
               <div className="ofertas-step">
                 <div className="ofertas-step-number">3</div>
                 <div className="ofertas-step-label">
-                  Confirmar en Mis Inscripciones
+                  Confirmar en "Mis Actividades"
                 </div>
               </div>
             </div>

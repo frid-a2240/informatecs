@@ -14,7 +14,7 @@ import "@/styles/alumno/horario.css";
 import { MateriasDrawer } from "@/app/components/materiasdrawer";
 import { CalendarioView } from "@/app/components/calendario";
 
-export default function HorarioInteligente() {
+export default function MisActividades() {
   const calendarRef = useRef(null);
 
   const {
@@ -230,7 +230,7 @@ export default function HorarioInteligente() {
           <div className="horario-header-left">
             <Calendar size={50} color="#fe9e10" strokeWidth={2.5} />
             <div>
-              <h1 className="horario-welcome-title">Mi Horario</h1>
+              <h1 className="horario-welcome-title">Mis Actividades</h1>
               <p className="horario-header-subtitle">
                 {inscripciones.length} materias inscritas
               </p>

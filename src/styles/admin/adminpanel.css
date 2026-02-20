@@ -48,7 +48,7 @@ Tarjetas modernas
 ========================== */
 .card {
   background: transparent;
-
+  box-shadow: #142a50;
   padding: 2rem;
 
   transition: all 0.3s ease;
@@ -764,7 +764,48 @@ Panel de oferta
   flex-wrap: wrap;
   gap: 1rem;
 }
+/* Contenedor de la lista de oferta para que sea independiente */
+.oferta-lista-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+}
 
+/* Tarjeta de oferta más compacta */
+.actividad-oferta {
+  border-left: 4px solid var(--secondary) !important; /* Marca visual de selección */
+  padding: 1rem;
+  background: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  grid-template-columns: 1fr auto; /* Texto a la izquierda, botones a la derecha */
+  align-items: center;
+}
+
+.actividad-oferta .actividad-info h4 {
+  text-align: left; /* Rompemos el centrado general para que sea legible en lista */
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Detalles en línea para ahorrar espacio vertical */
+.detalles-inline {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.detalle-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--pa-blue-light);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
 .btn-publicar {
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;

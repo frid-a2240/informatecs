@@ -52,7 +52,7 @@ const OfferModal = ({ item, onClose, onRegister }) => (
           </div>
         </div>
       </div>
-      // En OfferModal, el botón debe quedar así:
+
       <button
         className="ofertas-register-btn"
         onClick={() => onRegister(item)} // Pasa el objeto de la oferta seleccionado

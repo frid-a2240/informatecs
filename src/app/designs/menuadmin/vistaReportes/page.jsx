@@ -1,6 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, FileText, CheckCircle, Clock, Filter, Download } from "lucide-react";
+import {
+  Search,
+  FileText,
+  CheckCircle,
+  Clock,
+  Filter,
+  Download,
+} from "lucide-react";
 
 export default function VistaReportes() {
   const [inscripcionesAprobadas, setInscripcionesAprobadas] = useState([]);
@@ -16,19 +23,19 @@ export default function VistaReportes() {
   const cargarInscripcionesAprobadas = async () => {
     try {
       setLoading(true);
-      
+
       const response = await fetch("/api/inscripciones", {
-        cache: 'no-store'
+        cache: "no-store",
       });
-      
+
       if (!response.ok) {
         console.error("❌ Error HTTP:", response.status);
         setInscripcionesAprobadas([]);
         return;
       }
-      
+
       const inscripciones = await response.json();
-      
+
       if (!Array.isArray(inscripciones)) {
         console.error("❌ Respuesta no es array:", inscripciones);
         setInscripcionesAprobadas([]);
@@ -38,7 +45,9 @@ export default function VistaReportes() {
       // Filtrar solo las inscripciones aprobadas (calificación >= 70)
       const aprobadas = inscripciones.filter((inscripcion) => {
         const calificacion = inscripcion.calificacion || 0;
-        return calificacion >= 70 && inscripcion.estudiante && inscripcion.actividad;
+        return (
+          calificacion >= 70 && inscripcion.estudiante && inscripcion.actividad
+        );
       });
 
       // Ordenar por número de control y luego por actividad
@@ -51,12 +60,15 @@ export default function VistaReportes() {
       setInscripcionesAprobadas(aprobadas);
 
       // Extraer actividades únicas para el filtro
-      const actividadesUnicas = [...new Set(
-        aprobadas.map(i => i.actividad?.aconco || i.actividad?.aticve || "Sin nombre")
-      )].sort();
-      
-      setActividadesDisponibles(actividadesUnicas);
+      const actividadesUnicas = [
+        ...new Set(
+          aprobadas.map(
+            (i) => i.actividad?.aconco || i.actividad?.aticve || "Sin nombre",
+          ),
+        ),
+      ].sort();
 
+      setActividadesDisponibles(actividadesUnicas);
     } catch (error) {
       console.error("❌ Error al cargar inscripciones aprobadas:", error);
       setInscripcionesAprobadas([]);
@@ -66,41 +78,62 @@ export default function VistaReportes() {
   };
 
   // Filtrar inscripciones según búsqueda y filtro de actividad
-  const inscripcionesFiltradas = inscripcionesAprobadas.filter((inscripcion) => {
-    const estudiante = inscripcion.estudiante;
-    const actividad = inscripcion.actividad;
-    
-    const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.toLowerCase();
-    const numeroControl = (estudiante.aluctr || "").toLowerCase();
-    const nombreActividad = (actividad.aconco || actividad.aticve || "").toLowerCase();
-    const terminoBusqueda = busqueda.toLowerCase();
+  const inscripcionesFiltradas = inscripcionesAprobadas.filter(
+    (inscripcion) => {
+      const estudiante = inscripcion.estudiante;
+      const actividad = inscripcion.actividad;
 
-    const cumpleBusqueda = 
-      nombreCompleto.includes(terminoBusqueda) ||
-      numeroControl.includes(terminoBusqueda) ||
-      nombreActividad.includes(terminoBusqueda);
+      const nombreCompleto =
+        `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.toLowerCase();
+      const numeroControl = (estudiante.aluctr || "").toLowerCase();
+      const nombreActividad = (
+        actividad.aconco ||
+        actividad.aticve ||
+        ""
+      ).toLowerCase();
+      const terminoBusqueda = busqueda.toLowerCase();
 
-    const cumpleFiltroActividad = 
-      filtroActividad === "todas" || 
-      (actividad.aconco || actividad.aticve || "Sin nombre") === filtroActividad;
+      const cumpleBusqueda =
+        nombreCompleto.includes(terminoBusqueda) ||
+        numeroControl.includes(terminoBusqueda) ||
+        nombreActividad.includes(terminoBusqueda);
 
-    return cumpleBusqueda && cumpleFiltroActividad;
-  });
+      const cumpleFiltroActividad =
+        filtroActividad === "todas" ||
+        (actividad.aconco || actividad.aticve || "Sin nombre") ===
+          filtroActividad;
+
+      return cumpleBusqueda && cumpleFiltroActividad;
+    },
+  );
 
   // Función para exportar a CSV
   const exportarCSV = () => {
-    const headers = ["No. Control", "Nombre Completo", "Correo", "Actividad", "Código", "Créditos", "Horas", "Calificación", "Propósito"];
-    
-    const rows = inscripcionesFiltradas.map(inscripcion => {
+    const headers = [
+      "No. Control",
+      "Nombre Completo",
+      "Correo",
+      "Actividad",
+      "Código",
+      "Créditos",
+      "Horas",
+      "Calificación",
+      "Propósito",
+    ];
+
+    const rows = inscripcionesFiltradas.map((inscripcion) => {
       const estudiante = inscripcion.estudiante;
       const actividad = inscripcion.actividad;
-      const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
-      const nombreActividad = actividad.aconco || actividad.aticve || "Sin nombre";
-      const proposito = inscripcion.formularioData?.purpose === "creditos" 
-        ? "Créditos" 
-        : inscripcion.formularioData?.purpose === "servicio_social" 
-        ? "Servicio Social" 
-        : "Por Gusto";
+      const nombreCompleto =
+        `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
+      const nombreActividad =
+        actividad.aconco || actividad.aticve || "Sin nombre";
+      const proposito =
+        inscripcion.formularioData?.purpose === "creditos"
+          ? "Créditos"
+          : inscripcion.formularioData?.purpose === "servicio_social"
+            ? "Servicio Social"
+            : "Por Gusto";
 
       return [
         estudiante.aluctr,
@@ -111,20 +144,23 @@ export default function VistaReportes() {
         actividad.acocre || "N/A",
         actividad.acohrs || "N/A",
         inscripcion.calificacion,
-        proposito
+        proposito,
       ];
     });
 
     const csvContent = [
       headers.join(","),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `Reporte_Aprobados_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `Reporte_Aprobados_${new Date().toISOString().split("T")[0]}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -143,7 +179,8 @@ export default function VistaReportes() {
                   Lista de Estudiantes Aprobados
                 </h1>
                 <p className="text-gray-600">
-                  Estudiantes con calificación aprobatoria (≥70) en actividades complementarias
+                  Estudiantes con calificación aprobatoria (≥70) en actividades
+                  complementarias
                 </p>
               </div>
             </div>
@@ -264,8 +301,12 @@ export default function VistaReportes() {
           ) : inscripcionesFiltradas.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <FileText className="mx-auto mb-2 text-gray-300" size={48} />
-              <p className="font-medium">No se encontraron estudiantes aprobados</p>
-              <p className="text-sm mt-1">Intenta ajustar los filtros de búsqueda</p>
+              <p className="font-medium">
+                No se encontraron estudiantes aprobados
+              </p>
+              <p className="text-sm mt-1">
+                Intenta ajustar los filtros de búsqueda
+              </p>
             </div>
           ) : (
             <div className="max-h-[600px] overflow-y-auto">
@@ -305,21 +346,25 @@ export default function VistaReportes() {
                   {inscripcionesFiltradas.map((inscripcion, idx) => {
                     const estudiante = inscripcion.estudiante;
                     const actividad = inscripcion.actividad;
-                    const nombreCompleto = `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
-                    const nombreActividad = actividad.aconco || actividad.aticve || "Sin nombre";
+                    const nombreCompleto =
+                      `${estudiante.alunom || ""} ${estudiante.aluapp || ""} ${estudiante.aluapm || ""}`.trim();
+                    const nombreActividad =
+                      actividad.aconco || actividad.aticve || "Sin nombre";
                     const proposito = inscripcion.formularioData?.purpose;
-                    
-                    const propositoTexto = proposito === "creditos" 
-                      ? "Créditos" 
-                      : proposito === "servicio_social" 
-                      ? "Servicio Social" 
-                      : "Por Gusto";
 
-                    const propositoColor = proposito === "creditos"
-                      ? "bg-blue-100 text-blue-700"
-                      : proposito === "servicio_social"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-purple-100 text-purple-700";
+                    const propositoTexto =
+                      proposito === "creditos"
+                        ? "Créditos"
+                        : proposito === "servicio_social"
+                          ? "Servicio Social"
+                          : "Por Gusto";
+
+                    const propositoColor =
+                      proposito === "creditos"
+                        ? "bg-blue-100 text-blue-700"
+                        : proposito === "servicio_social"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-purple-100 text-purple-700";
 
                     return (
                       <tr
@@ -353,7 +398,9 @@ export default function VistaReportes() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${propositoColor}`}>
+                          <span
+                            className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${propositoColor}`}
+                          >
                             {propositoTexto}
                           </span>
                         </td>
@@ -369,14 +416,25 @@ export default function VistaReportes() {
         {/* Footer informativo */}
         <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <CheckCircle className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
+            <CheckCircle
+              className="text-green-600 flex-shrink-0 mt-0.5"
+              size={20}
+            />
             <div className="text-sm text-green-800">
-              <p className="font-semibold mb-1">ℹ️ Información sobre la lista</p>
+              <p className="font-semibold mb-1">ℹInformación sobre la lista</p>
               <ul className="space-y-1 list-disc list-inside">
                 <li>Solo se muestran estudiantes con calificación ≥ 70</li>
-                <li>Si un estudiante está inscrito en múltiples actividades, aparecerá una vez por cada actividad aprobada</li>
-                <li>Los datos se actualizan automáticamente desde la base de datos</li>
-                <li>Puedes exportar la lista completa en formato CSV para análisis externos</li>
+                <li>
+                  Si un estudiante está inscrito en múltiples actividades,
+                  aparecerá una vez por cada actividad aprobada
+                </li>
+                <li>
+                  Los datos se actualizan automáticamente desde la base de datos
+                </li>
+                <li>
+                  Puedes exportar la lista completa en formato CSV para análisis
+                  externos
+                </li>
               </ul>
             </div>
           </div>
