@@ -62,13 +62,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    #d1d5db 100px,
-    #d1d5db calc(100% - 100px),
-    transparent
-  );
+
   transform: translateX(-50%);
 }
 

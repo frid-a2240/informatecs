@@ -42,13 +42,593 @@ Contenedor principal
   background: var(--background);
   min-height: 100vh;
 }
+/* =====================================================
+   HEADER CARD — pega esto al final de adminpanel.css
+   ===================================================== */
 
+.header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Reducido para que el collage quede más junto al título */
+  gap: 1rem;
+  overflow: visible;
+  min-height: 260px;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ════════════════════════════════
+   COLLAGE: columna pequeña + card grande
+════════════════════════════════ */
+.act-collage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  /* Acercado al borde derecho del header */
+  margin-right: -0.5rem;
+}
+
+/* Columna de cards pequeñas */
+.act-col-small {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Cards pequeñas ── */
+.act-sm {
+  width: 72px;
+  height: 82px;
+  border-radius: 12px;
+  background-size: 100% 100%;
+  box-shadow: 8px 8px 6px rgba(0, 0, 0, 0.28);
+}
+
+/* Sliders cards pequeñas */
+@keyframes sl-sm1 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1547153760-18fc86324498?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  }
+}
+.sm-1 {
+  background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.1s both,
+    sl-sm1 10s linear 2s infinite;
+}
+
+@keyframes sl-sm2 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1519315901367-f34ff9154487?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  }
+}
+.sm-2 {
+  background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.2s both,
+    sl-sm2 10s linear 3.5s infinite;
+}
+
+@keyframes sl-sm3 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  }
+}
+.sm-3 {
+  background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.3s both,
+    sl-sm3 10s linear 5s infinite;
+}
+
+/* ── Card grande principal ── */
+.act-card-big {
+  width: 260px;
+  height: 330px;
+  border-radius: 18px;
+  background-size: 100% 100%;
+  box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.32);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  animation:
+    entrada 0.5s ease 0s both,
+    slider-big 16s linear 0.6s infinite;
+}
+
+/* Gradiente inferior */
+.act-card-labels {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 10px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
+  border-radius: 0 0 18px 18px;
+}
+
+/* Labels superpuestos */
+.lbl {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+}
+
+/* ── Entrada ── */
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: scale(0.82) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ════════════════════════════════════════
+   SLIDER CARD GRANDE
+   Actividades extraescolares reales:
+   Fútbol Soccer, Basquetbol, Natación,
+   Danza Folclórica, Música, Voleibol, Ajedrez, Atletismo
+════════════════════════════════════════ */
+@keyframes slider-big {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=420&h=540&fit=crop");
+  } /* futbol  */
+  12.4% {
+    background-image: url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=420&h=540&fit=crop");
+  }
+  12.5% {
+    background-image: url("https://images.unsplash.com/photo-1546519638-68e109498ffc?w=420&h=540&fit=crop");
+  } /* basquet */
+  24.9% {
+    background-image: url("https://images.unsplash.com/photo-1546519638-68e109498ffc?w=420&h=540&fit=crop");
+  }
+  25% {
+    background-image: url("https://images.unsplash.com/photo-1560090995-01632a28895b?w=420&h=540&fit=crop");
+  } /* natacion*/
+  37.4% {
+    background-image: url("https://images.unsplash.com/photo-1560090995-01632a28895b?w=420&h=540&fit=crop");
+  }
+  37.5% {
+    background-image: url("https://images.unsplash.com/photo-1547153760-18fc86324498?w=420&h=540&fit=crop");
+  } /* danza   */
+  49.9% {
+    background-image: url("https://images.unsplash.com/photo-1547153760-18fc86324498?w=420&h=540&fit=crop");
+  }
+  50% {
+    background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=420&h=540&fit=crop");
+  } /* musica  */
+  62.4% {
+    background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=420&h=540&fit=crop");
+  }
+  62.5% {
+    background-image: url("https://images.unsplash.com/photo-1592656094267-764a45160876?w=420&h=540&fit=crop");
+  } /* voleibol*/
+  74.9% {
+    background-image: url("https://images.unsplash.com/photo-1592656094267-764a45160876?w=420&h=540&fit=crop");
+  }
+  75% {
+    background-image: url("https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=420&h=540&fit=crop");
+  } /* ajedrez */
+  87.4% {
+    background-image: url("https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=420&h=540&fit=crop");
+  }
+  87.5% {
+    background-image: url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=420&h=540&fit=crop");
+  } /* atletismo*/
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=420&h=540&fit=crop");
+  }
+}
+
+/* ════════════════════════════════════════
+   LABELS sincronizados (16s)
+════════════════════════════════════════ */
+@keyframes lbl-anim-1 {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-1 {
+  animation: lbl-anim-1 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-2 {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  23% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-2 {
+  animation: lbl-anim-2 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-3 {
+  0% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  26% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  36% {
+    opacity: 1;
+  }
+  37.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-3 {
+  animation: lbl-anim-3 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-4 {
+  0% {
+    opacity: 0;
+  }
+  37% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  39% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  49% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-4 {
+  animation: lbl-anim-4 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-5 {
+  0% {
+    opacity: 0;
+  }
+  49% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  51% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  61% {
+    opacity: 1;
+  }
+  62.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-5 {
+  animation: lbl-anim-5 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-6 {
+  0% {
+    opacity: 0;
+  }
+  62% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  64% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  74% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-6 {
+  animation: lbl-anim-6 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-7 {
+  0% {
+    opacity: 0;
+  }
+  74% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  76% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  86% {
+    opacity: 1;
+  }
+  87.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-7 {
+  animation: lbl-anim-7 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-8 {
+  0% {
+    opacity: 0;
+  }
+  87% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  89% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-8 {
+  animation: lbl-anim-8 16s linear 0.6s infinite;
+}
+
+/* ── RESPONSIVO ── */
+@media (max-width: 1100px) {
+  .act-card-big {
+    width: 220px;
+    height: 280px;
+  }
+  .act-sm {
+    width: 62px;
+    height: 70px;
+  }
+}
+@media (max-width: 900px) {
+  .header-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .act-card-big {
+    width: 190px;
+    height: 240px;
+  }
+  .act-col-small {
+    flex-direction: row;
+  }
+  .act-sm {
+    width: 56px;
+    height: 64px;
+  }
+}
+@media (max-width: 600px) {
+  .act-card-big {
+    width: 150px;
+    height: 190px;
+  }
+  .act-sm {
+    width: 48px;
+    height: 54px;
+  }
+}
+/* CONTENEDOR DEL TÍTULO */
+.titulo-wrap {
+  position: relative;
+}
+
+/* Pista base */
+.albatros-pista {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-80px);
+  width: calc(100% - 420px);
+  height: 120px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Base */
+.alb {
+  position: absolute;
+  width: 85px;
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* Animación principal */
+@keyframes vuelta-y-parqueo {
+  0% {
+    left: -120px;
+    transform: scaleX(1);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+
+  35% {
+    left: calc(100% - 120px);
+    transform: scaleX(1);
+  }
+
+  36%,
+  70% {
+    left: calc(100% - 120px);
+    transform: scaleX(-1);
+  }
+
+  85% {
+    left: 25%;
+    transform: scaleX(-1);
+  }
+
+  86% {
+    left: 25%;
+    transform: scaleX(1);
+  }
+
+  100% {
+    left: var(--park-pos);
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Rebote sin romper scale */
+@keyframes hop {
+  0%,
+  100% {
+    translate: 0 4px;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+/* ALBATROS 1 */
+.alb-1 {
+  --park-pos: 50%;
+  top: 0;
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 0s forwards,
+    hop 0.6s ease-in-out infinite;
+}
+
+/* ALBATROS 2 */
+.alb-2 {
+  --park-pos: calc(50% - 90px);
+  top: 15px;
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 8s forwards,
+    hop 0.6s ease-in-out 0.2s infinite;
+}
+
+/* 🔥 ALBATROS 3 — REALMENTE POR ENCIMA DEL TÍTULO */
+.alb-3 {
+  --park-pos: calc(50% - 180px);
+
+  position: absolute;
+  top: -140px; /* Lo colocamos claramente arriba */
+  z-index: 50; /* MÁS que el h2 */
+
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 9s forwards,
+    hop 0.6s ease-in-out 0.4s infinite;
+}
+
+/* Asegúrate que el h2 tenga menor z-index */
+h2 {
+  position: relative;
+  z-index: 10;
+}
 /* ==========================
 Tarjetas modernas
 ========================== */
 .card {
   background: transparent;
-  box-shadow: #142a50;
+
   padding: 2rem;
 
   transition: all 0.3s ease;
@@ -57,7 +637,482 @@ Tarjetas modernas
 .card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
+/* =====================================================
+   HEADER CARD — pega esto al final de adminpanel.css
+   ===================================================== */
 
+.header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  overflow: visible;
+  min-height: 260px;
+}
+
+.header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ════════════════════════════════
+   COLLAGE: columna pequeña + card grande
+════════════════════════════════ */
+.act-collage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Columna de cards pequeñas a la izquierda */
+.act-col-small {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Cards pequeñas ── */
+.act-sm {
+  width: 72px;
+  height: 82px;
+  border-radius: 12px;
+  background-size: 100% 100%;
+  box-shadow: 8px 8px 6px rgba(0, 0, 0, 0.28);
+  animation: entrada 0.5s ease both;
+}
+.sm-1 {
+  animation-delay: 0.1s;
+}
+.sm-2 {
+  animation-delay: 0.2s;
+}
+.sm-3 {
+  animation-delay: 0.3s;
+}
+
+/* ── Card grande principal ── */
+.act-card-big {
+  width: 260px;
+  height: 330px;
+  border-radius: 18px;
+  background-size: 100% 100%;
+  box-shadow: 20px 20px 10px rgba(0, 0, 0, 0.32);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  animation:
+    entrada 0.5s ease 0s both,
+    slider-big 16s linear 0.6s infinite;
+}
+
+/* Gradiente inferior */
+.act-card-labels {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 10px 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
+  border-radius: 0 0 18px 18px;
+}
+
+/* ── LABELS — todos superpuestos, solo 1 visible a la vez ── */
+.lbl {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+}
+
+/* ── Entrada ── */
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: scale(0.82) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ════════════════════════════════════════
+   SLIDER CARDS PEQUEÑAS
+   Cada una con sus propias 3 imágenes
+════════════════════════════════════════ */
+
+@keyframes sl-sm1 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1547153760-18fc86324498?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  }
+}
+.sm-1 {
+  background-image: url("https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.1s both,
+    sl-sm1 10s linear 2s infinite;
+}
+
+@keyframes sl-sm2 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  }
+}
+.sm-2 {
+  background-image: url("https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.2s both,
+    sl-sm2 10s linear 3.5s infinite;
+}
+
+@keyframes sl-sm3 {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  }
+  33% {
+    background-image: url("https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=200&h=240&fit=crop");
+  }
+  66% {
+    background-image: url("https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=200&h=240&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  }
+}
+.sm-3 {
+  background-image: url("https://images.unsplash.com/photo-1530549387789-4c1017266635?w=200&h=240&fit=crop");
+  animation:
+    entrada 0.5s ease 0.3s both,
+    sl-sm3 10s linear 5s infinite;
+}
+
+/* ════════════════════════════════════════
+   SLIDER CARD GRANDE — 8 imágenes, 2s c/u = 16s
+════════════════════════════════════════ */
+@keyframes slider-big {
+  0% {
+    background-image: url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=420&h=540&fit=crop");
+  }
+  12.4% {
+    background-image: url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=420&h=540&fit=crop");
+  }
+  12.5% {
+    background-image: url("https://images.unsplash.com/photo-1546519638-68e109498ffc?w=420&h=540&fit=crop");
+  }
+  24.9% {
+    background-image: url("https://images.unsplash.com/photo-1546519638-68e109498ffc?w=420&h=540&fit=crop");
+  }
+  25% {
+    background-image: url("https://images.unsplash.com/photo-1560090995-01632a28895b?w=420&h=540&fit=crop");
+  }
+  37.4% {
+    background-image: url("https://images.unsplash.com/photo-1560090995-01632a28895b?w=420&h=540&fit=crop");
+  }
+  37.5% {
+    background-image: url("https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=420&h=540&fit=crop");
+  }
+  49.9% {
+    background-image: url("https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=420&h=540&fit=crop");
+  }
+  50% {
+    background-image: url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=420&h=540&fit=crop");
+  }
+  62.4% {
+    background-image: url("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=420&h=540&fit=crop");
+  }
+  62.5% {
+    background-image: url("https://images.unsplash.com/photo-1592656094267-764a45160876?w=420&h=540&fit=crop");
+  }
+  74.9% {
+    background-image: url("https://images.unsplash.com/photo-1592656094267-764a45160876?w=420&h=540&fit=crop");
+  }
+  75% {
+    background-image: url("https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=420&h=540&fit=crop");
+  }
+  87.4% {
+    background-image: url("https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=420&h=540&fit=crop");
+  }
+  87.5% {
+    background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=420&h=540&fit=crop");
+  }
+  100% {
+    background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=420&h=540&fit=crop");
+  }
+}
+
+/* ════════════════════════════════════════
+   LABELS sincronizados con slider-big (16s)
+════════════════════════════════════════ */
+@keyframes lbl-anim-1 {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  10% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-1 {
+  animation: lbl-anim-1 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-2 {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  23% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-2 {
+  animation: lbl-anim-2 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-3 {
+  0% {
+    opacity: 0;
+  }
+  24% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  26% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  36% {
+    opacity: 1;
+  }
+  37.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-3 {
+  animation: lbl-anim-3 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-4 {
+  0% {
+    opacity: 0;
+  }
+  37% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  39% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  49% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-4 {
+  animation: lbl-anim-4 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-5 {
+  0% {
+    opacity: 0;
+  }
+  49% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  51% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  61% {
+    opacity: 1;
+  }
+  62.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-5 {
+  animation: lbl-anim-5 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-6 {
+  0% {
+    opacity: 0;
+  }
+  62% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  64% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  74% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-6 {
+  animation: lbl-anim-6 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-7 {
+  0% {
+    opacity: 0;
+  }
+  74% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  76% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  86% {
+    opacity: 1;
+  }
+  87.5% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-7 {
+  animation: lbl-anim-7 16s linear 0.6s infinite;
+}
+
+@keyframes lbl-anim-8 {
+  0% {
+    opacity: 0;
+  }
+  87% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  89% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.lbl-8 {
+  animation: lbl-anim-8 16s linear 0.6s infinite;
+}
+
+/* ── RESPONSIVO ── */
+@media (max-width: 1100px) {
+  .act-card-big {
+    width: 220px;
+    height: 280px;
+  }
+  .act-sm {
+    width: 62px;
+    height: 70px;
+  }
+}
+@media (max-width: 900px) {
+  .header-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .act-card-big {
+    width: 190px;
+    height: 240px;
+  }
+  .act-col-small {
+    flex-direction: row;
+  }
+  .act-sm {
+    width: 56px;
+    height: 64px;
+  }
+}
+@media (max-width: 600px) {
+  .act-card-big {
+    width: 150px;
+    height: 190px;
+  }
+  .act-sm {
+    width: 48px;
+    height: 54px;
+  }
+}
 /* ==========================
 Grid 2 columnas
 ========================== */
@@ -418,7 +1473,141 @@ Lista de maestros
   margin-top: 8px;
   text-align: center;
 }
+/* CONTENEDOR GENERAL */
+.titulo-wrap {
+  position: relative;
+}
 
+/* Pista */
+.albatros-pista {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-80px);
+  width: calc(100% - 420px);
+  height: 260px; /* más altura para permitir -240 */
+  pointer-events: none;
+  overflow: visible;
+  z-index: 20;
+}
+
+/* Base */
+.alb {
+  position: absolute;
+  width: 85px;
+  height: auto;
+  pointer-events: none;
+  opacity: 0;
+  animation-fill-mode: forwards;
+  transition: preserve-3d;
+}
+
+/* Animación horizontal */
+@keyframes vuelta-y-parqueo {
+  0% {
+    left: -120px;
+    transform: scaleX(1);
+    opacity: 0;
+  }
+
+  5% {
+    opacity: 1;
+  }
+
+  35% {
+    left: calc(100% - 120px);
+    transform: scaleX(1);
+  }
+
+  45% {
+    /* 🔥 ahora gira en 10% de tiempo */
+    left: calc(100% - 120px);
+    transform: scaleX(-1);
+  }
+
+  70% {
+    left: calc(100% - 120px);
+    transform: scaleX(-1);
+  }
+
+  85% {
+    left: 25%;
+    transform: scaleX(-1);
+  }
+
+  95% {
+    /* 🔥 giro suave de regreso */
+    left: 25%;
+    transform: scaleX(1);
+  }
+
+  100% {
+    left: var(--park-pos);
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Rebote */
+@keyframes hop {
+  0%,
+  100% {
+    translate: 0 4px;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+/* ───────── POSICIONES ───────── */
+
+/* 1 y 2 misma altura */
+.alb-1 {
+  --park-pos: 50%;
+  top: 0;
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 0s forwards,
+    hop 0.6s ease-in-out infinite;
+}
+
+.alb-2 {
+  --park-pos: calc(50% - 90px);
+  top: 0; /* MISMA DISTANCIA */
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 8s forwards,
+    hop 0.6s ease-in-out 0.2s infinite;
+}
+
+/* 3 BIEN ARRIBA */
+.alb-3 {
+  --park-pos: calc(50% - 180px);
+  top: -240px; /* como pediste */
+  z-index: 50;
+  animation:
+    vuelta-y-parqueo 12s ease-in-out 9s forwards,
+    hop 0.6s ease-in-out 0.4s infinite;
+}
+
+/* ───────── BOTÓN ───────── */
+
+.btn-ocultar-albatros {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+  z-index: 999;
+}
+
+/* Clase para ocultarlos */
+.ocultar-albatros .alb {
+  opacity: 0 !important;
+  animation-play-state: paused;
+  pointer-events: none;
+}
 /* ==========================
 Footer del modal
 ========================== */
@@ -764,48 +1953,7 @@ Panel de oferta
   flex-wrap: wrap;
   gap: 1rem;
 }
-/* Contenedor de la lista de oferta para que sea independiente */
-.oferta-lista-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-}
 
-/* Tarjeta de oferta más compacta */
-.actividad-oferta {
-  border-left: 4px solid var(--secondary) !important; /* Marca visual de selección */
-  padding: 1rem;
-  background: var(--card-bg);
-  box-shadow: var(--shadow-sm);
-  display: grid;
-  grid-template-columns: 1fr auto; /* Texto a la izquierda, botones a la derecha */
-  align-items: center;
-}
-
-.actividad-oferta .actividad-info h4 {
-  text-align: left; /* Rompemos el centrado general para que sea legible en lista */
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
-}
-
-/* Detalles en línea para ahorrar espacio vertical */
-.detalles-inline {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.detalle-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  background: var(--pa-blue-light);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
 .btn-publicar {
   padding: 0.75rem 1.5rem;
   font-size: 0.875rem;

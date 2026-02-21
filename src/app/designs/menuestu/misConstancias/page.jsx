@@ -161,7 +161,7 @@ export default function MisConstancias() {
       =========================== */}
       <section className="user-banner">
         <div className="constancia-title">
-          <h1>Mis Constancias</h1>
+          <h3>Mis Constancias</h3>
           <div className="title-stats-group">
             <div className="stats-card">
               <div className="stats-number">{constanciasFiltradas.length}</div>
@@ -234,7 +234,7 @@ export default function MisConstancias() {
 
                       <div className="badge-folio">{c.folio}</div>
 
-                      <h3 className="constancia-title">{c.actividadNombre}</h3>
+                      <h2 className="constancia-acti">{c.actividadNombre}</h2>
 
                       <div className="constancia-details">
                         <div>
@@ -250,7 +250,7 @@ export default function MisConstancias() {
 
                     <div className="action-buttons">
                       <button
-                        className="btn-primary"
+                        className="btn-primary-cons"
                         onClick={() => manejarDescarga(c)}
                         disabled={descargando === c.id}
                       >

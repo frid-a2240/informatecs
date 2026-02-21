@@ -25,14 +25,6 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-dark);
-  line-height: 1.5;
-}
-
 /* Loading y Error */
 .maestro-loading-screen,
 .maestro-error-screen {
@@ -52,22 +44,6 @@ body {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loader-text {
-  color: var(--blue-primary);
-  font-weight: 500;
-}
-
-.maestro-error-screen {
-  text-align: center;
-  padding: 2rem;
 }
 
 .maestro-error-screen button {
@@ -90,7 +66,7 @@ body {
 
 /* Banner Superior */
 .top-banner {
-  background: linear-gradient(135deg, var(--blue-primary) 0%, #2c5282 100%);
+  background: var(--blue-primary);
   border-radius: var(--radius-lg);
   margin-bottom: 2rem;
   padding: 2rem;
@@ -190,7 +166,7 @@ body {
 .metric-icon {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, var(--blue-primary), var(--blue-hover));
+  background: var(--blue-primary);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -301,7 +277,7 @@ body {
 
 .panel-divider {
   height: 2px;
-  background: linear-gradient(90deg, var(--blue-primary), var(--yellow-accent));
+  background: var(--blue-primary);
   border-radius: 1px;
 }
 

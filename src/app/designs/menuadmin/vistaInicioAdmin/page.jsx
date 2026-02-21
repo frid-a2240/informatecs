@@ -14,6 +14,17 @@ import {
 } from "lucide-react";
 import "@/styles/admin/adminpanel.css";
 
+const CARDS_ACTIVIDADES = [
+  { label: "Fútbol", cls: "c1" },
+  { label: "Básquet", cls: "c2" },
+  { label: "Natación", cls: "c3" },
+  { label: "Danza", cls: "c4" },
+  { label: "Gym", cls: "c5" },
+  { label: "Voleibol", cls: "c6" },
+  { label: "Arte", cls: "c7" },
+  { label: "Música", cls: "c8" },
+];
+
 const AdminPanel = () => {
   const [modalVerMaestro, setModalVerMaestro] = useState(null);
   const [todasActividades, setTodasActividades] = useState([]);
@@ -21,15 +32,17 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
+  const toggleAlbatros = () => {
+    document.body.classList.toggle("ocultar-albatros");
+  };
+  const [mostrarAlbatros, setMostrarAlbatros] = useState(true);
 
-  // UN SOLO MODAL PARA TODO
   const [modalAgregar, setModalAgregar] = useState(null);
   const [busquedaMaestro, setBusquedaMaestro] = useState("");
   const [maestrosEncontrados, setMaestrosEncontrados] = useState([]);
   const [buscandoMaestro, setBuscandoMaestro] = useState(false);
   const [guardando, setGuardando] = useState(false);
 
-  //  FORMULARIO UNIFICADO
   const [formulario, setFormulario] = useState({
     dias: [],
     horaInicio: "",
@@ -67,11 +80,8 @@ const AdminPanel = () => {
     }
   };
 
-  //  ABRIR MODAL CON DATOS PRECARGADOS
   const abrirModalAgregar = (actividad) => {
     setModalAgregar(actividad);
-
-    // Precargar datos si ya existen
     setFormulario({
       dias: actividad.horario?.dias || [],
       horaInicio: actividad.horario?.horaInicio || "",
@@ -82,7 +92,6 @@ const AdminPanel = () => {
         ? `${actividad.maestro.pernom} ${actividad.maestro.perapp} ${actividad.maestro.perapm}`.trim()
         : "",
     });
-
     setBusquedaMaestro("");
     setMaestrosEncontrados([]);
   };
@@ -96,13 +105,11 @@ const AdminPanel = () => {
     }));
   };
 
-  //  BUSCAR MAESTROS
   const buscarMaestros = async (query) => {
     if (query.length < 2) {
       setMaestrosEncontrados([]);
       return;
     }
-
     try {
       setBuscandoMaestro(true);
       const response = await fetch(
@@ -117,7 +124,6 @@ const AdminPanel = () => {
     }
   };
 
-  //  SELECCIONAR MAESTRO
   const seleccionarMaestro = (maestro) => {
     setFormulario((prev) => ({
       ...prev,
@@ -128,7 +134,6 @@ const AdminPanel = () => {
     setMaestrosEncontrados([]);
   };
 
-  //  REMOVER MAESTRO SELECCIONADO
   const removerMaestro = () => {
     setFormulario((prev) => ({
       ...prev,
@@ -137,28 +142,21 @@ const AdminPanel = () => {
     }));
   };
 
-  //  GUARDAR TODO Y AGREGAR A OFERTA
   const guardarYAgregar = async () => {
-    // Validaciones básicas
     if (formulario.dias.length === 0) {
       alert("Selecciona al menos un día");
       return;
     }
     if (!formulario.horaInicio || !formulario.horaFin) {
-      alert(" Completa los horarios de inicio y fin");
+      alert("Completa los horarios de inicio y fin");
       return;
     }
     if (!formulario.maestroId) {
-      if (!confirm(" No has asignado un maestro. ¿Deseas continuar?")) {
-        return;
-      }
+      if (!confirm("No has asignado un maestro. ¿Deseas continuar?")) return;
     }
 
     try {
       setGuardando(true);
-
-      // 1. Guardar horario
-      console.log(" Guardando horario...");
       const horarioResponse = await fetch(`/api/horario`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -172,14 +170,9 @@ const AdminPanel = () => {
           },
         }),
       });
+      if (!horarioResponse.ok) throw new Error("Error al guardar horario");
 
-      if (!horarioResponse.ok) {
-        throw new Error("Error al guardar horario");
-      }
-
-      // 2. Asignar maestro (si fue seleccionado)
       if (formulario.maestroId) {
-        console.log(" Asignando maestro...");
         const maestroResponse = await fetch("/api/asignar-maestros", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -188,13 +181,9 @@ const AdminPanel = () => {
             maestroId: formulario.maestroId,
           }),
         });
-
-        if (!maestroResponse.ok) {
-          throw new Error("Error al asignar maestro");
-        }
+        if (!maestroResponse.ok) throw new Error("Error al asignar maestro");
       }
 
-      // 3. Actualizar actividad en memoria con los nuevos datos
       const actividadActualizada = {
         ...modalAgregar,
         horario: {
@@ -214,26 +203,22 @@ const AdminPanel = () => {
           : null,
       };
 
-      // 4. Actualizar en el catálogo
       setTodasActividades((prev) =>
         prev.map((act) =>
           act.id === modalAgregar.id ? actividadActualizada : act,
         ),
       );
 
-      // 5. Agregar a oferta si no está ya
       if (!actividadesOfertadas.find((act) => act.id === modalAgregar.id)) {
         setActividadesOfertadas((prev) => [...prev, actividadActualizada]);
       }
 
-      alert(" Actividad configurada y agregada a la oferta");
+      alert("Actividad configurada y agregada a la oferta");
       setModalAgregar(null);
-
-      // Recargar para asegurar datos actualizados
       await cargarActividades();
     } catch (error) {
-      console.error(" Error:", error);
-      alert(` Error: ${error.message}`);
+      console.error("Error:", error);
+      alert(`Error: ${error.message}`);
     } finally {
       setGuardando(false);
     }
@@ -250,7 +235,6 @@ const AdminPanel = () => {
       alert("Selecciona al menos una actividad para ofertar.");
       return;
     }
-
     if (!confirm(`¿Publicar ${actividadesOfertadas.length} actividades?`))
       return;
 
@@ -261,15 +245,12 @@ const AdminPanel = () => {
         semestre: "2024-2",
         activa: true,
       }));
-
       const response = await fetch("/api/ofertas-semestre/batch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ofertas }),
       });
-
       if (!response.ok) throw new Error("Error al publicar actividades");
-
       alert("¡Actividades publicadas!");
       setActividadesOfertadas([]);
     } catch (error) {
@@ -299,12 +280,13 @@ const AdminPanel = () => {
 
   return (
     <div className="admin-panel">
+      {/* ───────── MODALES ───────── */}
       {modalAgregar && (
         <div className="modal-overlay">
           <div className="modal-content modal-agregar">
             <div className="modal-header">
               <div>
-                <h3> Configurar y Agregar Actividad</h3>
+                <h3>Configurar y Agregar Actividad</h3>
                 <p className="modal-subtitle">
                   {modalAgregar.aconco || modalAgregar.aticve} — Código:{" "}
                   {modalAgregar.aticve}
@@ -319,13 +301,10 @@ const AdminPanel = () => {
             </div>
 
             <div className="modal-body">
-              {" "}
-              {/* SECCIÓN HORARIO */}
               <div className="seccion-form">
                 <h4>
                   <Clock size={20} /> Horario
                 </h4>
-
                 <label>Días de la semana:</label>
                 <div className="dias-grid">
                   {diasSemana.map((dia) => (
@@ -341,7 +320,6 @@ const AdminPanel = () => {
                     </button>
                   ))}
                 </div>
-
                 <div className="grid-2-campos">
                   <div>
                     <label>Hora inicio:</label>
@@ -356,7 +334,6 @@ const AdminPanel = () => {
                       }
                     />
                   </div>
-
                   <div>
                     <label>Hora fin:</label>
                     <input
@@ -371,7 +348,6 @@ const AdminPanel = () => {
                     />
                   </div>
                 </div>
-
                 <label>Salón o ubicación:</label>
                 <input
                   type="text"
@@ -382,11 +358,11 @@ const AdminPanel = () => {
                   placeholder="Ej: Aula 301, Cancha 2"
                 />
               </div>
+
               <div className="seccion-form">
                 <h4>
                   <User size={20} /> Maestro
                 </h4>
-
                 {formulario.maestroId ? (
                   <div className="maestro-seleccionado">
                     <div className="maestro-info">
@@ -416,11 +392,9 @@ const AdminPanel = () => {
                       }}
                       placeholder="Ej: 88 o César Noel"
                     />
-
                     {buscandoMaestro && (
                       <p className="texto-cargando">Buscando...</p>
                     )}
-
                     {maestrosEncontrados.length > 0 && (
                       <div className="lista-maestros">
                         {maestrosEncontrados.map((maestro) => (
@@ -475,12 +449,11 @@ const AdminPanel = () => {
             className="modal-content modal-small"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3> Maestro Asignado</h3>
+            <h3>Maestro Asignado</h3>
             <p className="materia-modal-title">
               {modalVerMaestro.aconco || modalVerMaestro.aticve}
             </p>
             <p className="codigo-modal">Código: {modalVerMaestro.aticve}</p>
-
             {modalVerMaestro.maestro ? (
               <div className="maestro-info-box">
                 <div className="maestro-avatar">
@@ -511,7 +484,6 @@ const AdminPanel = () => {
             ) : (
               <p>No hay maestro asignado</p>
             )}
-
             <div className="modal-buttons">
               <button
                 className="btn-primary"
@@ -524,20 +496,51 @@ const AdminPanel = () => {
         </div>
       )}
 
-      {/* HEADER */}
+      {/* ───────── HEADER ───────── */}
       <div className="card header-card">
-        <h2>Gestionar Actividades</h2>
-        <p>
-          Configura y selecciona las actividades que deseas ofertar este
-          semestre
-        </p>
+        <div className="albatros-pista" aria-hidden="true">
+          <img src="/imagenes/basss.gif" alt="" className="alb alb-1" />
+          <img src="/imagenes/logosin.gif" alt="" className="alb alb-2" />
+          <img src="/imagenes/albatrobanda.gif" alt="" className="alb alb-3" />
+        </div>
+
+        <div className="header-text">
+          <h2>Gestionar Actividades</h2>
+          <p>
+            Configura y selecciona las actividades que deseas ofertar este
+            semestre
+          </p>
+        </div>
+
+        {/* Card grande + pequeñas alrededor */}
+        <div className="act-collage" aria-hidden="true">
+          {/* Cards pequeñas — columna izquierda */}
+          <div className="act-col-small">
+            <div className="act-sm sm-1"></div>
+            <div className="act-sm sm-2"></div>
+            <div className="act-sm sm-3"></div>
+          </div>
+
+          {/* Card grande principal */}
+          <div className="act-card-big">
+            <div className="act-card-labels">
+              <span className="lbl lbl-1">Fútbol Soccer</span>
+              <span className="lbl lbl-2">Basquetbol</span>
+              <span className="lbl lbl-3">Natación</span>
+              <span className="lbl lbl-4">Danza Folclórica</span>
+              <span className="lbl lbl-5">Música</span>
+              <span className="lbl lbl-6">Voleibol</span>
+              <span className="lbl lbl-7">Ajedrez</span>
+              <span className="lbl lbl-8">Atletismo</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid-2">
         {/* CATÁLOGO */}
         <div className="card catalogo">
           <h3>Catálogo ({todasActividades.length})</h3>
-
           <div className="busqueda">
             <input
               type="text"
@@ -561,7 +564,6 @@ const AdminPanel = () => {
                     <div className="actividad-info">
                       <h4>{actividad.aconco || actividad.aticve}</h4>
                       <p>Código: {actividad.aticve}</p>
-
                       <div className="meta">
                         <span>{actividad.acocre} créditos</span>
                         <span>{actividad.acohrs} hrs</span>
@@ -582,14 +584,10 @@ const AdminPanel = () => {
                         )}
                       </div>
                     </div>
-
-                    {/* ✅ UN SOLO BOTÓN */}
                     <button
                       className={agregada ? "btn-agregado" : "btn-configurar"}
                       onClick={() => {
-                        if (!agregada) {
-                          abrirModalAgregar(actividad);
-                        }
+                        if (!agregada) abrirModalAgregar(actividad);
                       }}
                       disabled={!!agregada}
                     >

@@ -213,7 +213,11 @@
   font-weight: 800;
   color: var(--blue-primary);
 }
-
+.constancia-acti {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--blue-primary);
+}
 .constancia-details {
   display: flex;
   flex-wrap: wrap;
@@ -256,7 +260,7 @@
   }
 }
 
-.btn-primary {
+.btn-primary-cons {
   background: var(--yellow-accent);
   color: var(--blue-dark);
   border: none;
