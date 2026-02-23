@@ -15,7 +15,7 @@ import {
   FiMenu,
   FiFile,
 } from "react-icons/fi";
-import { Fa0, FaStar } from "react-icons/fa6";
+import { Fa0, FaCheck, FaStar } from "react-icons/fa6";
 import { Bell, Edit } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -51,7 +51,7 @@ export default function AdminSidebar() {
     },
     {
       href: "/designs/menuadmin/AprobarSolicitudes",
-      icon: <FaStar />,
+      icon: <FaCheck />,
       label: "Aprobar Solicitudes",
     },
 

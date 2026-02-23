@@ -119,7 +119,7 @@
   border: 1px solid rgba(254, 158, 16, 0.25);
 }
 .paneladmin__titulo {
-  font-size: 3rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   font-weight: 800;
   color: var(--blue-primary);
   letter-spacing: -0.03em;
@@ -395,7 +395,7 @@
   border-radius: var(--pa-r-sm);
   padding: 0.65rem 1rem;
   box-shadow: var(--pa-sh-md);
-  font-family: "Montserrat", sans-serif;
+
   font-size: 0.8rem;
 }
 .paneladmin__tooltip-label {

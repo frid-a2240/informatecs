@@ -2,20 +2,10 @@
 
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  User,
-  CheckCircle,
-  FileX,
-  Search,
-  Loader2,
-  MessageSquare,
-  BookOpen,
-  ShieldCheck,
-  Layers,
-} from "lucide-react";
+import "@/styles/admin/AdminSolicitudes.css";
 
 export default function AdminSolicitudes() {
-  const [filtroEstado, setFiltroEstado] = useState("pendiente");
+  const [filtroEstado, setFiltroEstado] = useState("todas");
   const [seleccionada, setSeleccionada] = useState(null);
   const [motivoRechazo, setMotivoRechazo] = useState("");
   const queryClient = useQueryClient();
@@ -30,22 +20,15 @@ export default function AdminSolicitudes() {
     refetchInterval: 30000,
   });
 
-  // --- LÓGICA DE AGRUPACIÓN POR ESTUDIANTE ---
   const alumnosAgrupados = React.useMemo(() => {
     const grupos = {};
-
     solicitudes.forEach((reg) => {
       const id = reg.estudianteId;
       if (!grupos[id]) {
-        grupos[id] = {
-          ...reg,
-          todasLasActividades: [],
-        };
+        grupos[id] = { ...reg, todasLasActividades: [] };
       }
-      // Agregamos la actividad a la lista del alumno
       grupos[id].todasLasActividades.push(reg.actividad);
     });
-
     const lista = Object.values(grupos);
     if (filtroEstado === "pendiente") {
       return lista.filter((a) => a.tipoSangreSolicitado && !a.sangreValidada);
@@ -55,15 +38,12 @@ export default function AdminSolicitudes() {
 
   const mutation = useMutation({
     mutationFn: async ({ aluctr, accion, actividades }) => {
-      // 1. Validar sangre en la tabla de inscripciones
       const res = await fetch(`/api/sangre`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ aluctr, accion, mensaje: motivoRechazo }),
       });
       if (!res.ok) throw new Error("Error en validación");
-
-      // 2. Si se aprueba, crear constancias para CADA actividad inscrita
       if (accion === "aprobar") {
         for (const act of actividades) {
           await fetch("/api/constancias", {
@@ -72,7 +52,7 @@ export default function AdminSolicitudes() {
             body: JSON.stringify({
               numeroControl: aluctr,
               actividadId: act.id,
-              actividadNombre: act.acodes, // Usando tu campo acodes
+              actividadNombre: act.acodes,
               periodo: "2026-1",
             }),
           });
@@ -82,109 +62,241 @@ export default function AdminSolicitudes() {
     onSuccess: () => {
       queryClient.invalidateQueries(["inscripciones"]);
       setSeleccionada(null);
+      setMotivoRechazo("");
       alert("Proceso completado exitosamente");
     },
   });
 
+  const esPDF = seleccionada?.comprobanteSangrePDF?.startsWith(
+    "data:application/pdf",
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <header className="flex justify-between items-center mb-10">
-          <h1 className="text-2xl font-black flex items-center gap-3 italic">
-            <ShieldCheck className="text-blue-600" size={32} /> PANEL DE CONTROL
+    <div className="ssolicitudes-wrapper">
+      <div className="ssolicitudes-container">
+        {/* HEADER */}
+        <header className="ssolicitudes-header">
+          <h1 className="ssolicitudes-header-title">
+            Validación de Documentos
           </h1>
-          <div className="flex bg-white rounded-2xl p-1 shadow-sm border">
-            {["todas", "pendiente"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFiltroEstado(f)}
-                className={`px-6 py-2 rounded-xl text-xs font-black uppercase transition-all ${filtroEstado === f ? "bg-blue-600 text-white" : "text-slate-400"}`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LISTA DE ALUMNOS (DEDUPLICADA) */}
-          <div className="lg:col-span-6 space-y-4">
+        {/* TABS */}
+        <div className="ssolicitudes-tabs">
+          {["todas", "pendiente"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFiltroEstado(f)}
+              className={`ssolicitudes-tab-btn ${filtroEstado === f ? "ssolicitudes-tab-btn--active" : ""}`}
+            >
+              {f === "todas" ? "Todas" : "Pendientes"}
+            </button>
+          ))}
+        </div>
+
+        {/* GRID */}
+        <div className="ssolicitudes-grid">
+          {/* LISTA */}
+          <div className="ssolicitudes-list-col">
+            {isLoading && (
+              <p className="ssolicitudes-loading">Cargando solicitudes...</p>
+            )}
+
+            {!isLoading && alumnosAgrupados.length === 0 && (
+              <div className="ssolicitudes-empty">
+                No hay solicitudes{" "}
+                {filtroEstado === "pendiente" ? "pendientes" : "registradas"}.
+              </div>
+            )}
+
             {alumnosAgrupados.map((alumno) => (
               <div
                 key={alumno.estudianteId}
                 onClick={() => setSeleccionada(alumno)}
-                className={`p-6 rounded-[2rem] bg-white border-2 cursor-pointer transition-all ${seleccionada?.estudianteId === alumno.estudianteId ? "border-blue-600 shadow-xl scale-[1.02]" : "border-transparent shadow-sm"}`}
+                className={`ssolicitudes-alumno-card ${seleccionada?.estudianteId === alumno.estudianteId ? "ssolicitudes-alumno-card--active" : ""}`}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400">
-                      <User size={24} />
-                    </div>
-                    <div>
-                      <h3 className="font-black text-slate-800 uppercase">
-                        {alumno.estudiante?.alunom} {alumno.estudiante?.aluapp}
-                      </h3>
-                      <p className="text-[10px] font-bold text-blue-600 tracking-widest">
-                        {alumno.estudianteId}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black flex items-center gap-1">
-                    <Layers size={12} /> {alumno.todasLasActividades.length}{" "}
-                    ACTIVIDADES
-                  </div>
+                {/* Avatar */}
+                <div
+                  className={`ssolicitudes-alumno-avatar ${seleccionada?.estudianteId === alumno.estudianteId ? "ssolicitudes-alumno-avatar--active" : ""}`}
+                >
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
                 </div>
+
+                {/* Info */}
+                <div className="ssolicitudes-alumno-info">
+                  <h3 className="ssolicitudes-alumno-nombre">
+                    {alumno.estudiante?.alunom} {alumno.estudiante?.aluapp}{" "}
+                    {alumno.estudiante?.aluapm}
+                  </h3>
+                  <p className="ssolicitudes-alumno-control">
+                    Control: {alumno.estudianteId}
+                  </p>
+                </div>
+
+                {/* Badge tipo sangre */}
+                <span
+                  className={`ssolicitudes-alumno-badge ${alumno.tipoSangreSolicitado ? "ssolicitudes-alumno-badge--sangre" : "ssolicitudes-alumno-badge--sd"}`}
+                >
+                  {alumno.tipoSangreSolicitado ?? "S/D"}
+                </span>
               </div>
             ))}
           </div>
 
-          {/* DETALLE Y VALIDACIÓN */}
-          <div className="lg:col-span-6">
+          {/* DETALLE */}
+          <div className="ssolicitudes-detail-col">
             {seleccionada ? (
-              <div className="bg-white rounded-[2.5rem] shadow-2xl border p-8 sticky top-6">
-                <h2 className="text-xl font-black mb-6 uppercase">
-                  Revisión de Documento
-                </h2>
+              <div className="ssolicitudes-detail-card">
+                {/* Header detalle */}
+                <div className="ssolicitudes-detail-header">
+                  <div>
+                    <h2 className="ssolicitudes-detail-header-title">
+                      Revisión de Expediente
+                    </h2>
+                    <p className="ssolicitudes-detail-header-sub">
+                      Revisa el comprobante antes de aprobar
+                    </p>
+                  </div>
+                </div>
 
-                {/* LISTA DE ACTIVIDADES A LAS QUE SE LES GENERARÁ CONSTANCIA */}
-                <div className="mb-8 space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Actividades a liberar:
-                  </label>
-                  {seleccionada.todasLasActividades.map((act, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"
-                    >
-                      <BookOpen size={14} className="text-blue-500" />
-                      <span className="text-xs font-bold text-slate-600 uppercase">
-                        {act.acodes}
-                      </span>
+                {/* Body */}
+                <div className="ssolicitudes-detail-body">
+                  {/* Datos del estudiante */}
+                  <div className="ssolicitudes-student-box">
+                    <p className="ssolicitudes-student-box-title">
+                      Datos del Estudiante
+                    </p>
+                    <div className="ssolicitudes-student-grid">
+                      <div>
+                        <span className="ssolicitudes-student-grid-label">
+                          Nombre:
+                        </span>
+                        <p className="ssolicitudes-student-grid-value">
+                          {seleccionada.estudiante?.alunom}{" "}
+                          {seleccionada.estudiante?.aluapp}{" "}
+                          {seleccionada.estudiante?.aluapm}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="ssolicitudes-student-grid-label">
+                          No. Control:
+                        </span>
+                        <p className="ssolicitudes-student-grid-value ssolicitudes-student-grid-value--highlight">
+                          {seleccionada.estudianteId}
+                        </p>
+                      </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                <div className="bg-slate-100 rounded-3xl h-64 mb-6 flex items-center justify-center overflow-hidden border-4 border-slate-50">
-                  {seleccionada.comprobanteSangrePDF ? (
-                    <img
-                      src={seleccionada.comprobanteSangrePDF}
-                      className="object-contain w-full h-full"
-                      alt="Sangre"
+                  {/* Actividades */}
+                  <div className="ssolicitudes-actividades-box">
+                    <p className="ssolicitudes-actividades-title">
+                      Actividades a liberar
+                    </p>
+                    <ul className="ssolicitudes-actividades-list">
+                      {seleccionada.todasLasActividades.map((act, i) => (
+                        <li key={i} className="ssolicitudes-actividad-item">
+                          {act.acodes}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Comprobante */}
+                  <div className="ssolicitudes-comprobante-box">
+                    <p className="ssolicitudes-comprobante-title">
+                      Comprobante Subido
+                    </p>
+
+                    {seleccionada.nombreArchivoSangre && (
+                      <p className="ssolicitudes-comprobante-file">
+                        Archivo: <span>{seleccionada.nombreArchivoSangre}</span>
+                      </p>
+                    )}
+
+                    <div className="ssolicitudes-comprobante-preview">
+                      {seleccionada.comprobanteSangrePDF ? (
+                        esPDF ? (
+                          <iframe
+                            src={seleccionada.comprobanteSangrePDF}
+                            title="Comprobante PDF"
+                            className="ssolicitudes-comprobante-iframe"
+                          />
+                        ) : (
+                          <img
+                            src={seleccionada.comprobanteSangrePDF}
+                            alt="Comprobante"
+                            className="ssolicitudes-comprobante-img"
+                          />
+                        )
+                      ) : (
+                        <div className="ssolicitudes-comprobante-empty">
+                          Sin comprobante adjunto
+                        </div>
+                      )}
+                    </div>
+
+                    {seleccionada.comprobanteSangrePDF && (
+                      <a
+                        href={seleccionada.comprobanteSangrePDF}
+                        download={
+                          seleccionada.nombreArchivoSangre ?? "comprobante"
+                        }
+                        className="ssolicitudes-download-btn"
+                      >
+                        Descargar Comprobante
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Motivo rechazo */}
+                  <div className="ssolicitudes-rechazo-box">
+                    <label
+                      className="ssolicitudes-label"
+                      htmlFor="motivo-rechazo"
+                    >
+                      Motivo de rechazo (opcional)
+                    </label>
+                    <textarea
+                      id="motivo-rechazo"
+                      className="ssolicitudes-rechazo-textarea"
+                      placeholder="Escribe el motivo de rechazo..."
+                      value={motivoRechazo}
+                      onChange={(e) => setMotivoRechazo(e.target.value)}
                     />
-                  ) : (
-                    <FileX size={48} className="text-slate-300" />
-                  )}
+                  </div>
                 </div>
 
-                <textarea
-                  placeholder="Motivo de rechazo..."
-                  className="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-sm resize-none h-20 outline-none focus:border-blue-500"
-                  value={motivoRechazo}
-                  onChange={(e) => setMotivoRechazo(e.target.value)}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
+                {/* Footer — acciones */}
+                <div className="ssolicitudes-detail-footer">
                   <button
+                    className="ssolicitudes-btn-rechazar"
+                    disabled={mutation.isPending}
+                    onClick={() =>
+                      mutation.mutate({
+                        aluctr: seleccionada.estudianteId,
+                        accion: "rechazar",
+                        actividades: [],
+                      })
+                    }
+                  >
+                    Rechazar
+                  </button>
+                  <button
+                    className="ssolicitudes-btn-aprobar"
+                    disabled={mutation.isPending}
                     onClick={() =>
                       mutation.mutate({
                         aluctr: seleccionada.estudianteId,
@@ -192,26 +304,35 @@ export default function AdminSolicitudes() {
                         actividades: seleccionada.todasLasActividades,
                       })
                     }
-                    className="bg-blue-600 text-white py-4 rounded-2xl font-black text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
                   >
-                    APROBAR TODO
-                  </button>
-                  <button
-                    onClick={() =>
-                      mutation.mutate({
-                        aluctr: seleccionada.estudianteId,
-                        accion: "rechazar",
-                      })
-                    }
-                    className="bg-red-50 text-red-600 py-4 rounded-2xl font-black text-xs hover:bg-red-100 transition-all"
-                  >
-                    RECHAZAR
+                    {mutation.isPending ? "Procesando..." : "Aprobar y Validar"}
                   </button>
                 </div>
+
+                {mutation.isError && (
+                  <p className="ssolicitudes-error-msg">
+                    Ocurrió un error. Intenta de nuevo.
+                  </p>
+                )}
               </div>
             ) : (
-              <div className="h-96 border-4 border-dashed rounded-[3rem] flex items-center justify-center text-slate-300 font-black uppercase text-sm italic">
-                Selecciona un expediente
+              <div className="ssolicitudes-detail-placeholder">
+                <div className="ssolicitudes-placeholder-icon">
+                  <svg
+                    width="36"
+                    height="36"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                </div>
+                <p>Selecciona un alumno para revisar</p>
               </div>
             )}
           </div>

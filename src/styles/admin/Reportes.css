@@ -1,0 +1,215 @@
+/* ── Variables de Colores y Tipografía ────────────────────────── */
+:root {
+  --reportes-blue-primary: #1b396a;
+  --reportes-yellow-accent: #fe9e10;
+  --reportes-blue-hover: #8eafef;
+  --reportes-text-dark: #333333;
+  --reportes-white: #ffffff;
+  --reportes-ite-text: #4a5568;
+  --reportes-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --reportes-radius-sm: 8px;
+
+  --reportes-pa-bg: #f2f5fb;
+  --reportes-pa-card: #ffffff;
+  --reportes-pa-brd: rgba(27, 57, 106, 0.1);
+  --reportes-pa-txt2: #4a5568;
+
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ── Contenedor principal ────────────────────────── */
+.reportes-dashboard-container {
+  background-color: var(--reportes-pa-bg);
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.reportes-dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Cards ────────────────────────── */
+.reportes-card {
+  background-color: var(--reportes-pa-card);
+  border-radius: var(--reportes-radius-sm);
+  box-shadow: var(--reportes-shadow-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Header ────────────────────────── */
+.reportes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reportes-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reportes-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--reportes-blue-primary);
+  margin: 0;
+}
+
+.reportes-subtitle {
+  color: var(--reportes-ite-text);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Botones ────────────────────────── */
+.reportes-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--reportes-blue-primary);
+  color: var(--reportes-white);
+  font-weight: 600;
+  border-radius: var(--reportes-radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.reportes-btn-primary:hover:not(:disabled) {
+  background-color: var(--reportes-blue-hover);
+}
+
+.reportes-btn-primary:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+/* ── Estadísticas ────────────────────────── */
+.reportes-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.reportes-stat-card {
+  background-color: var(--reportes-pa-card);
+  padding: 1rem;
+  border-radius: var(--reportes-radius-sm);
+  text-align: center;
+  box-shadow: var(--reportes-shadow-lg);
+}
+
+.reportes-stat-label {
+  font-size: 0.85rem;
+  color: var(--reportes-ite-text);
+  margin-bottom: 0.3rem;
+}
+
+.reportes-stat-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--reportes-blue-primary);
+}
+
+/* ── Buscador y Filtros ────────────────────────── */
+.reportes-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.reportes-input-group {
+  position: relative;
+}
+
+.reportes-input-group input,
+.reportes-input-group select {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  border: 1px solid var(--reportes-pa-brd);
+  border-radius: var(--reportes-radius-sm);
+  font-size: 0.95rem;
+  color: var(--reportes-text-dark);
+}
+
+.reportes-input-group select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.reportes-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--reportes-blue-primary);
+}
+
+/* ── Tabla ────────────────────────── */
+.reportes-table-container {
+  overflow-x: auto;
+}
+
+.reportes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reportes-table th,
+.reportes-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--reportes-text-dark);
+}
+
+.reportes-table th {
+  background-color: var(--reportes-blue-primary);
+  font-weight: 600;
+  color: white;
+}
+
+.reportes-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* ── Badges ────────────────────────── */
+.reportes-badge-score {
+  display: inline-block;
+  min-width: 2rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--reportes-white);
+  background-color: var(--reportes-blue-primary);
+}
+
+/* ── Loading ────────────────────────── */
+.reportes-loading {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--reportes-ite-text);
+}
+
+.reportes-spin {
+  animation: spin 1s linear infinite;
+  color: var(--reportes-blue-primary);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Animación Spin ────────────────────────── */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

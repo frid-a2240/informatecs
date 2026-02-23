@@ -15,14 +15,19 @@ import {
 import "@/styles/admin/adminpanel.css";
 
 const CARDS_ACTIVIDADES = [
-  { label: "Fútbol", cls: "c1" },
-  { label: "Básquet", cls: "c2" },
-  { label: "Natación", cls: "c3" },
-  { label: "Danza", cls: "c4" },
-  { label: "Gym", cls: "c5" },
-  { label: "Voleibol", cls: "c6" },
-  { label: "Arte", cls: "c7" },
-  { label: "Música", cls: "c8" },
+  { label: "Futbol Soccer", cls: "lbl-1" },
+  { label: "Basquetbol", cls: "lbl-2" },
+  { label: "Danza folclórica", cls: "lbl-3" },
+  { label: "Música", cls: "lbl-4" },
+  { label: "Voleibol", cls: "lbl-5" },
+  { label: "Ajedrez", cls: "lbl-6" },
+  { label: "Escolta", cls: "lbl-7" },
+  { label: "Teatro", cls: "lbl-8" },
+  { label: "Tenis", cls: "lbl-9" },
+  { label: "Softbol", cls: "lbl-10" },
+  { label: "Tenis de mesa", cls: "lbl-11" },
+  { label: "Club de lectura", cls: "lbl-12" },
+  { label: "Catrines/Catrinas", cls: "lbl-13" },
 ];
 
 const AdminPanel = () => {
@@ -496,15 +501,32 @@ const AdminPanel = () => {
         </div>
       )}
 
-      {/* ───────── HEADER ───────── */}
+      {/* ══ HEADER ══ */}
       <div className="card header-card">
-        <div className="albatros-pista" aria-hidden="true">
-          <img src="/imagenes/basss.gif" alt="" className="alb alb-1" />
-          <img src="/imagenes/logosin.gif" alt="" className="alb alb-2" />
-          <img src="/imagenes/albatrobanda.gif" alt="" className="alb alb-3" />
-        </div>
+        {/* Lado izquierdo: título con pista de albatros ENCIMA */}
+        <div className="header-text titulo-wrap">
+          {/* Albatros 1 — encima del título, bota el balón, ida y vuelta, desaparece */}
+          <img
+            src="/imagenes/basss.gif"
+            alt=""
+            className="alb alb-arriba"
+            aria-hidden="true"
+          />
 
-        <div className="header-text">
+          {/* Albatros 2 — abajo del título, corre, ida y vuelta, desaparece */}
+          <img
+            src="/imagenes/albatrobanda.gif"
+            alt=""
+            className="alb alb-abajo"
+            aria-hidden="true"
+          />
+          <img
+            src="/imagenes/logosin.gif"
+            alt=""
+            className="alb alb-tercero"
+            aria-hidden="true"
+          />
+
           <h2>Gestionar Actividades</h2>
           <p>
             Configura y selecciona las actividades que deseas ofertar este
@@ -512,26 +534,20 @@ const AdminPanel = () => {
           </p>
         </div>
 
-        {/* Card grande + pequeñas alrededor */}
+        {/* Lado derecho: collage de imágenes */}
         <div className="act-collage" aria-hidden="true">
-          {/* Cards pequeñas — columna izquierda */}
           <div className="act-col-small">
             <div className="act-sm sm-1"></div>
             <div className="act-sm sm-2"></div>
             <div className="act-sm sm-3"></div>
           </div>
-
-          {/* Card grande principal */}
           <div className="act-card-big">
             <div className="act-card-labels">
-              <span className="lbl lbl-1">Fútbol Soccer</span>
-              <span className="lbl lbl-2">Basquetbol</span>
-              <span className="lbl lbl-3">Natación</span>
-              <span className="lbl lbl-4">Danza Folclórica</span>
-              <span className="lbl lbl-5">Música</span>
-              <span className="lbl lbl-6">Voleibol</span>
-              <span className="lbl lbl-7">Ajedrez</span>
-              <span className="lbl lbl-8">Atletismo</span>
+              {CARDS_ACTIVIDADES.map((card, i) => (
+                <span key={i} className={`lbl ${card.cls}`}>
+                  {card.label}
+                </span>
+              ))}
             </div>
           </div>
         </div>

@@ -1,20 +1,34 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* 🎨 Colores y Tipografía Base */
 :root {
-  --blue-primary: #1b396a;
-  --yellow-accent: #fe9e10;
-  --blue-hover: #8eafef;
-  --text-dark: #333333;
-  --act-primary: #1b396a;
-  --act-primary-dark: #142a50;
+  /* Colores Base Proyecto */
+  --primary: #1b396a;
+  --primary-dark: #142a50;
+  --secondary: #fe9e10;
+  --secondary-dark: #c97800;
+  --accent: #8eafef;
 
-  --white: #ffffff;
-  font-family: "Montserrat";
+  /* Semántica */
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #fe9e10;
+
+  /* Fondos y Superficies */
+  --background: #f2f5fb;
+  --card-bg: #ffffff;
+  --pa-blue-light: #e8f0fb;
+  --pa-blue-ll: #f0f5ff;
+
+  /* Texto */
+  --text-primary: #1b396a;
+  --text-secondary: #4a5568;
+  --text-muted: #8fa3be;
+
+  /* Bordes y Sombras */
+  --border: rgba(27, 57, 106, 0.1);
+  --shadow-sm: 0 2px 10px rgba(27, 57, 106, 0.08);
+  --shadow-md: 0 6px 24px rgba(27, 57, 106, 0.13);
+
+  font-family: "Montserrat", sans-serif;
 }
-
 /* Corrección para el Título Principal: "Instituto Tecnológico" */
 .main-headline {
   font-size: clamp(3.5rem, 6vw, 5.5rem);
