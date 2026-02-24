@@ -1,69 +1,3 @@
-/* ── Variables de Colores y Tipografía ────────────────────────── */
-:root {
-  --reportes-blue-primary: #1b396a;
-  --reportes-yellow-accent: #fe9e10;
-  --reportes-blue-hover: #8eafef;
-  --reportes-text-dark: #333333;
-  --reportes-white: #ffffff;
-  --reportes-ite-text: #4a5568;
-  --reportes-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --reportes-radius-sm: 8px;
-
-  --reportes-pa-bg: #f2f5fb;
-  --reportes-pa-card: #ffffff;
-  --reportes-pa-brd: rgba(27, 57, 106, 0.1);
-  --reportes-pa-txt2: #4a5568;
-
-  font-family: "Montserrat", sans-serif;
-}
-
-/* ── Contenedor principal ────────────────────────── */
-.reportes-dashboard-container {
-  background-color: var(--reportes-pa-bg);
-  min-height: 100vh;
-  padding: 2rem;
-}
-
-.reportes-dashboard-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* ── Cards ────────────────────────── */
-.reportes-card {
-  background-color: var(--reportes-pa-card);
-  border-radius: var(--reportes-radius-sm);
-  box-shadow: var(--reportes-shadow-lg);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-/* ── Header ────────────────────────── */
-.reportes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.reportes-header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.reportes-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--reportes-blue-primary);
-  margin: 0;
-}
-
-.reportes-subtitle {
-  color: var(--reportes-ite-text);
-  font-size: 0.95rem;
-  margin: 0;
-}
-
 /* ── Botones ────────────────────────── */
 .reportes-btn-primary {
   display: inline-flex;
@@ -113,6 +47,172 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--reportes-blue-primary);
+}
+/* ── Variables de Colores y Tipografía ────────────────────────── */
+:root {
+  --reportes-blue-primary: #1b396a;
+  --reportes-yellow-accent: #fe9e10;
+  --reportes-blue-hover: #8eafef;
+  --reportes-text-dark: #333333;
+  --reportes-white: #ffffff;
+  --reportes-ite-text: #4a5568;
+  --reportes-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --reportes-radius-sm: 8px;
+
+  --reportes-pa-bg: #f2f5fb;
+  --reportes-pa-card: #ffffff;
+  --reportes-pa-brd: rgba(27, 57, 106, 0.1);
+  --reportes-pa-txt2: #4a5568;
+
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ── Contenedor principal ────────────────────────── */
+.reportes-dashboard-container {
+  background-color: var(--reportes-pa-bg);
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.reportes-dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Card normal — header, filtros, tabla, etc. ────────────────────────── */
+.reportes-card {
+  background-color: var(--reportes-pa-card);
+  border-radius: var(--reportes-radius-sm);
+  box-shadow: var(--reportes-shadow-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Header ────────────────────────── */
+.reportes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reportes-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.reportes-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--reportes-blue-primary);
+  margin: 0;
+}
+
+.reportes-subtitle {
+  color: var(--reportes-ite-text);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* ── Grid de estadísticas ────────────────────────── */
+.reportes-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  margin-bottom: 1.5rem;
+}
+
+/* ────────────────────────────────────────────────────────
+   STAT CARD — efecto de sombra colorida desplazada
+   Úsalo SOLO en los cards de números/estadísticas
+   ──────────────────────────────────────────────────────── */
+.reportes-stat-card {
+  position: relative;
+  background-color: var(--reportes-white);
+  border-radius: 16px;
+  padding: 24px 20px 56px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 8px 10px 0px 0px var(--reportes-blue-primary);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.reportes-stat-card:hover {
+  transform: translate(-4px, -5px);
+}
+
+/* ── Variantes de color ── */
+.reportes-stat-card.card-blue {
+  box-shadow: 8px 10px 0px 0px var(--reportes-blue-primary);
+}
+.reportes-stat-card.card-blue:hover {
+  box-shadow: 12px 14px 0px 0px var(--reportes-blue-primary);
+}
+
+.reportes-stat-card.card-yellow {
+  box-shadow: 8px 10px 0px 0px var(--reportes-yellow-accent);
+}
+.reportes-stat-card.card-yellow:hover {
+  box-shadow: 12px 14px 0px 0px var(--reportes-yellow-accent);
+}
+
+.reportes-stat-card.card-blue-light {
+  box-shadow: 8px 10px 0px 0px var(--reportes-blue-hover);
+}
+.reportes-stat-card.card-blue-light:hover {
+  box-shadow: 12px 14px 0px 0px var(--reportes-blue-hover);
+}
+
+/* ── Textos dentro del stat card ── */
+.reportes-stat-card .reportes-stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--reportes-ite-text);
+}
+
+.reportes-stat-card .reportes-stat-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--reportes-blue-primary);
+  line-height: 1;
+}
+
+/* ── Burbuja de ícono (esquina inferior derecha) ── */
+.reportes-stat-badge {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--reportes-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.reportes-stat-card.card-blue .reportes-stat-badge {
+  background-color: var(--reportes-blue-primary);
+}
+
+.reportes-stat-card.card-yellow .reportes-stat-badge {
+  background-color: var(--reportes-yellow-accent);
+}
+
+.reportes-stat-card.card-blue-light .reportes-stat-badge {
+  background-color: var(--reportes-blue-hover);
+}
+
+.reportes-stat-card:hover .reportes-stat-badge {
+  transform: scale(1.12);
 }
 
 /* ── Buscador y Filtros ────────────────────────── */

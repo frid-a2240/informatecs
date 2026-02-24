@@ -7,132 +7,130 @@ import { useState, useEffect } from "react";
 import {
   FiHome,
   FiCalendar,
-  FiUsers,
   FiFileText,
   FiBarChart2,
-  FiSettings,
   FiLogOut,
   FiMenu,
   FiFile,
+  FiX,
 } from "react-icons/fi";
-import { Fa0, FaCheck, FaStar } from "react-icons/fa6";
-import { Bell, Edit } from "lucide-react";
+import { FaCheck, FaStar } from "react-icons/fa6";
+import { Edit } from "lucide-react";
+import "@/styles/layouts/navbaradm.css";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // Estado para detectar móvil de forma segura
   const pathname = usePathname();
   const router = useRouter();
 
+  // Manejo seguro del tamaño de ventana
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setOpen(false); // En móvil empieza cerrado
+      } else {
+        setOpen(true); // En web empieza abierto/expandido
+      }
+    };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Cerrar al navegar (solo en móvil)
   useEffect(() => {
-    setOpen(!isMobile);
-  }, [isMobile]);
-
-  const handleLogout = () => {
-    if (window.confirm("¿Seguro que deseas cerrar sesión?")) {
-      localStorage.removeItem("adminData");
-      router.push("/designs/vistaLogin");
+    if (isMobile) {
+      setOpen(false);
     }
-  };
-
-  const menuItems = [
-    { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
-    {
-      href: "/designs/menuadmin/vistaInicioAdmin",
-      icon: <FiCalendar />,
-      label: "Gestionar Eventos",
-    },
-    {
-      href: "/designs/menuadmin/AprobarSolicitudes",
-      icon: <FaCheck />,
-      label: "Aprobar Solicitudes",
-    },
-
-    {
-      href: "/designs/menuadmin/vistaInscripcionesAdmin",
-      icon: <FiFileText />,
-      label: "Inscripciones",
-    },
-    {
-      href: "/designs/menuadmin/vistaReportes",
-      icon: <FiBarChart2 />,
-      label: "Lista Aprobados",
-    },
-    {
-      href: "/designs/menuadmin/vistaConstancias",
-      icon: <FiFile />,
-      label: "Constancias",
-    },
-    {
-      href: "/designs/menuadmin/vistaIntramuros",
-      icon: <FaStar />,
-      label: "Intramuros",
-    },
-    {
-      href: "/designs/menuadmin/publicaciones",
-      icon: <Edit />,
-      label: "Publicaciones",
-    },
-  ];
+  }, [pathname, isMobile]);
 
   return (
-    <aside className={`sliderbaradm ${open ? "open" : "closed"}`}>
-      {/* Header */}
-      <div className="sliderbaradm-header">
-        {open && (
+    <>
+      {/* Botón hamburguesa: Solo visible en móvil vía CSS */}
+      <button className="toggle-btn-mobile" onClick={() => setOpen(!open)}>
+        {open ? <FiX /> : <FiMenu />}
+      </button>
+
+      <aside className={`sliderbaradm ${open ? "open" : "closed"}`}>
+        <div className="sliderbaradm-header">
           <div className="logo-container">
-            <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
-            <div className="logo-text-container">
-              <span className="logo-text">Eventos ITE</span>
-              <span className="admin-badge">ADMIN</span>
+            <Image src="/imagenes/ite.svg" alt="Logo" width={30} height={30} />
+            <span className="logo-text">Eventos ITE</span>
+          </div>
+          {/* Botón para colapsar en Escritorio */}
+          <button className="desktop-toggle" onClick={() => setOpen(!open)}>
+            <FiMenu />
+          </button>
+        </div>
+
+        <ul className="menu-list">
+          {menuItems.map((item) => (
+            <li
+              key={item.href}
+              className={`menu-item ${pathname === item.href ? "active" : ""}`}
+            >
+              <Link href={item.href} className="menu-link">
+                <span className="icon">{item.icon}</span>
+                <span className="etiqueta-flotante">{item.label}</span>
+              </Link>
+            </li>
+          ))}
+          <li
+            className="menu-item logout"
+            onClick={() => router.push("/designs/vistaLogin")}
+          >
+            <div className="menu-link">
+              <span className="icon">
+                <FiLogOut />
+              </span>
+              <span className="etiqueta-flotante">Cerrar Sesión</span>
             </div>
-          </div>
-        )}
-        <button className="toggle-btn" onClick={() => setOpen(!open)}>
-          <FiMenu />
-        </button>
-      </div>
-
-      {/* Menu */}
-      <ul className="menu">
-        {menuItems.map((item) => (
-          <SidebarItem
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            open={open}
-            active={pathname === item.href}
-          />
-        ))}
-
-        <li className="menu-item logout" onClick={handleLogout}>
-          <div className="menu-link">
-            <span className="icon">
-              <FiLogOut />
-            </span>
-            {open && <span className="title">Cerrar Sesión</span>}
-          </div>
-        </li>
-      </ul>
-    </aside>
+          </li>
+        </ul>
+      </aside>
+    </>
   );
 }
 
-function SidebarItem({ href, icon, label, open, active }) {
-  return (
-    <li className={`menu-item ${active ? "active" : ""}`}>
-      <Link href={href} className="menu-link">
-        <span className="icon">{icon}</span>
-        {open && <span className="title">{label}</span>}
-      </Link>
-    </li>
-  );
-}
+const menuItems = [
+  { href: "/designs/menuadmin", icon: <FiHome />, label: "Inicio" },
+  {
+    href: "/designs/menuadmin/vistaInicioAdmin",
+    icon: <FiCalendar />,
+    label: "Eventos",
+  },
+  {
+    href: "/designs/menuadmin/AprobarSolicitudes",
+    icon: <FaCheck />,
+    label: "Solicitudes",
+  },
+  {
+    href: "/designs/menuadmin/vistaInscripcionesAdmin",
+    icon: <FiFileText />,
+    label: "Inscripciones",
+  },
+  {
+    href: "/designs/menuadmin/vistaReportes",
+    icon: <FiBarChart2 />,
+    label: "Reportes",
+  },
+  {
+    href: "/designs/menuadmin/vistaConstancias",
+    icon: <FiFile />,
+    label: "Constancias",
+  },
+  {
+    href: "/designs/menuadmin/vistaIntramuros",
+    icon: <FaStar />,
+    label: "Intramuros",
+  },
+  {
+    href: "/designs/menuadmin/publicaciones",
+    icon: <Edit />,
+    label: "Publicaciones",
+  },
+];

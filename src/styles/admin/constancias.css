@@ -28,19 +28,20 @@
   gap: 24px;
 }
 
-/* ── Card ───────────────────────────── */
-/* ── Card bonito ────────────────────────────── */
+/* ────────────────────────────────────────────────────────
+   CARD NORMAL — header, filtros, tabla. Sin efecto.
+   ──────────────────────────────────────────────────────── */
 .constanciasge-card {
-  background-color: var(--pa-card); /* blanco */
-  border-radius: var(--pa-r-md);
-  box-shadow: var(--pa-sh-md);
+  background-color: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(27, 57, 106, 0.1);
   padding: 20px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .constanciasge-card:hover {
@@ -69,14 +70,16 @@
   font-size: 2rem;
   color: var(--yellow-accent);
 }
+
 /* ── Header ───────────────────────────── */
 .constanciasge-header {
   display: flex;
-  flex-direction: column; /* hace que el contenido se apile verticalmente */
-  align-items: center; /* centra horizontalmente */
-  justify-content: center; /* centra verticalmente si quieres */
-  text-align: center; /* asegura que el texto dentro se centre */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
+
 .constanciasge-title {
   font-size: 1.875rem;
   font-weight: 800;
@@ -96,75 +99,146 @@
 .constanciasge-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  justify-content: center;
+  gap: 20px;
+  /* padding extra para que la sombra de color no se corte */
+  padding-bottom: 10px;
+  padding-right: 10px;
 }
 
+/* ────────────────────────────────────────────────────────
+   STAT CARD — efecto colorido SOLO para los 3 números.
+   Técnica: box-shadow con offset de color (sin z-index issues)
+   ──────────────────────────────────────────────────────── */
 .constanciasge-stat-card {
+  position: relative;
   background-color: var(--white);
-  border-left: 4px solid var(--blue-primary);
-  box-shadow: var(--shadow-lg);
-  padding: 20px;
-  border-radius: var(--radius-sm);
-  text-align: center;
-  min-width: 180px;
+  border-radius: 16px;
+  padding: 24px 20px 56px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* La sombra de color desplazada hace el efecto de capa */
+  box-shadow: 8px 10px 0px 0px var(--blue-primary);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.constanciasge-border-blue {
-  border-left-color: var(--blue-hover);
+/* Al hover: el card sube y la sombra se aleja más */
+.constanciasge-stat-card:hover {
+  transform: translate(-4px, -5px);
+  box-shadow: 12px 14px 0px 0px var(--blue-primary);
 }
 
-.constanciasge-border-green {
-  border-left-color: var(--blue-hover);
+/* ── Variantes: solo cambia el color de la sombra ── */
+.constanciasge-stat-card.card-blue {
+  box-shadow: 8px 10px 0px 0px var(--blue-primary);
+}
+.constanciasge-stat-card.card-blue:hover {
+  box-shadow: 12px 14px 0px 0px var(--blue-primary);
 }
 
-.constanciasge-border-gray {
-  border-left-color: var(--blue-hover);
+.constanciasge-stat-card.card-yellow {
+  box-shadow: 8px 10px 0px 0px var(--yellow-accent);
+}
+.constanciasge-stat-card.card-yellow:hover {
+  box-shadow: 12px 14px 0px 0px var(--yellow-accent);
 }
 
-/* ── Buscador y filtros unificados ───────────────────── */
+.constanciasge-stat-card.card-blue-light {
+  box-shadow: 8px 10px 0px 0px var(--blue-hover);
+}
+.constanciasge-stat-card.card-blue-light:hover {
+  box-shadow: 12px 14px 0px 0px var(--blue-hover);
+}
+
+/* ── Textos del stat card ── */
+.constanciasge-stat-card .constanciasge-card-subtitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ite-text);
+}
+
+.constanciasge-stat-card .constanciasge-card-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--blue-primary);
+  line-height: 1;
+}
+
+/* ── Burbuja de ícono (esquina inferior derecha) ── */
+.constanciasge-card-badge {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.constanciasge-stat-card.card-blue .constanciasge-card-badge {
+  background-color: var(--blue-primary);
+}
+
+.constanciasge-stat-card.card-yellow .constanciasge-card-badge {
+  background-color: var(--yellow-accent);
+}
+
+.constanciasge-stat-card.card-blue-light .constanciasge-card-badge {
+  background-color: var(--blue-hover);
+}
+
+.constanciasge-stat-card:hover .constanciasge-card-badge {
+  transform: scale(1.12);
+}
+
+/* ── Buscador y filtros ───────────────────── */
 .constanciasge-filters {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .constanciasge-input-group {
   position: relative;
   flex: 1;
-  min-width: 200px; /* Evita que se colapsen en móvil */
+  min-width: 200px;
 }
 
-/* Iconos idénticos para ambos */
 .constanciasge-input-group .constanciasge-icon {
   position: absolute;
   top: 50%;
-  left: 14px; /* Posición exacta */
+  left: 14px;
   transform: translateY(-50%);
-  color: var(--pa-txt3); /* Color gris azulado de tu paleta */
+  color: var(--pa-txt3);
   pointer-events: none;
   z-index: 2;
 }
 
-/* Estilo unificado para Input y Select */
 .constanciasge-input,
 .constanciasge-select {
   width: 100%;
-  height: 42px; /* Altura fija para consistencia */
-  padding: 0 12px 0 40px; /* 40px a la izquierda para el icono */
-  border-radius: var(--radius-sm); /* CORREGIDO: Usar medida, no color */
+  height: 42px;
+  padding: 0 12px 0 40px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--pa-brd);
   font-size: 0.875rem;
   font-family: "Montserrat", sans-serif;
   color: var(--ite-text);
   background-color: var(--white);
   transition: all 0.2s ease;
-  appearance: none; /* Quita la flecha nativa en Select */
+  appearance: none;
   outline: none;
 }
 
-/* Hover y Focus para ambos */
 .constanciasge-input:hover,
 .constanciasge-select:hover {
   border-color: var(--blue-hover);
@@ -173,7 +247,7 @@
 .constanciasge-input:focus,
 .constanciasge-select:focus {
   border-color: var(--blue-primary);
-  box-shadow: 0 0 0 3px rgba(142, 175, 239, 0.2); /* Brillo sutil azul */
+  box-shadow: 0 0 0 3px rgba(142, 175, 239, 0.2);
 }
 
 /* ── Tabla ───────────────────────────── */
@@ -205,6 +279,51 @@
   text-align: center;
   padding: 24px;
   color: #9ca3af;
+}
+
+/* ── Fila de estudiante ────────────────────────────── */
+.constanciasge-table-row {
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.2s ease;
+}
+
+.constanciasge-table-row:last-child {
+  border-bottom: 0;
+}
+
+.constanciasge-table-row:hover {
+  background-color: #f9faff;
+}
+
+/* ── Celdas ────────────────────────────── */
+.constanciasge-td {
+  padding: 12px 10px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.constanciasge-td-center {
+  text-align: center;
+}
+
+/* ── Badge de estado ────────────────────────────── */
+.constanciasge-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.constanciasge-badge.aprobado {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.constanciasge-badge.pendiente {
+  background-color: #fef3c7;
+  color: #92400e;
 }
 
 /* ── Nota ───────────────────────────── */
@@ -244,50 +363,6 @@
 /* ── Iconos ───────────────────────────── */
 .constanciasge-icon {
   color: var(--blue-primary);
-}
-/* ── Fila de estudiante ────────────────────────────── */
-.constanciasge-table-row {
-  border-bottom: 1px solid #ddd;
-  transition: background-color 0.2s ease;
-}
-
-.constanciasge-table-row:last-child {
-  border-bottom: 0;
-}
-
-.constanciasge-table-row:hover {
-  background-color: #f9faff; /* fondo ligero al pasar el mouse */
-}
-
-/* ── Celdas ────────────────────────────── */
-.constanciasge-td {
-  padding: 12px 10px;
-  font-size: 0.9rem;
-  text-align: left;
-}
-
-.constanciasge-td-center {
-  text-align: center;
-}
-
-/* ── Badge de estado ────────────────────────────── */
-.constanciasge-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.constanciasge-badge.aprobado {
-  background-color: #d1fae5; /* verde claro */
-  color: #065f46; /* verde oscuro */
-}
-
-.constanciasge-badge.pendiente {
-  background-color: #fef3c7; /* amarillo claro */
-  color: #92400e; /* amarillo oscuro */
 }
 
 /* ── Botón generar ────────────────────────────── */

@@ -37,7 +37,7 @@ const HomePage = () => {
       categoria: "Cultura",
       titulo: "Música y Arte",
       descripcion: "Expresa tu creatividad en nuestros grupos musicales",
-      imagen: "/imagenes/musica.jpg",
+      imagen: "/imagenes/musicaa.jpg",
     },
     {
       id: 2,

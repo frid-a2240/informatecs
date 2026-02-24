@@ -10,7 +10,7 @@ import TarjetasTotales from "@/app/components/TarjetasTotales";
 import ActividadCard from "@/app/components/ActividadCard";
 import ModalValidarSangre from "@/app/components/ ModalValidarSangre";
 import ModalDetalleEstudiante from "@/app/components/ModalDetalleEstudiante";
-
+import "@/styles/admin/InscripcionesPanel.css";
 const InscripcionesPanel = () => {
   const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
   const [inscripciones, setInscripciones] = useState({});

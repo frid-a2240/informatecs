@@ -43,26 +43,39 @@
   display: none;
 }
 
+.navbar__menu li {
+  margin: 0.5rem 0;
+}
+/* Asegúrate de que el contenedor del menú tenga estas propiedades para el despliegue */
 .navbar__menu {
+  display: none; /* Oculto por defecto */
   flex-direction: column;
   background-color: var(--blue-primary);
   width: 100%;
   position: absolute;
   top: 100%;
   left: 0;
-  display: none;
   padding: 1rem 2rem;
+  list-style: none;
   transition: all 0.3s ease-in-out;
 }
 
+/* Esta clase es la que activaremos con JS */
 .navbar__menu--open {
-  display: flex;
+  display: flex !important;
+  animation: fadeIn 0.3s ease;
 }
 
-.navbar__menu li {
-  margin: 0.5rem 0;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
 /* ==========================
    Mobile Responsive
 ========================== */

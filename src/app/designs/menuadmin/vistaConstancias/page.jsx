@@ -1,10 +1,10 @@
 // app/designs/admin/constancias/page.jsx
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { Search, Award, Filter } from "lucide-react";
+import { Search, Filter, Users, CheckCircle, XCircle } from "lucide-react";
 import { ModalGenerar } from "@/app/components/ModalGenerar";
 import { EstudianteRow } from "@/app/components/EstudianteRow";
-import "@/styles/admin/constancias.css"; // Asegúrate que este CSS tenga el prefijo constanciasge-
+import "@/styles/admin/constancias.css";
 
 export default function VistaConstanciasAdmin() {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -98,6 +98,7 @@ export default function VistaConstanciasAdmin() {
   return (
     <div className="constanciasge-page-container">
       <div className="constanciasge-content-wrapper">
+        {/* Header — card normal, sin efecto */}
         <div className="constanciasge-card constanciasge-header">
           <div>
             <h1 className="constanciasge-title">Generación de Constancias</h1>
@@ -107,29 +108,40 @@ export default function VistaConstanciasAdmin() {
           </div>
         </div>
 
-        {/* Estadísticas */}
+        {/* Estadísticas — stat-card CON efecto colorido */}
         <div className="constanciasge-stats-grid">
-          <div className="constanciasge-stat-card constanciasge-border-blue">
-            <p className="constanciasge-card-title">Total Estudiantes</p>
+          <div className="constanciasge-stat-card card-blue">
+            <p className="constanciasge-card-subtitle">Total Estudiantes</p>
             <p className="constanciasge-card-value">{estadisticas.total}</p>
+            <div className="constanciasge-card-badge">
+              <Users size={18} />
+            </div>
           </div>
-          <div className="constanciasge-stat-card constanciasge-border-green">
-            <p className="constanciasge-card-title">
+
+          <div className="constanciasge-stat-card card-yellow">
+            <p className="constanciasge-card-subtitle">
               Con Actividades Aprobadas
             </p>
             <p className="constanciasge-card-value">{estadisticas.aprobados}</p>
+            <div className="constanciasge-card-badge">
+              <CheckCircle size={18} />
+            </div>
           </div>
-          <div className="constanciasge-stat-card ">
-            <p className="constanciasge-card-title">
+
+          <div className="constanciasge-stat-card card-blue-light">
+            <p className="constanciasge-card-subtitle">
               Sin Actividades Aprobadas
             </p>
             <p className="constanciasge-card-value">
               {estadisticas.noAprobados}
             </p>
+            <div className="constanciasge-card-badge">
+              <XCircle size={18} />
+            </div>
           </div>
         </div>
 
-        {/* Buscador y Filtros */}
+        {/* Buscador y Filtros — card normal, sin efecto */}
         <div className="constanciasge-card constanciasge-filters">
           <div className="constanciasge-input-group">
             <Search size={18} className="constanciasge-icon" />
@@ -151,7 +163,7 @@ export default function VistaConstanciasAdmin() {
           </div>
         </div>
 
-        {/* Tabla */}
+        {/* Tabla — card normal, sin efecto */}
         <div className="constanciasge-card constanciasge-table-container">
           <table className="constanciasge-table">
             <thead>

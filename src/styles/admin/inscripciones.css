@@ -1,3 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap");
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --white: #ffffff;
+  --ite-text: #4a5568;
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+}
+
 /* ─── Modal Overlay ─────────────────────────────────────────────────────────── */
 .overlay {
   position: fixed;
@@ -71,9 +83,9 @@
 
 .modalTitle {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--blue-primary);
 }
 
 .modalSubtitle {
@@ -335,4 +347,264 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+/* ============================================================
+   ESTADÍSTICAS - TarjetasTotales (tt-prefix)
+   ============================================================ */
+
+.tt-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 0 8px;
+}
+
+/* --- HERO GRID --- */
+.tt-hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr 1fr;
+  gap: 14px;
+}
+
+.tt-hero-card {
+  position: relative;
+  border-radius: 18px;
+  padding: 20px 22px 18px;
+  overflow: hidden;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+  cursor: default;
+}
+
+.tt-hero-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Colores de Tarjetas */
+.tt-hero-card--students {
+  background: var(--blue-primary);
+  box-shadow: 0 10px 32px rgba(67, 56, 202, 0.38);
+}
+.tt-hero-card--activities {
+  background: var(--yellow-accent);
+  box-shadow: 0 10px 32px rgba(5, 150, 105, 0.32);
+}
+.tt-hero-card--women {
+  background: var(--blue-hover);
+  box-shadow: 0 10px 32px rgba(219, 39, 119, 0.32);
+}
+.tt-hero-card--men {
+  background: var(--blue-primary);
+  box-shadow: 0 10px 32px rgba(59, 130, 246, 0.32);
+}
+
+/* Círculos decorativos */
+.tt-bg-c {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.09;
+  background: #fff;
+  pointer-events: none;
+}
+.tt-bg-c1 {
+  width: 120px;
+  height: 120px;
+  top: -30px;
+  right: -30px;
+}
+.tt-bg-c2 {
+  width: 70px;
+  height: 70px;
+  bottom: -20px;
+  left: -10px;
+}
+
+.tt-hero-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 7px;
+}
+.tt-hero-value {
+  font-size: 2.7rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.tt-hero-sub {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-weight: 400;
+}
+.tt-hero-icon {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  opacity: 0.18;
+}
+
+/* --- SECCIONES INFERIORES --- */
+.tt-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.tt-section-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.tt-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.tt-section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tt-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: #6b7280;
+  margin: 0;
+}
+
+.tt-tipo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.tt-tipo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+  cursor: default;
+}
+.tt-tipo-item:hover {
+  background: #f1f5f9;
+  transform: scale(1.02);
+}
+.tt-tipo-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.tt-tipo-name {
+  font-size: 0.66rem;
+  color: #9ca3af;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.tt-tipo-count {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tt-prop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.tt-prop-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: transform 0.15s;
+  cursor: default;
+}
+.tt-prop-item:hover {
+  transform: translateX(4px);
+}
+.tt-prop-label {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
+}
+.tt-prop-count {
+  font-size: 1.35rem;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* ── MEDIA QUERIES CORREGIDOS ── */
+
+@media (max-width: 1200px) {
+  /* En tablets grandes o laptops pequeñas reducimos un poco el tamaño de fuente */
+  .tt-hero-value {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Tablets: Las 4 tarjetas de arriba en 2 columnas */
+  .tt-hero {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Celulares y tablets pequeñas: Secciones en una sola columna */
+  .tt-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .tt-hero-value {
+    font-size: 2rem;
+  }
+
+  .tt-tipo-grid {
+    grid-template-columns: 1fr; /* Los tipos de actividad en una fila cada uno */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Celulares pequeños */
+  .tt-hero {
+    grid-template-columns: 1fr;
+  } /* Cada tarjeta ocupa todo el ancho */
+
+  .tt-hero-card {
+    padding: 16px;
+  }
+
+  .tt-prop-label {
+    font-size: 0.75rem;
+  }
+
+  /* Ajuste de las PropBar para que no se amontone el contador */
+  .tt-prop-item {
+    padding: 10px;
+  }
 }
