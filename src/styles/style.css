@@ -227,18 +227,6 @@
   opacity: 0.3;
 }
 
-/* ======= ANIMACIONES ======= */
-@keyframes news-fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .news-event-block:nth-child(1) {
   animation: news-fadeIn 0.5s ease-out 0.1s both;
 }

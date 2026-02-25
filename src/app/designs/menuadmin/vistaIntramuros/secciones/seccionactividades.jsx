@@ -1,30 +1,108 @@
-import React from 'react';
-import { Plus, MapPin, Edit } from 'lucide-react';
+import React from "react";
+import { Plus, MapPin, Edit, CircleCheck, CircleX } from "lucide-react";
 
+import "../css/seccionactividades.css";
 const SectionActividades = ({ data, inscripciones, onEdit, onNew }) => (
-  <div className="space-y-6">
-    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div><h2 className="text-2xl sm:text-3xl font-black text-slate-900">Torneos Activos</h2><p className="text-slate-500 mt-1">{data.length} torneos registrados</p></div>
-      <button onClick={onNew} className="bg-blue-600 text-white px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg font-bold hover:bg-blue-700 transition-colors"><Plus size={20}/> Nueva Actividad</button>
+  <div className="sa-wrapper">
+    <div className="sa-header">
+      <div>
+        <h2 className="sa-header__title">Torneos Activos</h2>
+        <p className="sa-header__sub">{data.length} torneos registrados</p>
+      </div>
+      <button className="sa-btn-new" onClick={onNew}>
+        <Plus size={16} />
+        Nueva Actividad
+      </button>
     </div>
-    <div className="bg-white rounded-2xl shadow-xl border overflow-hidden overflow-x-auto">
-      <table className="w-full text-left">
-        <thead className="bg-slate-50 border-b"><tr className="text-xs font-black text-slate-400 uppercase"><th className="p-5">Actividad</th><th className="p-5 text-center">Estado</th><th className="p-5 text-center">Equipos</th><th className="p-5 text-center">Acciones</th></tr></thead>
-        <tbody className="divide-y text-sm">
-          {data.map((act, idx) => {
-            const numEq = [...new Set(inscripciones.filter(i => i.ID_Actividad?.toString() === act.ID_Actividad?.toString() && i.Nombre_Equipo !== "Individual").map(i => i.Nombre_Equipo?.toLowerCase().trim()))].length;
-            return (
-              <tr key={idx} className="hover:bg-blue-50/40">
-                <td className="p-5"><div className="font-bold text-slate-700 uppercase">{act.Nombre_Actividad}</div><div className="text-xs text-slate-400 flex items-center gap-1 mt-1"><MapPin size={12}/> {act.Lugar_Sede}</div></td>
-                <td className="p-5 text-center"><span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${act.Estado?.toLowerCase() === 'abierto' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}`}>{act.Estado}</span></td>
-                <td className="p-5 text-center"><div className="text-lg font-black text-blue-600">{numEq} / {act.Capacidad_Maxima}</div></td>
-                <td className="p-5 text-center"><button onClick={() => onEdit(act)} className="p-2 text-slate-400 hover:text-blue-600 hover:scale-110 transition-all"><Edit size={20}/></button></td>
-              </tr>
-            );
-          })}
+
+    {/* ── Tabla ── */}
+    <div className="sa-table-wrap">
+      <table className="sa-table">
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th className="center">Estado</th>
+            <th className="center">Equipos</th>
+            <th className="center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="sa-empty">
+                No hay actividades registradas
+              </td>
+            </tr>
+          ) : (
+            data.map((act, idx) => {
+              const numEq = [
+                ...new Set(
+                  inscripciones
+                    .filter(
+                      (i) =>
+                        i.ID_Actividad?.toString() ===
+                          act.ID_Actividad?.toString() &&
+                        i.Nombre_Equipo !== "Individual",
+                    )
+                    .map((i) => i.Nombre_Equipo?.toLowerCase().trim()),
+                ),
+              ].length;
+
+              const isOpen = act.Estado?.toLowerCase() === "abierto";
+
+              return (
+                <tr key={idx}>
+                  {/* Nombre + sede */}
+                  <td>
+                    <div className="sa-td-name">{act.Nombre_Actividad}</div>
+                    <div className="sa-td-location">
+                      <MapPin size={11} />
+                      {act.Lugar_Sede}
+                    </div>
+                  </td>
+
+                  {/* Estado */}
+                  <td className="center">
+                    <span
+                      className={`sa-badge ${
+                        isOpen ? "sa-badge--open" : "sa-badge--closed"
+                      }`}
+                    >
+                      {isOpen ? (
+                        <CircleCheck size={11} />
+                      ) : (
+                        <CircleX size={11} />
+                      )}
+                      {act.Estado}
+                    </span>
+                  </td>
+
+                  {/* Contador equipos */}
+                  <td className="center">
+                    <div className="sa-td-count">
+                      {numEq} / {act.Capacidad_Maxima}
+                      <span>inscritos</span>
+                    </div>
+                  </td>
+
+                  {/* Acciones */}
+                  <td className="center">
+                    <button
+                      className="sa-btn-edit"
+                      onClick={() => onEdit(act)}
+                      title="Editar actividad"
+                    >
+                      <Edit size={18} />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </table>
     </div>
   </div>
 );
+
 export default SectionActividades;

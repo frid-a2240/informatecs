@@ -5,7 +5,7 @@ import IntramurosCalendar from "./componentes/IntramurosCalendar";
 const IntramurosPage = () => {
   return (
     <div className="intramuros-main-page">
-      <h1>🏆 Actividades Extracurriculares Intramuros ITE</h1>
+      <h1> Actividades Extracurriculares Intramuros ITE</h1>
       <p>
         Información centralizada sobre torneos, ligas y eventos deportivos
         internos. La información es actualizada en tiempo real desde el Registro

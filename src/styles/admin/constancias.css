@@ -1,5 +1,3 @@
-/* Constancias Admin CSS con prefijo constanciasge- y tu paleta de colores */
-
 /* ── Variables ───────────────────────────── */
 :root {
   --blue-primary: #1b396a;
@@ -12,12 +10,21 @@
   --radius-sm: 8px;
 }
 
+/* ── Reset base ───────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ── Contenedor principal ───────────────── */
 .constanciasge-page-container {
   min-height: 100vh;
-  padding: 24px;
+  padding: clamp(12px, 3vw, 24px);
   background-color: #f2f5fb;
   font-family: "Montserrat", sans-serif;
+  /* CRÍTICO: evita scroll horizontal por sombras y contenido desbordado */
+  overflow-x: hidden;
 }
 
 .constanciasge-content-wrapper {
@@ -25,23 +32,23 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(16px, 3vw, 24px);
 }
 
-/* ────────────────────────────────────────────────────────
-   CARD NORMAL — header, filtros, tabla. Sin efecto.
-   ──────────────────────────────────────────────────────── */
+/* ── Card normal (header, filtros, tabla) ── */
 .constanciasge-card {
   background-color: var(--white);
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(27, 57, 106, 0.1);
-  padding: 20px;
+  padding: clamp(14px, 3vw, 20px);
   display: flex;
   flex-direction: column;
   gap: 12px;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
+  min-width: 0; /* evita overflow en flex/grid */
+  width: 100%;
 }
 
 .constanciasge-card:hover {
@@ -57,7 +64,7 @@
 
 .constanciasge-card-subtitle {
   font-size: 0.875rem;
-  color: var(--pa-txt3);
+  color: var(--ite-text);
 }
 
 .constanciasge-card-value {
@@ -71,7 +78,7 @@
   color: var(--yellow-accent);
 }
 
-/* ── Header ───────────────────────────── */
+/* ── Header ── */
 .constanciasge-header {
   display: flex;
   flex-direction: column;
@@ -81,56 +88,51 @@
 }
 
 .constanciasge-title {
-  font-size: 1.875rem;
+  font-size: clamp(1.2rem, 4vw, 1.875rem);
   font-weight: 800;
   color: var(--blue-primary);
   letter-spacing: -0.03em;
   line-height: 1.15;
   text-align: center;
+  word-break: break-word;
 }
 
 .constanciasge-subtitle {
-  font-size: 0.875rem;
+  font-size: clamp(0.8rem, 2vw, 0.875rem);
   color: var(--ite-text);
   text-align: center;
 }
 
-/* ── Estadísticas ───────────────────────────── */
+/* ── Stats grid ── */
 .constanciasge-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  /* padding extra para que la sombra de color no se corte */
-  padding-bottom: 10px;
-  padding-right: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: clamp(12px, 3vw, 20px);
+  /* CRÍTICO: espacio para que la box-shadow desplazada no cause scroll */
+  padding: 4px 12px 14px 4px;
 }
 
-/* ────────────────────────────────────────────────────────
-   STAT CARD — efecto colorido SOLO para los 3 números.
-   Técnica: box-shadow con offset de color (sin z-index issues)
-   ──────────────────────────────────────────────────────── */
+/* ── Stat card con sombra de color ── */
 .constanciasge-stat-card {
   position: relative;
   background-color: var(--white);
   border-radius: 16px;
-  padding: 24px 20px 56px 20px;
+  padding: clamp(16px, 3vw, 24px) clamp(14px, 3vw, 20px) 56px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  /* La sombra de color desplazada hace el efecto de capa */
   box-shadow: 8px 10px 0px 0px var(--blue-primary);
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  min-width: 0;
 }
 
-/* Al hover: el card sube y la sombra se aleja más */
 .constanciasge-stat-card:hover {
   transform: translate(-4px, -5px);
   box-shadow: 12px 14px 0px 0px var(--blue-primary);
 }
 
-/* ── Variantes: solo cambia el color de la sombra ── */
 .constanciasge-stat-card.card-blue {
   box-shadow: 8px 10px 0px 0px var(--blue-primary);
 }
@@ -152,9 +154,8 @@
   box-shadow: 12px 14px 0px 0px var(--blue-hover);
 }
 
-/* ── Textos del stat card ── */
 .constanciasge-stat-card .constanciasge-card-subtitle {
-  font-size: 0.78rem;
+  font-size: clamp(0.68rem, 2vw, 0.78rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -162,13 +163,12 @@
 }
 
 .constanciasge-stat-card .constanciasge-card-value {
-  font-size: 2.4rem;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
   font-weight: 800;
   color: var(--blue-primary);
   line-height: 1;
 }
 
-/* ── Burbuja de ícono (esquina inferior derecha) ── */
 .constanciasge-card-badge {
   position: absolute;
   bottom: 16px;
@@ -186,31 +186,40 @@
 .constanciasge-stat-card.card-blue .constanciasge-card-badge {
   background-color: var(--blue-primary);
 }
-
 .constanciasge-stat-card.card-yellow .constanciasge-card-badge {
   background-color: var(--yellow-accent);
 }
-
 .constanciasge-stat-card.card-blue-light .constanciasge-card-badge {
   background-color: var(--blue-hover);
 }
-
 .constanciasge-stat-card:hover .constanciasge-card-badge {
   transform: scale(1.12);
 }
 
-/* ── Buscador y filtros ───────────────────── */
+/* ── Filtros ── */
 .constanciasge-filters {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 0;
+  flex-direction: column; /* Apilado en móvil */
+  gap: 12px;
+}
+
+@media (min-width: 600px) {
+  .constanciasge-filters {
+    flex-direction: row;
+    gap: 16px;
+  }
+  .constanciasge-filters .constanciasge-input-group:first-child {
+    flex: 2;
+  }
+  .constanciasge-filters .constanciasge-input-group:last-child {
+    flex: 1;
+  }
 }
 
 .constanciasge-input-group {
   position: relative;
-  flex: 1;
-  min-width: 200px;
+  width: 100%;
+  min-width: 0; /* CRÍTICO: elimina min-width que causaba overflow */
 }
 
 .constanciasge-input-group .constanciasge-icon {
@@ -218,7 +227,7 @@
   top: 50%;
   left: 14px;
   transform: translateY(-50%);
-  color: var(--pa-txt3);
+  color: var(--ite-text);
   pointer-events: none;
   z-index: 2;
 }
@@ -226,11 +235,13 @@
 .constanciasge-input,
 .constanciasge-select {
   width: 100%;
+  max-width: 100%; /* evita desborde */
   height: 42px;
   padding: 0 12px 0 40px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--pa-brd);
-  font-size: 0.875rem;
+  border: 1px solid #d1d5db;
+  /* min 16px evita zoom automático en iOS Safari */
+  font-size: max(16px, 0.875rem);
   font-family: "Montserrat", sans-serif;
   color: var(--ite-text);
   background-color: var(--white);
@@ -250,14 +261,18 @@
   box-shadow: 0 0 0 3px rgba(142, 175, 239, 0.2);
 }
 
-/* ── Tabla ───────────────────────────── */
+/* ── Tabla ── */
 .constanciasge-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Bordes redondeados se respetan */
+  border-radius: 0 0 16px 16px;
 }
 
 .constanciasge-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 480px; /* fuerza scroll horizontal antes de romper */
 }
 
 .constanciasge-table th,
@@ -273,6 +288,81 @@
   text-transform: uppercase;
   font-size: 0.75rem;
   color: white;
+  white-space: nowrap;
+}
+
+/* ── MÓVIL: tabla → cards ── */
+@media (max-width: 560px) {
+  .constanciasge-table-container {
+    overflow-x: visible; /* desactivamos scroll horizontal */
+  }
+
+  .constanciasge-table {
+    min-width: unset;
+  }
+
+  /* Ocultar encabezados */
+  .constanciasge-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .constanciasge-table,
+  .constanciasge-table tbody,
+  .constanciasge-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .constanciasge-table tr {
+    padding: 12px 0;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .constanciasge-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .constanciasge-table td {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 0;
+    border: none;
+    font-size: 0.875rem;
+  }
+
+  /* Etiqueta auto desde data-label */
+  .constanciasge-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--blue-primary);
+    min-width: 110px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+
+  .constanciasge-no-data::before {
+    display: none;
+  }
+
+  .constanciasge-td,
+  .constanciasge-td-center {
+    padding: 5px 0;
+    text-align: left !important;
+  }
+
+  .constanciasge-btn-generar {
+    width: 100%;
+    justify-content: center;
+    margin: 6px 0 0 0;
+  }
 }
 
 .constanciasge-no-data {
@@ -281,32 +371,30 @@
   color: #9ca3af;
 }
 
-/* ── Fila de estudiante ────────────────────────────── */
+/* ── Fila de estudiante ── */
 .constanciasge-table-row {
   border-bottom: 1px solid #ddd;
   transition: background-color 0.2s ease;
 }
-
 .constanciasge-table-row:last-child {
   border-bottom: 0;
 }
-
 .constanciasge-table-row:hover {
   background-color: #f9faff;
 }
 
-/* ── Celdas ────────────────────────────── */
+/* ── Celdas ── */
 .constanciasge-td {
   padding: 12px 10px;
   font-size: 0.9rem;
   text-align: left;
+  word-break: break-word;
 }
-
 .constanciasge-td-center {
   text-align: center;
 }
 
-/* ── Badge de estado ────────────────────────────── */
+/* ── Badge estado ── */
 .constanciasge-badge {
   display: inline-block;
   padding: 4px 8px;
@@ -314,35 +402,37 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-align: center;
+  white-space: nowrap;
 }
-
 .constanciasge-badge.aprobado {
   background-color: #d1fae5;
   color: #065f46;
 }
-
 .constanciasge-badge.pendiente {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-/* ── Nota ───────────────────────────── */
+/* ── Nota ── */
 .constanciasge-note {
   background-color: #ebf8ff;
   border: 1px solid #bfdbfe;
   border-radius: var(--radius-sm);
   padding: 12px;
   color: #1e40af;
-  font-size: 0.875rem;
+  font-size: clamp(0.78rem, 2.5vw, 0.875rem);
+  line-height: 1.5;
+  word-break: break-word;
 }
 
-/* ── Loading ───────────────────────────── */
+/* ── Loading ── */
 .constanciasge-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 48px;
+  gap: 16px;
 }
 
 .constanciasge-spinner {
@@ -360,12 +450,12 @@
   }
 }
 
-/* ── Iconos ───────────────────────────── */
+/* ── Iconos ── */
 .constanciasge-icon {
   color: var(--blue-primary);
 }
 
-/* ── Botón generar ────────────────────────────── */
+/* ── Botón generar ── */
 .constanciasge-btn-generar {
   background-color: var(--blue-primary);
   color: var(--white);
@@ -379,12 +469,14 @@
   margin: 0 auto;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .constanciasge-btn-generar:hover {
   background-color: var(--blue-hover);
 }
-
 .constanciasge-btn-generar:active {
   transform: scale(0.95);
 }

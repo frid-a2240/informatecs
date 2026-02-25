@@ -1,6 +1,5 @@
 "use client";
-import React, { Fragment } from "react";
-// Añadimos MapPin para identificar visualmente el aula
+import React, { Fragment, useState, useEffect } from "react";
 import { Clock, Edit2, Trash2, MapPin } from "lucide-react";
 
 export const CalendarioView = ({
@@ -12,14 +11,107 @@ export const CalendarioView = ({
   onEdit,
   onDelete,
 }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkSize = () => setIsMobile(window.innerWidth < 768);
+    checkSize();
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
+  }, []);
+
   const getStartRow = (horaInicio) => {
     if (!horaInicio) return 2;
     const [h] = horaInicio.split(":").map(Number);
     return h - primeraHora + 2;
   };
 
+  // --- VISTA MÓVIL (Mantiene la coherencia de tus colores de actividad) ---
+  if (isMobile) {
+    return (
+      <div className="mobile-container" style={{ padding: "10px" }}>
+        {diasSemana.map((dia) => {
+          const actividadesDia = [];
+          const vistos = new Set();
+          horasVisibles.forEach((h) => {
+            const act = getActivityForSlot(dia, h);
+            if (act && !vistos.has(act.id)) {
+              actividadesDia.push(act);
+              vistos.add(act.id);
+            }
+          });
+
+          if (actividadesDia.length === 0) return null;
+
+          return (
+            <div key={dia} style={{ marginBottom: "20px" }}>
+              <div
+                style={{
+                  fontWeight: "800",
+                  color: "#1b396a",
+                  borderBottom: "2px solid #fe9e10",
+                  marginBottom: "10px",
+                  paddingBottom: "5px",
+                }}
+              >
+                {dia.toUpperCase()}
+              </div>
+              {actividadesDia.map((act) => (
+                <div
+                  key={act.id}
+                  style={{
+                    backgroundColor: act.color || "#3b82f6",
+                    borderRadius: "6px",
+                    padding: "12px",
+                    color: "white",
+                    marginBottom: "8px",
+                    position: "relative",
+                  }}
+                >
+                  <div style={{ fontWeight: "700", fontSize: "0.9rem" }}>
+                    {act.nombre}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "4px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "3px",
+                      }}
+                    >
+                      <Clock size={12} /> {act.horaInicio}
+                    </span>
+                    {act.aula && (
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "3px",
+                        }}
+                      >
+                        <MapPin size={12} /> {act.aula}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // --- VISTA COMPUTADORA (TU CÓDIGO ORIGINAL EXACTO) ---
   return (
-    <div className="calendario-container">
+    <div className="calendario-container" style={{ overflowX: "auto" }}>
       <div
         className="calendario-grid"
         style={{
@@ -28,6 +120,7 @@ export const CalendarioView = ({
           gridTemplateRows: `50px repeat(${horasVisibles.length}, 60px)`,
           gap: "0",
           position: "relative",
+          minWidth: "1000px", // Asegura que en Tablets no se colapsen las columnas
         }}
       >
         {/* Cabecera Hora */}
@@ -57,7 +150,7 @@ export const CalendarioView = ({
           </div>
         ))}
 
-        {/* Celdas de fondo */}
+        {/* Celdas de fondo - RESTAURADO: border 1px solid #e5e7eb */}
         {diasSemana.map((dia, diaIdx) => (
           <Fragment key={`bg-${dia}`}>
             {horasVisibles.map((hora, horaIdx) => (
@@ -75,7 +168,7 @@ export const CalendarioView = ({
           </Fragment>
         ))}
 
-        {/* Actividades */}
+        {/* Actividades - RESTAURADO: Estilos originales de padding, margin y texto */}
         {diasSemana.map((dia, diaIdx) => {
           const colIndex = diaIdx + 2;
           return (
@@ -108,7 +201,6 @@ export const CalendarioView = ({
                       }}
                     >
                       <div className="actividad-contenido">
-                        {/* Nombre de la actividad */}
                         <div
                           className="actividad-nombre"
                           style={{
@@ -124,7 +216,6 @@ export const CalendarioView = ({
                           {activity.nombre}
                         </div>
 
-                        {/* SECCIÓN DEL AULA (NUEVA) */}
                         {activity.aula && (
                           <div
                             className="actividad-aula"
@@ -143,7 +234,6 @@ export const CalendarioView = ({
                           </div>
                         )}
 
-                        {/* Horario */}
                         <div
                           className="actividad-tiempo"
                           style={{

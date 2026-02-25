@@ -1,10 +1,8 @@
 /* ============================================================
    PANEL ADMIN — paneladmin.css
-   Paleta: --blue-primary #1b396a · --yellow-accent #fe9e10
-           --blue-hover #8eafef · Montserrat
 ============================================================ */
 
-/* ── Variables (extiende las del proyecto) ──────────────────── */
+/* ── Variables ──────────────────────────────────────────────── */
 :root {
   --blue-primary: #1b396a;
   --yellow-accent: #fe9e10;
@@ -17,31 +15,32 @@
   --ite-blue-dark: #1b396a;
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --radius-sm: 8px;
-
-  /* Extensiones internas del dashboard */
   --pa-blue-mid: #2d5ba8;
   --pa-blue-light: #e8f0fb;
   --pa-blue-ll: #f0f5ff;
   --pa-yellow-d: #c97800;
   --pa-yellow-l: #fff5e0;
   --pa-hover-l: #dce9ff;
-
   --pa-bg: #f2f5fb;
   --pa-card: #ffffff;
   --pa-brd: rgba(27, 57, 106, 0.1);
   --pa-txt2: #4a5568;
   --pa-txt3: #8fa3be;
-
   --pa-sh-xs: 0 1px 3px rgba(27, 57, 106, 0.06);
   --pa-sh-sm: 0 2px 10px rgba(27, 57, 106, 0.08);
   --pa-sh-md: 0 6px 24px rgba(27, 57, 106, 0.13);
-
   --pa-r-sm: 10px;
   --pa-r-md: 16px;
   --pa-r-lg: 22px;
   --pa-r-xl: 28px;
-
   font-family: "Montserrat", sans-serif;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /* ── Page wrapper ───────────────────────────────────────────── */
@@ -51,24 +50,7 @@
   color: var(--text-dark);
   min-height: 100vh;
   background: var(--pa-bg);
-  background-image:
-    radial-gradient(
-      ellipse 70% 50% at 0% 0%,
-      rgba(45, 91, 168, 0.07) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 50% 60% at 100% 30%,
-      rgba(254, 158, 16, 0.06) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 40% 40% at 55% 100%,
-      rgba(27, 57, 106, 0.05) 0%,
-      transparent 50%
-    );
   padding: 2.5rem 3rem;
-  overflow-x: hidden;
 }
 
 .paneladmin__main {
@@ -77,6 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-x: hidden;
 }
 
 /* ── Loading ────────────────────────────────────────────────── */
@@ -143,6 +126,7 @@
   letter-spacing: -0.03em;
   line-height: 1.15;
   margin-bottom: 0.35rem;
+  word-break: break-word;
 }
 .paneladmin__subtitulo {
   color: var(--pa-txt2);
@@ -201,12 +185,12 @@
     box-shadow 0.3s,
     transform 0.3s;
   animation: pa-fade-up 0.45s ease both;
+  min-width: 0;
 }
 .paneladmin__stat:hover {
   box-shadow: var(--pa-sh-md);
   transform: translateY(-3px);
 }
-/* Top accent bar */
 .paneladmin__stat::before {
   content: "";
   position: absolute;
@@ -215,22 +199,18 @@
   border-radius: var(--pa-r-lg) var(--pa-r-lg) 0 0;
 }
 .paneladmin__stat--primary::before {
-  background: linear-gradient(90deg, var(--blue-primary), var(--pa-blue-mid));
+  background: var(--blue-primary);
 }
 .paneladmin__stat--yellow::before {
-  background: linear-gradient(90deg, var(--yellow-accent), #ffca6b);
+  background: var(--yellow-accent);
 }
 .paneladmin__stat--hover::before {
-  background: linear-gradient(90deg, var(--blue-hover), #c8dcff);
+  background: var(--blue-hover);
 }
 .paneladmin__stat--dark::before {
-  background: linear-gradient(
-    90deg,
-    var(--act-primary-dark),
-    var(--blue-primary)
-  );
+  background: var(--act-primary-dark);
 }
-/* Decorative bg circle */
+
 .paneladmin__stat::after {
   content: "";
   position: absolute;
@@ -249,7 +229,6 @@
   background: var(--blue-hover);
 }
 
-/* Stat icon */
 .paneladmin__stat-icon {
   width: 42px;
   height: 42px;
@@ -276,7 +255,6 @@
   color: var(--act-primary-dark);
 }
 
-/* Stat value */
 .paneladmin__stat-val {
   font-size: 2.25rem;
   font-weight: 800;
@@ -287,7 +265,6 @@
 .paneladmin__stat--yellow .paneladmin__stat-val {
   color: var(--pa-yellow-d);
 }
-
 .paneladmin__stat-label {
   font-size: 0.74rem;
   font-weight: 700;
@@ -310,6 +287,7 @@
   box-shadow: var(--pa-sh-xs);
   transition: box-shadow 0.3s;
   animation: pa-fade-up 0.45s ease both;
+  min-width: 0;
 }
 .paneladmin__chart-card:hover {
   box-shadow: var(--pa-sh-md);
@@ -337,18 +315,18 @@
   flex-shrink: 0;
 }
 
-/* ── Donut + legend layout ──────────────────────────────────── */
+/* ── Donut + legend ─────────────────────────────────────────── */
 .paneladmin__donut-wrap {
   display: flex;
   align-items: center;
   gap: 1.75rem;
 }
-
 .paneladmin__legend {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
   flex: 1;
+  min-width: 0;
 }
 .paneladmin__legend-item {
   display: flex;
@@ -362,7 +340,6 @@
 .paneladmin__legend-item:hover {
   background: var(--pa-blue-ll);
 }
-
 .paneladmin__legend-dot {
   width: 10px;
   height: 10px;
@@ -385,7 +362,7 @@
 .paneladmin__total-box {
   margin-top: 1.25rem;
   padding: 1rem 1.25rem;
-  background: linear-gradient(135deg, var(--pa-blue-ll), var(--pa-blue-light));
+  background: var(--pa-blue-ll);
   border-radius: var(--pa-r-md);
   border: 1px solid rgba(27, 57, 106, 0.12);
 }
@@ -486,55 +463,20 @@
   background: var(--blue-hover);
 }
 
-/* ── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 1200px) {
-  .paneladmin {
-    padding: 2rem;
-  }
-  .paneladmin__grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 900px) {
-  .paneladmin__grid-charts {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 640px) {
-  .paneladmin {
-    padding: 1.25rem;
-  }
-  .paneladmin__grid-4,
-  .paneladmin__grid-2,
-  .paneladmin__grid-charts {
-    grid-template-columns: 1fr;
-  }
-  .paneladmin__header {
-    flex-direction: column;
-  }
-  .paneladmin__titulo {
-    font-size: 1.5rem;
-  }
-  .paneladmin__stat-val {
-    font-size: 1.875rem;
-  }
-  .paneladmin__donut-wrap {
-    flex-direction: column;
-  }
-  .paneladmin__chart-card {
-    padding: 1.5rem;
-  }
-}
+/* ============================================================
+   OFERTAS
+============================================================ */
+
 .ofertas-dashboard-main {
   flex: 1;
-  transition: all 0.3s ease;
-  padding: 2rem 1rem;
-  max-width: 1200px; /* Un poco más ancho para dar respiro */
+  padding: clamp(0.75rem, 3vw, 2rem) 1rem;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centra todo el contenido verticalmente */
+  /* CRÍTICO: stretch permite que los hijos ocupen todo el ancho */
+  align-items: stretch;
 }
 
 .ofertas-icon {
@@ -545,68 +487,70 @@
   margin-right: 6px;
 }
 
-/* --- Contenedores principales --- */
-
-.ofertas-with-sidebar {
-  margin-left: 0;
-}
-
-.ofertas-full-width {
-  margin-left: 0;
-}
-
-/* --- Header y Mascota --- */
+/* ── Header + mascota ── */
 .ofertas-header-with-mascot {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-  padding: 0;
+  margin-bottom: 1rem;
+  gap: 0.25rem; /* gap mínimo en móvil */
+  width: 100%;
 }
 
 .ofertas-header-content {
   flex: 1;
   width: 100%;
 }
-
 .ofertas-header-content h1 {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.4rem, 5vw, 2.5rem);
   font-weight: 800;
   color: var(--blue-primary);
-  margin-bottom: 0.5rem;
-  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+  margin-top: 0; /* eliminado margin-top que creaba el hueco */
+  word-break: break-word;
 }
-
 .ofertas-header-content .ofertas-subtitle {
-  font-size: clamp(0.9rem, 3vw, 1.125rem);
+  font-size: clamp(0.85rem, 3vw, 1.125rem);
   color: #64748b;
   font-weight: 400;
   margin-bottom: 0;
 }
 
-.ofertas-mascota-container {
-  flex-shrink: 0;
-  animation: ofertas-float 3s ease-in-out infinite;
-  order: -1;
+.ofertas-header-with-mascot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+  width: 100%;
 }
 
+.ofertas-mascota-container {
+  flex-shrink: 0;
+  order: -1; /* siempre arriba */
+  animation: ofertas-float 3s ease-in-out infinite;
+  /* CRÍTICO: display block para que sea visible */
+  display: block;
+}
 .ofertas-mascota-container img {
-  width: clamp(120px, 30vw, 200px);
-  max-width: 200px;
-  pad: 2rem;
+  display: block;
+  width: clamp(90px, 25vw, 160px);
+  max-width: 160px;
   height: auto !important;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
   transition: transform 0.3s ease;
 }
-
 .ofertas-mascota-container img:hover {
   transform: scale(1.05) rotate(-5deg);
 }
-
+.ofertas-mascota-container img:hover {
+  transform: scale(1.05) rotate(-5deg);
+}
 @keyframes ofertas-float {
   0%,
   100% {
@@ -617,20 +561,20 @@
   }
 }
 
-/* --- Indicador de Pasos --- */
+/* ── Indicador de pasos ── */
 .ofertas-steps-indicator {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 1.5rem;
-  padding: 1rem 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
   border-radius: 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   gap: 0;
+  width: 100%;
 }
-
 .ofertas-steps-indicator::-webkit-scrollbar {
   height: 4px;
 }
@@ -664,21 +608,19 @@
   border: 3px solid transparent;
   position: relative;
   z-index: 2;
+  flex-shrink: 0;
 }
-
 .ofertas-step.active .ofertas-step-number {
   background: var(--blue-primary);
   color: white;
   border-color: var(--blue-primary);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
-
 .ofertas-step.completed .ofertas-step-number {
   background: var(--blue-primary);
   color: white;
   border-color: var(--blue-primary);
 }
-
 .ofertas-step.completed .ofertas-step-number::before {
   content: "✓";
   position: absolute;
@@ -686,38 +628,54 @@
   font-weight: bold;
 }
 
+.ofertas-step-label {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 500;
+  text-align: center;
+  max-width: 90px;
+  line-height: 1.2;
+  word-break: break-word;
+}
 .ofertas-step.active .ofertas-step-label {
-  color: #3b82f6;
+  color: var(--blue-primary);
   font-weight: 800;
 }
+.ofertas-step.completed .ofertas-step-label {
+  color: #64748b;
+  font-weight: 500;
+}
 
+/* CORRECCIÓN PRINCIPAL: eliminado top:-20px que desplazaba la línea fuera del flujo */
 .ofertas-step-line {
-  width: 0px;
+  width: 40px;
   height: 3px;
   background-color: #e5e7eb;
   margin: 0 0.25rem;
-  position: relative;
-  top: -20px;
+  /* Alineada verticalmente con el centro del círculo usando flex en el padre */
+  align-self: flex-start;
+  margin-top: 17px; /* mitad del alto del círculo (38/2 - 3/2) */
   border-radius: 2px;
   flex-shrink: 0;
+  transition: background 0.4s ease;
 }
-
 .ofertas-step-line.completed {
   background: var(--blue-primary);
 }
 
-/* --- Carrusel --- */
+/* ── Carrusel ── */
 .ofertas-carousel-container {
   position: relative;
   width: 100%;
-  max-width: 1100px; /* Ajuste para que quepan 3 cards de ~340px */
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 10px;
+  /* CORRECCIÓN: padding horizontal para que los botones quepan dentro */
+  padding: 0 2.5rem;
 }
 
 .ofertas-carousel {
   display: flex;
-  overflow-x: hidden; /* Cambiado de 'auto' a 'hidden' para que solo se mueva con flechas */
+  overflow-x: hidden;
   scroll-behavior: smooth;
   gap: 1.5rem;
   padding: 1rem 0;
@@ -727,73 +685,88 @@
   display: none;
 }
 
-/* --- Tarjetas --- */
+/* ── Cards ── */
 .ofertas-card {
   background: var(--white);
   padding: 1.25rem;
   border-radius: 1.25rem;
   flex: 0 0 calc(33.333% - 1rem);
-  min-width: 280px;
+  min-width: 260px;
   max-width: 350px;
   scroll-snap-align: start;
-  justify-items: center;
   cursor: pointer;
   border: 3px solid var(--blue-primary);
   display: flex;
   flex-direction: column;
-
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
-
 .ofertas-card:hover {
   border-color: var(--blue-hover);
   box-shadow: 0 15px 25px rgba(27, 57, 106, 0.25);
   transform: translateY(-2px);
 }
-
 .ofertas-card h3 {
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
   font-weight: 800;
   color: var(--text-dark);
   margin-bottom: 0.75rem;
 }
 
-.ofertas-card ofertas-description {
-  font-size: 0.9rem;
-  color: #555;
-  margin-bottom: 1rem;
-  line-height: 1.5;
+/* ── Botones del carrusel — CORRECCIÓN PRINCIPAL ── */
+.ofertas-carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: 2px solid var(--blue-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+  flex-shrink: 0;
 }
-.ofertas-modal-h1 {
-  /* Tamaño responsivo e impacto visual */
-  font-size: clamp(1.8rem, 5vw, 2.5rem);
-  font-weight: 900;
-
-  /* Colores de identidad: Azul a Naranja */
-  color: var(--blue-primary);
-
-  /* Estilizado de texto */
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
-  text-align: left;
-
-  /* Animación de entrada suave */
-  animation: ofertas-slide-in 0.5s ease-out;
+.ofertas-carousel-btn:hover {
+  background: var(--yellow-accent);
+  border-color: var(--yellow-accent);
 }
 
-@keyframes ofertas-slide-in {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Dentro del padding del container — ya no se salen del viewport */
+.ofertas-carousel-btn.left {
+  left: 0;
 }
+.ofertas-carousel-btn.right {
+  right: 0;
+}
+
+/* ── Botón registrar ── */
+.ofertas-register-btn {
+  padding: 0.9rem 2rem;
+  background: var(--blue-primary);
+  border: none;
+  border-radius: 0.6rem;
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(27, 57, 106, 0.25);
+  transition: background 0.2s;
+}
+.ofertas-register-btn:hover {
+  background: var(--blue-hover);
+}
+
+/* ── Card footer ── */
 .ofertas-card-footer {
   display: flex;
   justify-content: space-between;
@@ -803,60 +776,16 @@
   padding-top: 1rem;
   margin-top: auto;
 }
-
 .ofertas-card-footer span.ofertas-badge {
   background: var(--blue-primary);
   color: var(--white);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
-/* --- Botones --- */
-.ofertas-carousel-btn {
-  display: flex !important; /* Forzamos que se vean */
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: white;
-
-  border: none;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 50;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s;
-}
-.ofertas-register-btn {
-  padding: 0.9rem 2rem;
-  background: var(--blue-primary);
-  border: none;
-  border-radius: 0.6rem;
-  color: var(--white);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  box-shadow: 0 6px 18px rgba(27, 57, 106, 0.25);
-}
-.ofertas-carousel-btn:hover {
-  background: var(--yellow-accent);
-}
-
-.ofertas-carousel-btn.left {
-  left: -25px;
-}
-
-.ofertas-carousel-btn.right {
-  right: -25px;
-}
-
-/* --- Modales --- */
-/* --- Overlay (Fondo oscuro) --- */
+/* ── Modal ── */
 .ofertas-modal-overlay {
   position: fixed;
   inset: 0;
@@ -864,12 +793,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Asegura que esté por encima de todo */
+  z-index: 9999;
   backdrop-filter: blur(6px);
   padding: 1rem;
 }
-
-/* --- Estructura del Modal --- */
 .ofertas-modal {
   position: relative;
   background: var(--white);
@@ -880,29 +807,11 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  z-index: 10; /* El contenedor base */
 }
-
-/* --- El Borde Animado (Detrás del contenido) --- */
-.ofertas-modal::before {
-  content: "";
-  position: absolute;
-  inset: -3px; /* Se extiende un poco hacia afuera */
-  border-radius: 1.4rem;
-  padding: 3px;
-
-  background-size: 300% 300%;
-  animation: ofertas-electric 3s linear infinite;
-  z-index: -1; /* ¡ESTO ES LO MÁS IMPORTANTE! Se va al fondo */
-}
-
-/* --- Asegurar que el contenido sea visible --- */
 .ofertas-modal > * {
   position: relative;
-  z-index: 2; /* Todo lo que esté adentro sube al frente */
+  z-index: 2;
 }
-
-/* --- Botón de Cerrar --- */
 .ofertas-close-btn {
   position: absolute;
   top: 1rem;
@@ -920,11 +829,33 @@
   transition: all 0.2s;
   z-index: 30;
 }
-
 .ofertas-close-btn:hover {
   background: #e5e7eb;
   color: var(--blue-primary);
   transform: rotate(90deg);
+}
+
+.ofertas-modal-h1 {
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 900;
+  color: var(--blue-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+  animation: ofertas-slide-in 0.5s ease-out;
+  word-break: break-word;
+}
+@keyframes ofertas-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .ofertas-info-grid {
@@ -936,128 +867,98 @@
   flex-direction: column;
   gap: 0.75rem;
 }
-/* --- Indicador de pasos (Mobile) --- */
-.ofertas-steps-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 1.5rem;
-  padding: 1.5rem 0.5rem;
-  border-radius: 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  gap: 0;
-}
 
-.ofertas-steps-indicator::-webkit-scrollbar {
-  height: 4px;
-}
-
-.ofertas-steps-indicator::-webkit-scrollbar-thumb {
-  background: var(--blue-primary);
-  border-radius: 4px;
-}
-
-.ofertas-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-  min-width: 80px;
-  flex-shrink: 0;
-}
-
-.ofertas-step-number {
-  width: 50px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #e5e7eb;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  border: 3px solid transparent;
-  position: relative;
-  z-index: 2;
-}
-
-.ofertas-step.active .ofertas-step-number {
-  background: var(--blue-primary);
-  color: white;
-  border-color: var(--blue-primary);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.ofertas-step.completed .ofertas-step-number {
-  background: var(--blue-primary);
-  color: white;
-  border-color: var(--blue-primary);
-}
-
-.ofertas-step.completed .ofertas-step-number::before {
-  content: "✓";
-  position: absolute;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.ofertas-step-label {
-  font-size: 1rem;
-  color: #9ca3af;
-  font-weight: 500;
-  text-align: center;
-  max-width: 100px; /* Evita el corte de "Seleccion-ar" */
-  line-height: 1.2;
-  margin-top: 10px;
-  word-wrap: normal;
-}
-.ofertas-step.completed .ofertas-step-label {
-  color: #64748b;
-  font-weight: 500;
-}
-
-.ofertas-step-line {
-  width: 40px;
-  height: 3px;
-  background-color: #e5e7eb;
-  margin: 0 0.25rem;
-  transition: all 0.4s ease;
-  position: relative;
-  top: -20px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.ofertas-step-line.completed {
-  background: var(--blue-primary);
-}
-
-/* --- Ajustes para Escritorio --- */
-@media (min-width: 768px) {
-  .ofertas-steps-indicator {
-    padding: 2rem 1rem;
-    justify-content: center;
-    overflow-x: visible;
-  }
-
-  .ofertas-step {
-    min-width: 120px;
-  }
-
-  .ofertas-step-line {
-    width: 80px;
-    top: -23px;
-    margin: 0 0.5rem;
-  }
-}
 /* ============================================================
    RESPONSIVE
-   ============================================================ */
+============================================================ */
+
+/* ============================================================
+   CORRECCIÓN @MEDIA 1200PX
+============================================================ */
+
+@media (max-width: 1200px) {
+  /* Reducción de espacio lateral para evitar desbordamientos */
+  .paneladmin {
+    padding: 1.5rem 2rem;
+  }
+
+  /* Ajuste de cuadrícula: de 4 columnas a 2 para mantener legibilidad */
+  .paneladmin__grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .ofertas-mascota-container {
+    display: none !important; /* Forzamos el ocultado para evitar conflictos */
+  }
+
+  /* Ajuste opcional: Centrar el header cuando ya no está la mascota */
+  .ofertas-header-with-mascot {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  /* Asegurar que las cards del carrusel no se vean gigantes */
+  .ofertas-card {
+    flex: 0 0 calc(50% - 1rem);
+    min-width: 300px;
+  }
+  .ofertas-header-content {
+    width: 100%;
+  }
+
+  .ofertas-header-content h1 {
+    font-size: 2rem; /* Tamaño intermedio para tablets/laptops */
+    margin: 0 auto 0.5rem; /* Centra el bloque del título */
+    margin-top: 3rem;
+  }
+
+  .ofertas-header-content .ofertas-subtitle {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .paneladmin__grid-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .paneladmin {
+    padding: 1.25rem;
+  }
+  .paneladmin__grid-4,
+  .paneladmin__grid-2,
+  .paneladmin__grid-charts {
+    grid-template-columns: 1fr;
+  }
+  .paneladmin__header {
+    flex-direction: column;
+  }
+  .paneladmin__titulo {
+    font-size: 1.5rem;
+  }
+  .paneladmin__stat-val {
+    font-size: 1.875rem;
+  }
+  .paneladmin__donut-wrap {
+    flex-direction: column;
+  }
+  .paneladmin__chart-card {
+    padding: 1.5rem;
+  }
+
+  /* Carrusel: 1 card visible en móvil */
+  .ofertas-card {
+    flex: 0 0 calc(100% - 1rem);
+    min-width: unset;
+    max-width: 100%;
+  }
+  .ofertas-carousel-container {
+    padding: 0 2rem;
+  }
+}
 
 @media (min-width: 768px) {
   .ofertas-header-with-mascot {
@@ -1070,33 +971,17 @@
   .ofertas-mascota-container img {
     width: 160px;
   }
-
   .ofertas-steps-indicator {
     justify-content: center;
+    overflow-x: visible;
+  }
+  .ofertas-step {
+    min-width: 120px;
   }
   .ofertas-step-line {
     width: 80px;
+    margin-top: 17px;
   }
-
-  .ofertas-carousel-btn {
-    display: flex;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--white);
-    border: 2px solid var(--blue-primary);
-    border-radius: 50%;
-    padding: 0.5rem;
-    cursor: pointer;
-    z-index: 20;
-  }
-  .ofertas-carousel-btn.left {
-    left: -1.5rem;
-  }
-  .ofertas-carousel-btn.right {
-    right: -1.5rem;
-  }
-
   .ofertas-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1104,13 +989,7 @@
 }
 
 @media (min-width: 1024px) {
-  .ofertas-dashboard-container {
-    flex-direction: row;
-  }
-  .ofertas-with-sidebar {
-    margin-left: 16rem;
-  }
   .ofertas-card {
-    flex: 0 0 20rem;
+    flex: 0 0 calc(33.333% - 1rem);
   }
 }

@@ -2,22 +2,24 @@
   --blue-primary: #1b396a;
   --yellow-accent: #fe9e10;
   --white: #ffffff;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sliderbaradm {
   height: 100vh;
   background-color: var(--blue-primary);
   color: var(--white);
-  transition: width 0.3s ease;
+  transition: var(--transition);
   position: fixed;
   left: 0;
   top: 0;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  overflow: visible !important;
+  overflow: visible;
 }
 
+/* ESTADOS ESCRITORIO */
 .sliderbaradm.open {
   width: 260px;
 }
@@ -25,159 +27,136 @@
   width: 75px;
 }
 
-.menu-item {
-  position: relative;
-  height: 55px;
+.sliderbaradm-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  height: 60px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ===========================================
-   ESCRITORIO (Efecto a la Derecha)
-   =========================================== */
-.sliderbaradm.closed .etiqueta-flotante {
-  display: none;
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
 }
 
-.sliderbaradm.closed .menu-item:hover .etiqueta-flotante {
-  display: block;
-  position: absolute;
-  left: 80px;
-  background-color: var(--blue-primary);
-  color: white;
-  padding: 8px 15px;
-  border-radius: 6px;
-  font-size: 13px;
+.logo-text {
   font-weight: bold;
   white-space: nowrap;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
-  animation: fadeInRight 0.2s ease-out;
+  transition: opacity 0.2s;
 }
 
-/* Triangulito a la izquierda */
-.sliderbaradm.closed .menu-item:hover .etiqueta-flotante::before {
-  content: "";
-  position: absolute;
-  left: -6px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-right: 6px solid white;
+.sliderbaradm.closed .logo-text {
+  opacity: 0;
 }
 
-@media (max-width: 768px) {
-  /* 1. EL CONTENEDOR (Fijo arriba con el alto del header al estar cerrado) */
-  .sliderbaradm {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 60px !important; /* Altura de la franja azul siempre visible */
-    background: #1b396a !important;
-    overflow: hidden; /* Oculta el menú hasta que se presiona la hamburguesa */
-    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 3000;
-    display: flex !important;
-    flex-direction: column;
-    border: none;
-  }
+.desktop-toggle {
+  background: none;
+  border: none;
+  color: var(--yellow-accent);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
 
-  /* 2. AL PRESIONAR LA HAMBURGUESA (Se abre el contenido) */
-  .sliderbaradm.open {
-    height: 100vh !important; /* Se expande a toda la pantalla */
-    background: rgba(27, 57, 106, 0.98) !important;
-    backdrop-filter: blur(10px);
-  }
+/* LISTA Y MENÚ */
+.menu-list {
+  padding: 10px 0;
+  list-style: none;
+}
 
-  /* 3. EL HEADER (Siempre visible: Logo + Texto + Hamburguesa) */
-  .sliderbaradm-header {
-    display: flex !important;
-    width: 100%;
-    min-height: 60px !important;
-    max-height: 60px !important;
-    padding: 0 20px;
-    align-items: center;
-    justify-content: space-between; /* Logo a la izquierda, Hamburguesa a la derecha */
-    background: #1b396a;
-  }
+.menu-item {
+  position: relative;
+  transition: background 0.2s;
+}
 
-  .logo-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+.menu-item.active {
+  background-color: rgba(254, 158, 16, 0.15);
+  border-left: 4px solid var(--yellow-accent);
+}
 
-  .logo-text {
-    display: block !important;
-    color: white !important;
-    font-weight: 800;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
+.menu-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 25px;
+  text-decoration: none;
+  color: white;
+  gap: 15px;
+}
 
-  /* 4. LA HAMBURGUESA (Interactiva) */
-  .toggle-btn {
-    display: block !important;
-    background: transparent;
-    border: none;
-    color: var(--yellow-accent);
-    font-size: 1.8rem;
-    cursor: pointer;
-    z-index: 3001;
-    padding: 5px;
-  }
+.sliderbaradm.closed .menu-link {
+  justify-content: center;
+  padding: 12px 0;
+}
 
-  /* 5. EL MENÚ JUSTIFICADO (Alineado al eje central) */
-  .menu-list {
-    width: 100%;
-    padding: 20px 0;
-    /* Efecto de aparición suave */
+.icon {
+  font-size: 1.4rem;
+  min-width: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ETIQUETA FLOTANTE (Efecto Tooltip) */
+.etiqueta-flotante {
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+
+@media (min-width: 769px) {
+  .sliderbaradm.closed .etiqueta-flotante {
+    position: absolute;
+    left: 85px;
+    background: var(--blue-primary);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
-    transition: opacity 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    pointer-events: none;
+    display: block;
   }
 
-  .sliderbaradm.open .menu-list {
+  .sliderbaradm.closed .menu-item:hover .etiqueta-flotante {
     opacity: 1;
+    left: 75px;
+    transition: all 0.2s ease;
+  }
+}
+
+/* RESPONSIVE MÓVIL (Tu diseño original conservado) */
+@media (max-width: 768px) {
+  .desktop-toggle {
+    display: none;
   }
 
-  .menu-item {
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  .toggle-btn-mobile {
+    position: fixed;
+    right: 15px;
+    top: 15px;
+    z-index: 10000;
+    background: var(--yellow-accent);
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    display: flex;
+    font-size: 1.5rem;
+  }
+
+  .sliderbaradm {
+    width: 100% !important;
+    height: 60px;
+    overflow: hidden;
+  }
+
+  .sliderbaradm.open {
+    height: 100vh;
   }
 
   .menu-link {
-    display: flex !important;
-    /* JUSTIFICACIÓN: Alineado a la izquierda pero empujado con padding lateral */
-    justify-content: flex-start !important;
-    padding: 1.2rem 22% !important; /* Ajusta este % para centrar el bloque de texto */
-    align-items: center;
-    gap: 20px;
-    width: 100%;
-    text-decoration: none;
-  }
-
-  .icon {
-    font-size: 1.4rem;
-    min-width: 30px; /* Eje vertical fijo para iconos */
-    display: flex;
-    justify-content: center;
-    color: var(--yellow-accent);
-  }
-
-  .etiqueta-flotante {
-    display: block !important;
-    position: static !important;
-    color: white !important;
-    font-size: 1.15rem !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    text-align: left; /* Alineación perfecta con el icono arriba */
-    background: transparent !important;
-    box-shadow: none !important;
-    transform: none !important;
+    padding: 15px 10%;
+    justify-content: flex-start;
   }
 }

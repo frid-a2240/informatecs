@@ -1,223 +1,159 @@
 :root {
   --blue-primary: #1b396a;
   --yellow-accent: #fe9e10;
-  --blue-hover: #8eafef;
-  --text-dark: #333333;
   --white: #ffffff;
-  --bg-activity-light: rgba(8, 94, 222, 0.05);
-  font-family: "Noto Sans", sans-serif;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* === Submenús anidados === */
-.submenu {
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  padding-left: 1.5rem;
-}
-
-.submenu.show {
-  max-height: 300px;
-}
-
-.submenu-link {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  padding: 0.5rem 0;
-  color: #ffffffb0;
-  font-size: 0.95rem;
-  transition: color 0.3s ease;
-}
-
-.submenu-link:hover {
-  color: white;
-}
-
-/* Chevron rotación */
-.chevron {
-  margin-left: auto;
-  transition: transform 0.3s ease;
-}
-
-.chevron.rotate {
-  transform: rotate(180deg);
-}
-
-/* ─────────── ESTILO POR DEFECTO (escritorio) ─────────── */
-@media (max-width: 768px) {
-  .main-content h1,
-  .main-content p {
-    margin-top: 40px; /* ajusta este valor si quieres más o menos espacio */
-  }
-}
-.sliderstu {
-  position: fixed;
-  top: 0;
-  left: 0;
+.sidebar-estu {
   height: 100vh;
-  width: 250px;
   background-color: var(--blue-primary);
   color: var(--white);
+  transition: var(--transition);
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  z-index: 1000;
+  overflow: visible;
 }
 
-.sliderstu-closed {
-  width: 70px;
+.sidebar-estu.open {
+  width: 260px;
+}
+.sidebar-estu.closed {
+  width: 75px;
 }
 
-.sliderstu-header {
+.sidebar-estu-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 15px;
+  height: 60px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo-container {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
+  overflow: hidden;
 }
 
-.logo-container img {
-  width: 50px;
-  height: 80px;
-}
-
-.designer-text {
-  font-size: 1.5rem;
-  text-align: center;
+.logo-text {
   font-weight: bold;
-  color: var(--white);
+  white-space: nowrap;
+  transition: opacity 0.2s;
 }
 
-.sliderstu-toggle-btn {
+.sidebar-estu.closed .logo-text {
+  opacity: 0;
+}
+
+.desktop-toggle {
   background: none;
   border: none;
-  color: var(--white);
+  color: var(--yellow-accent);
   font-size: 1.5rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-} /* Link activo */
-.menu-item.active .menu-link {
-  background-color: rgba(255, 255, 255, 0.1); /* tono más claro */
-  color: var(--yellow-accent);
 }
 
-.menu-item.active .icon {
-  color: var(--yellow-accent);
-}
-
-/* Menú (escritorio) */
-
-.menu {
+/* LISTA Y MENÚ */
+.menu-list {
+  padding: 10px 0;
   list-style: none;
-  padding: 0;
-  margin: 0.5rem 0;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .menu-item {
-  display: flex;
-  align-items: center;
-  padding: 0.5em 0rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.menu-item.active {
+  background-color: rgba(254, 158, 16, 0.15);
+  border-left: 4px solid var(--yellow-accent);
 }
 
 .menu-link {
   display: flex;
   align-items: center;
+  padding: 12px 25px;
   text-decoration: none;
-  color: var(--white);
-  width: 100%;
-  gap: 1rem;
+  color: white;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.sidebar-estu.closed .menu-link {
+  justify-content: center;
+  padding: 12px 0;
 }
 
 .icon {
-  font-size: 1.5rem;
-  min-width: 24px;
-  color: #ffffff;
+  font-size: 1.4rem;
+  min-width: 25px;
+  display: flex;
+  justify-content: center;
 }
 
-.title {
-  font-size: 1rem;
+/* ETIQUETA FLOTANTE (Tooltips) */
+.etiqueta-flotante {
+  transition: opacity 0.2s;
   white-space: nowrap;
 }
 
-/* ─────────── RESPONSIVE (Móvil: Transparente y Colapsable) ─────────── */
-@media (max-width: 768px) {
-  .sliderstu {
-    width: 100% !important;
-    height: 70px !important; /* Altura de la barra superior */
-    background: rgba(27, 57, 106, 0.7) !important; /* Cristal transparente */
-    backdrop-filter: blur(15px) saturate(180%);
-    -webkit-backdrop-filter: blur(15px) saturate(180%);
-    overflow: visible;
-  }
-
-  .sliderstu-header {
-    display: flex !important; /* Se ve el contenido (Logo/Botón) */
-    height: 70px;
-    padding: 0 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .logo-container img {
-    height: 50px;
-    width: auto;
-  }
-
-  /* EL MENÚ QUE CAE (Oculto por defecto) */
-  .menu {
+@media (min-width: 769px) {
+  .sidebar-estu.closed .etiqueta-flotante {
     position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
-    background: rgba(27, 57, 106, 0.95); /* Fondo del menú desplegado */
-    backdrop-filter: blur(10px);
-    max-height: 0;
+    left: 85px;
+    background: var(--blue-primary);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     opacity: 0;
-    overflow: hidden;
-    transition: all 0.4s ease-in-out;
+    pointer-events: none;
   }
 
-  /* Clase para MOSTRAR el menú (Úsala en el <ul> o mediante una clase en el padre) */
-  .menu.open,
-  .sliderstu-open .menu {
-    max-height: 100vh;
+  .sidebar-estu.closed .menu-item:hover .etiqueta-flotante {
     opacity: 1;
-    padding: 1rem 0;
+    left: 75px;
+  }
+}
+
+/* RESPONSIVE MÓVIL */
+@media (max-width: 768px) {
+  .desktop-toggle {
+    display: none;
   }
 
-  .menu-item {
-    width: 100%;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  .toggle-btn-mobile {
+    position: fixed;
+    right: 15px;
+    top: 15px;
+    z-index: 10000;
+    background: var(--yellow-accent);
+    border: none;
+    border-radius: 5px;
+    padding: 8px;
+    display: flex;
+    font-size: 1.5rem;
+  }
+
+  .sidebar-estu {
+    width: 100% !important;
+    height: 60px;
+    overflow: hidden;
+  }
+
+  .sidebar-estu.open {
+    height: 100vh;
   }
 
   .menu-link {
-    display: flex !important; /* Asegura que se vea icono y texto */
-    flex-direction: row !important; /* Icono a la izquierda */
-    padding: 1rem 1.5rem;
-    gap: 1.5rem;
-  }
-
-  .icon {
-    display: block !important;
-    font-size: 1.4rem;
-    color: var(--white);
-  }
-
-  .title {
-    display: block !important;
-    font-size: 1rem;
+    padding: 15px 10%;
   }
 }

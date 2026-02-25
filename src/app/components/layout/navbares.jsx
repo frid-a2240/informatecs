@@ -1,104 +1,88 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { FiUser, FiClipboard, FiHome, FiLogOut, FiMenu, FiAward, FiActivity } from "react-icons/fi";
-import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  FiHome,
+  FiUser,
+  FiClipboard,
+  FiActivity,
+  FiAward,
+  FiLogOut,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
 import "@/styles/layouts/navbares.css";
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const indicatorRef = useRef(null); // Referencia para la burbuja
-  const menuRef = useRef(null);      // Referencia para el contenedor del menú
-  const router = useRouter();
+const menuItems = [
+  { href: "/designs/menuestu/vistaInicio", icon: <FiHome />, label: "Inicio" },
+  { href: "/designs/menuestu", icon: <FiUser />, label: "Perfil" },
+  {
+    href: "/designs/menuestu/vistaCategorias",
+    icon: <FiClipboard />,
+    label: "Actividades",
+  },
+  {
+    href: "/designs/menuestu/misActividades",
+    icon: <FiActivity />,
+    label: "Mis Actividades",
+  },
+  {
+    href: "/designs/menuestu/misConstancias",
+    icon: <FiAward />,
+    label: "Constancias",
+  },
+];
+
+export default function SidebarEstudiante({ open, setOpen }) {
   const pathname = usePathname();
-
-  // Función para mover el indicador
-useEffect(() => {
-  const activeItem = menuRef.current?.querySelector(".menu-item.active");
-  if (activeItem && indicatorRef.current) {
-    const { offsetTop } = activeItem;
-    // Alineación vertical perfecta con el ítem
-    indicatorRef.current.style.top = `${offsetTop}px`;
-    indicatorRef.current.style.opacity = "1";
-  }
-}, [pathname, open]);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    setOpen(!isMobile);
-  }, [isMobile]);
-
-  const handleLogout = () => router.push("/designs/vistaLogin");
+  const router = useRouter();
 
   return (
-    <aside className={`sliderstu ${open ? "sliderstu-open" : "sliderstu-closed"}`}>
-      <div className="sliderstu-header logo-toggle-container">
-        {open && (
+    <>
+      {/* Botón Móvil */}
+      <button className="toggle-btn-mobile" onClick={() => setOpen(!open)}>
+        {open ? <FiX /> : <FiMenu />}
+      </button>
+
+      <aside className={`sidebar-estu ${open ? "open" : "closed"}`}>
+        <div className="sidebar-estu-header">
           <div className="logo-container">
-            <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
-            <span className="designer-text">Eventos ITE</span>
+            <Image src="/imagenes/ite.svg" alt="Logo" width={30} height={30} />
+            <span className="logo-text">Eventos ITE</span>
           </div>
-        )}
-        <button className="sliderstu-toggle-btn" onClick={() => setOpen(!open)}>
-          <FiMenu />
-        </button>
-      </div>
+          <button className="desktop-toggle" onClick={() => setOpen(!open)}>
+            <FiMenu />
+          </button>
+        </div>
 
-      {/* Añadimos la referencia al ul */}
-      <ul className="menu" ref={menuRef}>
-        {/* El Indicador (Burbuja) */}
-        <div className="nav-indicator" ref={indicatorRef}></div>
+        <ul className="menu-list">
+          {menuItems.map((item) => (
+            <li
+              key={item.href}
+              className={`menu-item ${pathname === item.href ? "active" : ""}`}
+            >
+              <Link href={item.href} className="menu-link">
+                <span className="icon">{item.icon}</span>
+                <span className="etiqueta-flotante">{item.label}</span>
+              </Link>
+            </li>
+          ))}
 
-        <li className={`menu-item ${pathname === "/designs/menuestu/vistaInicio" ? "active" : ""}`}>
-          <Link href="/designs/menuestu/vistaInicio" className="menu-link">
-            <FiHome className="icon" />
-            {open && <span className="title">Inicio</span>}
-          </Link>
-        </li>
-
-        <li className={`menu-item ${pathname === "/designs/menuestu" ? "active" : ""}`}>
-          <Link href="/designs/menuestu" className="menu-link">
-            <FiUser className="icon" />
-            {open && <span className="title">Perfil</span>}
-          </Link>
-        </li>
-
-        <li className={`menu-item ${pathname === "/designs/menuestu/vistaCategorias" ? "active" : ""}`}>
-          <Link href="/designs/menuestu/vistaCategorias" className="menu-link">
-            <FiClipboard className="icon" />
-            {open && <span className="title">Actividades Ofertadas</span>}
-          </Link>
-        </li>
-
-        <li className={`menu-item ${pathname === "/designs/menuestu/misActividades" ? "active" : ""}`}>
-          <Link href="/designs/menuestu/misActividades" className="menu-link">
-            <FiActivity className="icon" />
-            {open && <span className="title">Mis Actividades</span>}
-          </Link>
-        </li>
-
-        <li className={`menu-item ${pathname === "/designs/menuestu/misConstancias" ? "active" : ""}`}>
-          <Link href="/designs/menuestu/misConstancias" className="menu-link">
-            <FiAward className="icon" />
-            {open && <span className="title">Constancias</span>}
-          </Link>
-        </li>
-
-        <li className="menu-item" onClick={handleLogout}>
-          <div className="menu-link">
-            <FiLogOut className="icon" />
-            {open && <span className="title">Cerrar Sesión</span>}
-          </div>
-        </li>
-      </ul>
-    </aside>
+          <li
+            className="menu-item logout"
+            onClick={() => router.push("/designs/vistaLogin")}
+          >
+            <div className="menu-link">
+              <span className="icon">
+                <FiLogOut />
+              </span>
+              <span className="etiqueta-flotante">Cerrar Sesión</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </>
   );
 }

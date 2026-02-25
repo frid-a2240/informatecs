@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import "../styles/actividades.css";
+import "../estilos/actividades.css";
 
 import {
   FaCalendarAlt,
@@ -9,8 +9,7 @@ import {
   FaUserTie,
   FaClock,
 } from "react-icons/fa";
-
-import ModalInscripcion from "../styles/form.css";
+import ModalInscripcion from "./formulariointra";
 
 // ================= CONFIGURACIÓN API =================
 const API_PROXY_URL = "/api/intramuros";
@@ -33,9 +32,13 @@ const formatDate = (dateString) => {
 
 const formatTime = (timeString) => {
   if (!timeString) return "N/A";
-  
+
   // Si Google Sheets envía un string simple "HH:mm", lo respetamos
-  if (typeof timeString === "string" && timeString.length === 5 && timeString.includes(":")) {
+  if (
+    typeof timeString === "string" &&
+    timeString.length === 5 &&
+    timeString.includes(":")
+  ) {
     return timeString;
   }
 
@@ -112,14 +115,17 @@ const IntramurosList = () => {
         a.Actividad,
         a.Deporte_o_Area,
         a.Coordinador,
-      ].join(" ").toLowerCase();
+      ]
+        .join(" ")
+        .toLowerCase();
       return content.includes(term);
     });
   }, [actividades, searchTerm]);
 
   // ================= RENDER =================
 
-  if (loading) return <div className="loading-state">Cargando actividades...</div>;
+  if (loading)
+    return <div className="loading-state">Cargando actividades...</div>;
 
   return (
     <div className="intramuros-list-wrapper">
@@ -136,8 +142,10 @@ const IntramurosList = () => {
 
       {error && (
         <div className="alert alert-error">
-          ⚠️ {error} 
-          <button onClick={fetchActividades} className="btn-retry">Reintentar</button>
+          ⚠️ {error}
+          <button onClick={fetchActividades} className="btn-retry">
+            Reintentar
+          </button>
         </div>
       )}
 
@@ -168,24 +176,31 @@ const IntramurosList = () => {
           <tbody>
             {filteredActividades.length > 0 ? (
               filteredActividades.map((a, index) => (
-               <tr key={`${a.ID_Actividad}-${index}`}>
+                <tr key={`${a.ID_Actividad}-${index}`}>
                   <td data-label="ID">{a.ID_Actividad}</td>
                   <td data-label="Actividad" className="font-bold">
                     {a.Nombre_Actividad || a.Actividad}
                   </td>
-                  <td data-label="Área">{a.Deporte_o_Area || a.Deporte_Area}</td>
+                  <td data-label="Área">
+                    {a.Deporte_o_Area || a.Deporte_Area}
+                  </td>
                   <td data-label="Coordinador">
-                    <FaUserTie className="icon-small" /> {a.Coordinador || "N/A"}
+                    <FaUserTie className="icon-small" />{" "}
+                    {a.Coordinador || "N/A"}
                   </td>
                   <td data-label="Fecha / Hora">
                     <div className="datetime-cell">
                       <span>{formatDate(a.Fecha_Inicio)}</span>
-                      <small><FaClock /> {formatTime(a.Hora_Inicio)}</small>
+                      <small>
+                        <FaClock /> {formatTime(a.Hora_Inicio)}
+                      </small>
                     </div>
                   </td>
                   <td data-label="Lugar">{a.Lugar_Sede}</td>
                   <td data-label="Estado">
-                    <span className={`status-badge ${getStatusClass(a.Estado)}`}>
+                    <span
+                      className={`status-badge ${getStatusClass(a.Estado)}`}
+                    >
                       {a.Estado || "Abierto"}
                     </span>
                   </td>

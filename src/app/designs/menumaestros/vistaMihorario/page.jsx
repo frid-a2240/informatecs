@@ -36,32 +36,26 @@ export default function VistaMiHorarioPage() {
   const cargarMaterias = async (percve) => {
     try {
       setLoading(true);
-      console.log("🔍 Cargando materias para percve:", percve);
-
       const response = await fetch(`/api/maestros-materias?percve=${percve}`);
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("❌ Error de la API:", errorData);
+        console.error("Error de la API:", errorData);
         setMaterias([]);
         return;
       }
 
       const data = await response.json();
-      console.log("📚 Materias del maestro:", data);
-
-      // Filtrar solo las que tienen horario
       const materiasConHorario = data.filter((m) => m.horario);
       setMaterias(materiasConHorario || []);
     } catch (error) {
-      console.error("❌ Error al cargar materias:", error);
+      console.error("Error al cargar materias:", error);
       setMaterias([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para obtener el color de una materia basado en su índice
   const getColorMateria = (index) => {
     const colores = [
       { bg: "#e0f2fe", border: "#0ea5e9", text: "#075985" },
@@ -74,7 +68,6 @@ export default function VistaMiHorarioPage() {
     return colores[index % colores.length];
   };
 
-  // Verificar si una materia tiene clase en un día específico
   const getMateriaEnDia = (materia, dia) => {
     if (!materia.horario || !materia.horario.dias) return false;
     return materia.horario.dias.includes(dia);
@@ -82,18 +75,18 @@ export default function VistaMiHorarioPage() {
 
   if (loading) {
     return (
-      <div className="horario-loading-screen">
-        <div className="loader-circle"></div>
-        <p className="loader-text">Cargando horario...</p>
+      <div className="maestros">
+        <div className="horario-loading-screen">
+          <div className="loader-circle"></div>
+          <p className="loader-text">Cargando horario...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <NavbarMaestro />
+    <div className="maestros">
       <div className="horario-main-wrapper">
-        {/* Header */}
         <div className="horario-header">
           <div className="header-content">
             <div>
@@ -211,6 +204,6 @@ export default function VistaMiHorarioPage() {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -1,18 +1,59 @@
-/* Loading */
-.materias-loading-screen {
+:root {
+  --blue-primary: #1b396a;
+  --yellow-accent: #fe9e10;
+  --blue-hover: #8eafef;
+  --text-dark: #333333;
+  --act-primary: #1b396a;
+  --act-primary-dark: #142a50;
+  --white: #ffffff;
+  --ite-text: #4a5568;
+  --ite-blue-dark: #1b396a;
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+
+  /* Extensiones internas del dashboard */
+  --pa-blue-mid: #2d5ba8;
+  --pa-blue-light: #e8f0fb;
+  --pa-blue-ll: #f0f5ff;
+  --pa-yellow-d: #c97800;
+  --pa-yellow-l: #fff5e0;
+  --pa-hover-l: #dce9ff;
+
+  --pa-bg: #f2f5fb;
+  --pa-card: #ffffff;
+  --pa-brd: rgba(27, 57, 106, 0.1);
+  --pa-txt2: #4a5568;
+  --pa-txt3: #8fa3be;
+
+  --pa-sh-xs: 0 1px 3px rgba(46, 57, 75, 0.06);
+  --pa-sh-sm: 0 2px 10px rgba(27, 57, 106, 0.08);
+  --pa-sh-md: 0 6px 24px rgba(27, 57, 106, 0.13);
+
+  --pa-r-sm: 10px;
+  --pa-r-md: 16px;
+  --pa-r-lg: 22px;
+  --pa-r-xl: 28px;
+
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ==========================
+   Loading Screen
+========================== */
+.maestros .materias-loading-screen {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Cambio: De azul a fondo claro tipo dashboard */
+  background: var(--pa-bg);
 }
-
-.loader-circle {
+.maestros .loader-circle {
   width: 60px;
   height: 60px;
   border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: var(--white);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -23,34 +64,36 @@
   }
 }
 
-.loader-text {
-  color: white;
+.maestros .loader-text {
+  color: var(--blue-primary);
   font-size: 1.2rem;
   margin-top: 20px;
   font-weight: 500;
 }
 
-/* Main Wrapper */
-.materias-main-wrapper {
-  margin-left: 250px;
+/* ==========================
+   Main Wrapper (Corregido)
+========================== */
+.maestros .materias-main-wrapper {
+  margin-left: 0; /* Controlado por el Layout */
   min-height: 100vh;
-  background: #f8f9fc;
-  transition: margin-left 0.3s ease;
+  background: var(--pa-bg);
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
-.sliderbaradm.closed ~ .materias-main-wrapper {
-  margin-left: 80px;
+/* ==========================
+   Header
+========================== */
+.maestros .materias-header {
+  background: var(--white);
+  padding: 32px 40px;
+  color: var(--blue-primary);
+  border-bottom: 2px solid var(--pa-brd);
 }
 
-/* Header */
-.materias-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 40px;
-  color: white;
-}
-
-.header-content {
-  max-width: 1400px;
+.maestros .header-content {
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -59,8 +102,8 @@
   gap: 20px;
 }
 
-.header-title {
-  font-size: 2.5rem;
+.maestros .header-title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   margin-bottom: 10px;
   display: flex;
@@ -68,186 +111,95 @@
   gap: 15px;
 }
 
-.inline-icon {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.header-subtitle {
+.maestros .header-subtitle {
   font-size: 1.1rem;
-  opacity: 0.9;
+  color: var(--pa-txt2);
 }
 
-.header-stats {
+.maestros .header-stats {
   display: flex;
   gap: 15px;
 }
 
-.stat-badge {
+.maestros .stat-badge {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
+  background: var(--pa-blue-light);
+  border: 1px solid var(--pa-brd);
+  border-radius: var(--pa-r-sm);
   font-weight: 600;
-  font-size: 1.1rem;
+  color: var(--blue-primary);
 }
 
-.stat-badge svg {
-  font-size: 1.5rem;
-}
-
-/* Content */
-.materias-content {
+/* ==========================
+   Content & Cards
+========================== */
+.maestros .materias-content {
   max-width: 1400px;
   margin: 0 auto;
   padding: 40px;
 }
 
-/* Empty State */
-.materias-empty {
-  text-align: center;
-  padding: 80px 40px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.empty-icon {
-  color: #9ca3af;
-  margin-bottom: 20px;
-}
-
-.materias-empty h2 {
-  font-size: 1.8rem;
-  color: #1f2937;
-  margin-bottom: 10px;
-}
-
-.materias-empty p {
-  font-size: 1.1rem;
-  color: #6b7280;
-}
-
-/* Materias Grid */
-.materias-grid {
+.maestros .materias-grid {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Materia Card */
-.materia-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.maestros .materia-card {
+  background: var(--pa-card);
+  border-radius: var(--pa-r-md);
+  box-shadow: var(--pa-sh-sm);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
-.materia-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+.maestros .materia-card:hover {
+  box-shadow: var(--pa-sh-md);
 }
 
-.materia-card-header {
+.maestros .materia-card-header {
   padding: 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-.materia-card-header:hover {
-  background: #f9fafb;
-}
-
-.materia-info {
-  flex: 1;
-}
-
-.materia-nombre {
+.maestros .materia-nombre {
   font-size: 1.5rem;
-  color: #1f2937;
+  color: var(--text-dark);
   margin-bottom: 12px;
   font-weight: 700;
 }
 
-.materia-meta {
+.maestros .materia-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
   margin-bottom: 10px;
 }
 
-.meta-item {
+.maestros .meta-item {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #6b7280;
+  color: var(--pa-txt2);
   font-size: 0.95rem;
 }
 
-.materia-horario {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #667eea;
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-top: 10px;
-}
-
-.materia-horario .salon {
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.materia-actions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.estudiantes-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  font-size: 1.3rem;
-  font-weight: 700;
-  border-radius: 50%;
-}
-
-/* Materia Card Body */
-.materia-card-body {
-  border-top: 2px solid #f3f4f6;
+.maestros .materia-card-body {
+  border-top: 2px solid var(--pa-brd);
   padding: 25px;
-  background: #f9fafb;
+  background: var(--pa-blue-ll);
 }
 
-/* Estudiantes Empty */
-.estudiantes-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #9ca3af;
-}
-
-.estudiantes-empty svg {
-  margin-bottom: 15px;
-}
-
-.estudiantes-empty p {
-  font-size: 1.1rem;
-}
-
-/* Toolbar */
-.estudiantes-toolbar {
+/* ==========================
+   Toolbar & Search
+========================== */
+.maestros .estudiantes-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -256,116 +208,90 @@
   flex-wrap: wrap;
 }
 
-.search-box {
+.maestros .search-box {
   flex: 1;
   min-width: 250px;
   position: relative;
 }
 
-.search-icon {
-  position: absolute;
-  left: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9ca3af;
-}
-
-.search-box input {
+.maestros .search-box input {
   width: 100%;
   padding: 12px 15px 12px 45px;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
+  border: 2px solid var(--pa-brd);
+  border-radius: var(--pa-r-sm);
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
-.search-box input:focus {
+.maestros .search-box input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--blue-primary);
 }
 
-.btn-export {
+.maestros .btn-export {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: #10b981;
-  color: white;
+  background: var(--yellow-accent);
+  color: var(--white);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--pa-r-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.btn-export:hover {
-  background: #059669;
+.maestros .btn-export:hover {
+  background: var(--pa-yellow-d);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Tabla */
-.estudiantes-table-wrapper {
+/* ==========================
+   Tabla de Estudiantes
+========================== */
+.maestros .estudiantes-table-wrapper {
   overflow-x: auto;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.estudiantes-table {
+  border-radius: var(--pa-r-md);
+  box-shadow: var(--pa-sh-xs);
+  background: var(--pa-card);
   width: 100%;
-  background: white;
+}
+
+.maestros .estudiantes-table {
+  width: 100%;
   border-collapse: collapse;
+  min-width: 900px;
 }
 
-.estudiantes-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.maestros .estudiantes-table thead {
+  background: var(--blue-primary);
+  color: var(--white);
 }
 
-.estudiantes-table th {
+.maestros .estudiantes-table th {
   padding: 15px;
   text-align: left;
   font-weight: 600;
-  font-size: 0.95rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 0.85rem;
 }
 
-.estudiantes-table tbody tr {
-  border-bottom: 1px solid #f3f4f6;
-  transition: background 0.2s ease;
+.maestros .estudiantes-table tbody tr {
+  border-bottom: 1px solid var(--pa-brd);
 }
 
-.estudiantes-table tbody tr:hover {
-  background: #f9fafb;
+.maestros .estudiantes-table tbody tr:hover {
+  background: var(--pa-hover-l);
 }
 
-.estudiantes-table td {
+.maestros .estudiantes-table td {
   padding: 15px;
-  color: #1f2937;
   font-size: 0.95rem;
 }
 
-.font-mono {
-  font-family: "Courier New", monospace;
-  font-weight: 600;
-  color: #667eea;
-}
-
-.font-semibold {
-  font-weight: 600;
-}
-
-.carrera-cell {
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #6b7280;
-}
-
-.sexo-badge {
+/* Badges de Sexo */
+.maestros .sexo-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -373,101 +299,61 @@
   height: 32px;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 0.9rem;
 }
 
-.sexo-badge.masculino {
-  background: #dbeafe;
-  color: #1e40af;
+.maestros .sexo-badge.masculino {
+  background: var(--pa-blue-light);
+  color: var(--blue-primary);
+}
+.maestros .sexo-badge.femenino {
+  background: var(--pa-yellow-l);
+  color: var(--pa-yellow-d);
 }
 
-.sexo-badge.femenino {
-  background: #fce7f3;
-  color: #be185d;
-}
-
-.fecha-cell {
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.no-results {
+/* ==========================
+   Empty States & Footer
+========================== */
+.maestros .materias-empty,
+.maestros .estudiantes-empty {
   text-align: center;
-  color: #9ca3af;
-  padding: 40px !important;
-  font-style: italic;
+  padding: 60px 40px;
+  background: var(--pa-card);
+  border-radius: var(--pa-r-md);
 }
 
-/* Footer */
-.estudiantes-footer {
+.maestros .estudiantes-footer {
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 2px solid #e5e7eb;
+  border-top: 2px solid var(--pa-brd);
   text-align: center;
-  color: #6b7280;
-  font-size: 0.95rem;
+  color: var(--pa-txt2);
 }
 
-/* Responsive */
+/* ==========================
+   Responsive Final
+========================= */
 @media (max-width: 768px) {
-  .materias-main-wrapper {
-    margin-left: 0;
+  .maestros .materias-main-wrapper {
+    margin-left: 0 !important;
   }
 
-  .materias-header {
-    padding: 30px 20px;
-  }
-
-  .header-title {
-    font-size: 2rem;
-  }
-
-  .header-content {
+  .maestros .header-content {
     flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
   }
 
-  .header-stats {
+  .maestros .header-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
+  }
+
+  .maestros .materia-card-header {
     flex-direction: column;
-  }
-
-  .stat-badge {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .materias-content {
-    padding: 20px;
-  }
-
-  .materia-card-header {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 15px;
   }
 
-  .materia-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .estudiantes-toolbar {
+  .maestros .estudiantes-toolbar {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .btn-export {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .estudiantes-table {
-    font-size: 0.85rem;
-  }
-
-  .estudiantes-table th,
-  .estudiantes-table td {
-    padding: 10px;
   }
 }

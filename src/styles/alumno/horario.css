@@ -42,6 +42,11 @@
 * {
   box-sizing: border-box;
 }
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* Esto evita que el padding empuje el contenido hacia afuera */
+}
 
 body {
   margin: 0;
@@ -1108,4 +1113,18 @@ body {
   padding: 12px;
   border-radius: 8px;
   font-family: inherit;
+}
+/* Esto solo afectará a pantallas menores a 768px (móviles) */
+@media (max-width: 768px) {
+  .horario-welcome-title {
+    /* Ajusta el 40px a tu gusto para bajarlo más o menos */
+    margin-top: 40px !important;
+    margin-bottom: 20px;
+  }
+
+  /* Opcional: Si también quieres bajar el contenedor blanco completo */
+  .horario-header {
+    padding-top: 30px;
+    align-items: center;
+  }
 }

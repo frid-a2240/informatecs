@@ -1,194 +1,218 @@
-"use client"
-import React, { useState } from 'react';
-import { Plus, X, Send, Loader2 } from 'lucide-react';
+"use client";
+import React, { useState } from "react";
+import { Trophy, Plus, X, Send, Loader2 } from "lucide-react";
+import "../css/seccionpartidos.css";
 
-const SeccionPartidos = ({ actividades, resultados, onRefresh, WEB_APP_URL }) => {
+const WEB_APP_URL = "/api/intramuros";
+
+const SeccionPartidos = ({ actividades, resultados, onRefresh }) => {
   const [showModal, setShowModal] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  const [form, setForm] = useState({ 
-    Fecha: new Date().toISOString().split('T')[0], 
-    Actividad: '', 
-    Local: '', 
-    Visitante: '', 
-    ScoreL: 0, 
-    ScoreV: 0 
+
+  const [form, setForm] = useState({
+    Fecha: new Date().toISOString().split("T")[0],
+    Actividad: "",
+    Equipo_Local: "",
+    Marcador_L: "0",
+    Marcador_V: "0",
+    Equipo_Visitante: "",
   });
 
-  // Función para obtener el nombre del equipo sin importar cómo venga la llave del JSON
-  const getTeamName = (res, type) => {
-    if (type === 'local') {
-      return res["Equipo Local"] || res["Equipo_Local"] || res.Local || res.local || "Local";
-    }
-    return res["Equipo Visitante"] || res["Equipo_Visitante"] || res.Visitante || res.visitante || "Visitante";
-  };
-
-  const handleSave = async (e) => {
+  const handleSavePartido = async (e) => {
     e.preventDefault();
-    if (!form.Actividad || !form.Local || !form.Visitante) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
-
     setEnviando(true);
-    const sL = parseInt(form.ScoreL) || 0;
-    const sV = parseInt(form.ScoreV) || 0;
-    
-    // Determinamos el ganador para enviarlo listo a la hoja de cálculo
-    let ganador = sL > sV ? form.Local : sV > sL ? form.Visitante : "Empate";
 
-    const payload = {
-      action: 'saveResult',
-      hoja: 'partidos',
+    const pL = parseInt(form.Marcador_L || 0);
+    const pV = parseInt(form.Marcador_V || 0);
+    let ganadorFinal = "Empate";
+    if (pL > pV) ganadorFinal = form.Equipo_Local;
+    else if (pV > pL) ganadorFinal = form.Equipo_Visitante;
+
+    const dataToSend = {
+      action: "saveResult",
+      hoja: "partidos",
       Fecha: form.Fecha,
       Actividad: form.Actividad,
-      "Equipo Local": form.Local,
-      "Equipo Visitante": form.Visitante,
-      Marcador: `${sL} - ${sV}`,
-      Ganador: ganador
+      "Equipo Local": form.Equipo_Local,
+      Marcador: `${pL} - ${pV}`,
+      "Equipo Visitante": form.Equipo_Visitante,
+      Ganador: ganadorFinal,
     };
 
     try {
-      await fetch(WEB_APP_URL, { 
-        method: 'POST', 
-        mode: 'no-cors', 
-        body: JSON.stringify(payload) 
+      await fetch(WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(dataToSend),
       });
-      
+
       setShowModal(false);
-      setForm({ Fecha: new Date().toISOString().split('T')[0], Actividad: '', Local: '', Visitante: '', ScoreL: 0, ScoreV: 0 });
-      setTimeout(onRefresh, 1500);
-    } catch (err) { 
-      alert("Error al guardar. Verifica tu conexión."); 
+      setForm({
+        ...form,
+        Equipo_Local: "",
+        Equipo_Visitante: "",
+        Marcador_L: "0",
+        Marcador_V: "0",
+      });
+      setTimeout(() => {
+        onRefresh();
+      }, 1500);
+    } catch {
+      alert("Error al conectar.");
     } finally {
       setEnviando(false);
     }
   };
 
   return (
-    <div className="p-4 max-w-6xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+    <div className="pt-wrapper">
+      {/* ── Header sin fondo ── */}
+      <div className="pt-header">
         <div>
-          <h2 className="text-2xl font-black text-slate-900">Historial de Partidos</h2>
-          <p className="text-slate-500 font-medium">Se han registrado {resultados.length} encuentros</p>
+          <h2 className="pt-header__title">
+            <Trophy size={22} className="pt-header__title-icon" />
+            Partidos
+          </h2>
+          <p className="pt-header__sub">Hoja: partidos</p>
         </div>
-        <button 
-          onClick={() => setShowModal(true)} 
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold transition-transform active:scale-95 shadow-lg shadow-blue-100"
-        >
-          <Plus size={20}/> Registrar Score
+        <button className="pt-btn-new" onClick={() => setShowModal(true)}>
+          <Plus size={16} /> Registrar Resultado
         </button>
       </div>
 
-      {/* Tabla de Resultados */}
-      <div className="bg-white rounded-[2rem] shadow-xl border border-slate-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest">Fecha</th>
-                <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest">Torneo</th>
-                <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Encuentro</th>
-                <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest text-center">Marcador</th>
-                <th className="p-5 text-xs font-black text-slate-400 uppercase tracking-widest">Ganador</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {resultados.map((res, i) => (
-                <tr key={i} className="hover:bg-blue-50/30 transition-colors group">
-                  <td className="p-5 text-slate-500 font-medium">{res.Fecha}</td>
-                  <td className="p-5">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase">
-                      {res.Actividad}
-                    </span>
+      {/* ── Tabla ── */}
+      <div className="pt-table-wrap">
+        <table className="pt-table">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Torneo</th>
+              <th className="right">Local</th>
+              <th className="center">Marcador</th>
+              <th>Visitante</th>
+              <th className="center">Ganador</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resultados && resultados.length > 0 ? (
+              resultados.map((res, i) => (
+                <tr key={i}>
+                  <td className="pt-td-fecha">{res.Fecha}</td>
+                  <td className="pt-td-torneo">{res.Actividad}</td>
+                  <td className="right pt-td-equipo">
+                    {res["Equipo Local"] || res.Equipo_Local}
                   </td>
-                  <td className="p-5 text-center font-bold text-slate-700">
-                    <span className="group-hover:text-blue-600 transition-colors">
-                      {getTeamName(res, 'local')}
-                    </span>
-                    <span className="text-slate-300 mx-3 font-normal">VS</span>
-                    <span className="group-hover:text-blue-600 transition-colors">
-                      {getTeamName(res, 'visitante')}
-                    </span>
+                  <td className="center">
+                    <span className="pt-marcador">{res.Marcador}</span>
                   </td>
-                  <td className="p-5 text-center">
-                    <span className="bg-slate-900 text-white px-4 py-2 rounded-xl font-mono font-black text-lg">
-                      {res.Marcador}
-                    </span>
+                  <td className="pt-td-equipo">
+                    {res["Equipo Visitante"] || res.Equipo_Visitante}
                   </td>
-                  <td className="p-5 font-black text-blue-600 italic">
-                    {res.Ganador}
+                  <td className="center">
+                    <span
+                      className={`pt-badge ${res.Ganador === "Empate" ? "pt-badge--empate" : "pt-badge--ganador"}`}
+                    >
+                      {res.Ganador}
+                    </span>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="pt-empty">
+                  No hay datos disponibles en la hoja "partidos".
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Modal de Registro */}
+      {/* ── Modal ── */}
       {showModal && (
-        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 bg-blue-600 text-white flex justify-between items-center">
-              <span className="font-black tracking-widest">NUEVO MARCADOR</span>
-              <button onClick={() => setShowModal(false)} className="hover:rotate-90 transition-transform">
-                <X size={24}/>
+        <div className="pt-overlay">
+          <div className="pt-modal">
+            <div className="pt-modal__header">
+              <h3 className="pt-modal__title">Nuevo Resultado</h3>
+              <button
+                className="pt-modal__close"
+                onClick={() => setShowModal(false)}
+              >
+                <X size={16} />
               </button>
             </div>
-            
-            <form onSubmit={handleSave} className="p-8 space-y-5">
-              {/* Selector de Torneo */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase ml-2">Torneo / Actividad</label>
-                <select 
-                  required 
-                  className="w-full bg-slate-100 p-4 rounded-2xl font-bold outline-none border-2 border-transparent focus:border-blue-500" 
-                  onChange={e => setForm({...form, Actividad: e.target.value})}
-                >
-                    <option value="">Seleccionar...</option>
-                    {actividades.map((a, i) => <option key={i} value={a.Nombre_Actividad}>{a.Nombre_Actividad}</option>)}
-                </select>
-              </div>
 
-              {/* Inputs de Equipos y Scores */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-3">
-                  <input 
-                    placeholder="Equipo Local" 
-                    className="w-full bg-slate-50 p-4 rounded-xl font-bold border border-slate-200 outline-none focus:ring-2 ring-blue-500/20" 
-                    onChange={e => setForm({...form, Local: e.target.value})} 
-                  />
-                  <input 
-                    type="number"
-                    placeholder="0"
-                    className="w-full bg-slate-900 text-white text-center text-3xl p-4 rounded-xl font-black outline-none"
-                    onChange={e => setForm({...form, ScoreL: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-3">
-                  <input 
-                    placeholder="Equipo Visitante" 
-                    className="w-full bg-slate-50 p-4 rounded-xl font-bold border border-slate-200 outline-none focus:ring-2 ring-blue-500/20" 
-                    onChange={e => setForm({...form, Visitante: e.target.value})} 
-                  />
-                  <input 
-                    type="number"
-                    placeholder="0"
-                    className="w-full bg-slate-900 text-white text-center text-3xl p-4 rounded-xl font-black outline-none"
-                    onChange={e => setForm({...form, ScoreV: e.target.value})}
-                  />
-                </div>
-              </div>
-
-              <button 
-                disabled={enviando} 
-                className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-200 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:bg-slate-300"
+            <form onSubmit={handleSavePartido} className="pt-modal__body">
+              <select
+                required
+                className="pt-form-select"
+                value={form.Actividad}
+                onChange={(e) =>
+                  setForm({ ...form, Actividad: e.target.value })
+                }
               >
-                {enviando ? <Loader2 className="animate-spin"/> : <Send size={20}/>}
-                {enviando ? "PROCESANDO..." : "PUBLICAR RESULTADO"}
-              </button>
+                <option value="">¿A qué torneo pertenece?</option>
+                {actividades.map((a, i) => (
+                  <option key={i} value={a.Nombre_Actividad || a.Actividad}>
+                    {a.Nombre_Actividad || a.Actividad}
+                  </option>
+                ))}
+              </select>
+
+              <div className="pt-score-grid">
+                <div className="pt-score-col">
+                  <input
+                    className="pt-form-input"
+                    placeholder="Equipo Local"
+                    required
+                    onChange={(e) =>
+                      setForm({ ...form, Equipo_Local: e.target.value })
+                    }
+                  />
+                  <input
+                    type="number"
+                    className="pt-form-score"
+                    value={form.Marcador_L}
+                    onChange={(e) =>
+                      setForm({ ...form, Marcador_L: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="pt-score-col">
+                  <input
+                    className="pt-form-input"
+                    placeholder="Equipo Visitante"
+                    required
+                    onChange={(e) =>
+                      setForm({ ...form, Equipo_Visitante: e.target.value })
+                    }
+                  />
+                  <input
+                    type="number"
+                    className="pt-form-score"
+                    value={form.Marcador_V}
+                    onChange={(e) =>
+                      setForm({ ...form, Marcador_V: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
             </form>
+
+            <div className="pt-modal__footer">
+              <button
+                className="pt-btn-submit"
+                disabled={enviando}
+                onClick={handleSavePartido}
+              >
+                {enviando ? (
+                  <Loader2 size={18} className="spin" />
+                ) : (
+                  <Send size={18} />
+                )}
+                {enviando ? "Publicando..." : "Guardar Marcador"}
+              </button>
+            </div>
           </div>
         </div>
       )}

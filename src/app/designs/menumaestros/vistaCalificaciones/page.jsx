@@ -73,10 +73,10 @@ export default function VistaCalificacionesPage() {
     // Cargar calificaciones desde la base de datos
     try {
       console.log("📥 Cargando calificaciones de la materia:", materia.id);
-      
+
       const response = await fetch(
         `/api/calificaciones?actividadId=${materia.id}&maestroId=${maestroData.percve}`,
-        { cache: 'no-store' }
+        { cache: "no-store" },
       );
 
       if (!response.ok) {
@@ -85,9 +85,9 @@ export default function VistaCalificacionesPage() {
 
       const inscripciones = await response.json();
       if (!Array.isArray(inscripciones)) {
-      console.error("❌ inscripciones no es array:", inscripciones);
-      throw new Error("Formato de respuesta inválido");
-    }
+        console.error("❌ inscripciones no es array:", inscripciones);
+        throw new Error("Formato de respuesta inválido");
+      }
       console.log("✅ Inscripciones cargadas:", inscripciones);
 
       // Inicializar calificaciones con datos de la BD
@@ -107,21 +107,21 @@ export default function VistaCalificacionesPage() {
 
       // Si falla, inicializar con datos del objeto materia
       const calificacionesVacias = {};
-      
-    // ✅ Validar que materia.inscripact sea un array
-    if (Array.isArray(materia.inscripact)) {
-      materia.inscripact.forEach((inscripcion) => {
-        const aluctr = inscripcion?.estudiante?.aluctr;
-        
-        if (aluctr) {
-          calificacionesVacias[aluctr] = {
-            calificacion: inscripcion.calificacion || "",
-            observaciones: inscripcion.observaciones || "",
-            liberado: inscripcion.liberado || false,
-          };
-        }
-      });
-    }
+
+      // ✅ Validar que materia.inscripact sea un array
+      if (Array.isArray(materia.inscripact)) {
+        materia.inscripact.forEach((inscripcion) => {
+          const aluctr = inscripcion?.estudiante?.aluctr;
+
+          if (aluctr) {
+            calificacionesVacias[aluctr] = {
+              calificacion: inscripcion.calificacion || "",
+              observaciones: inscripcion.observaciones || "",
+              liberado: inscripcion.liberado || false,
+            };
+          }
+        });
+      }
       setCalificaciones(calificacionesVacias);
     }
   };
@@ -164,11 +164,11 @@ export default function VistaCalificacionesPage() {
           maestroId: maestroData.percve,
           calificaciones: calificaciones,
         }),
-        cache: 'no-store',
+        cache: "no-store",
       });
       // ✅ DEBUGGING: Ver qué devuelve la API
-    console.log("📡 Status de respuesta:", response.status);
-    console.log("📡 Headers:", response.headers);
+      console.log("📡 Status de respuesta:", response.status);
+      console.log("📡 Headers:", response.headers);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -178,11 +178,12 @@ export default function VistaCalificacionesPage() {
       const resultado = await response.json();
       console.log("✅ Resultado:", resultado);
       // ✅ Validar que resultado tenga la estructura esperada
-    const guardadas = resultado.guardadas || 
-                      resultado.resultados?.exitosos || 
-                      0;
+      const guardadas =
+        resultado.guardadas || resultado.resultados?.exitosos || 0;
 
-      alert(`✅ Se guardaron ${resultado.guardadas} calificaciones correctamente`);
+      alert(
+        `✅ Se guardaron ${resultado.guardadas} calificaciones correctamente`,
+      );
       setModoEdicion(false);
 
       // Recargar las materias para actualizar los contadores
@@ -220,7 +221,7 @@ export default function VistaCalificacionesPage() {
       30,
       {
         align: "center",
-      }
+      },
     );
 
     // Info de la materia
@@ -230,7 +231,7 @@ export default function VistaCalificacionesPage() {
       `Actividad: ${materiaSeleccionada.aconco || materiaSeleccionada.aticve}`,
       pageWidth / 2,
       38,
-      { align: "center" }
+      { align: "center" },
     );
 
     doc.setFontSize(10);
@@ -306,7 +307,6 @@ export default function VistaCalificacionesPage() {
   if (!materiaSeleccionada) {
     return (
       <>
-        <NavbarMaestro />
         <div className="calificaciones-main-wrapper">
           <div className="calificaciones-header">
             <div className="header-content">
@@ -329,7 +329,7 @@ export default function VistaCalificacionesPage() {
                   <span>
                     {materias.reduce(
                       (acc, m) => acc + (m.inscripact?.length || 0),
-                      0
+                      0,
                     )}{" "}
                     Estudiantes
                   </span>
@@ -343,7 +343,9 @@ export default function VistaCalificacionesPage() {
               <div className="materias-empty">
                 <FiBook size={64} className="empty-icon" />
                 <h2>No tienes materias asignadas</h2>
-                <p>Contacta con el administrador para que te asigne materias.</p>
+                <p>
+                  Contacta con el administrador para que te asigne materias.
+                </p>
               </div>
             ) : (
               <div className="materias-grid">
@@ -351,7 +353,8 @@ export default function VistaCalificacionesPage() {
                   const totalEstudiantes = materia.inscripact?.length || 0;
                   const estudiantesEvaluados =
                     materia.inscripact?.filter(
-                      (ins) => ins.calificacion !== null && ins.calificacion !== ""
+                      (ins) =>
+                        ins.calificacion !== null && ins.calificacion !== "",
                     ).length || 0;
 
                   return (
@@ -501,8 +504,7 @@ export default function VistaCalificacionesPage() {
                   const nombreCompleto = `${est.alunom || ""} ${
                     est.aluapp || ""
                   } ${est.aluapm || ""}`.trim();
-                  const calif =
-                    calificaciones[est.aluctr]?.calificacion || "";
+                  const calif = calificaciones[est.aluctr]?.calificacion || "";
                   const obs = calificaciones[est.aluctr]?.observaciones || "";
 
                   return (
@@ -523,7 +525,7 @@ export default function VistaCalificacionesPage() {
                             onChange={(e) =>
                               handleCalificacionChange(
                                 est.aluctr,
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             min="0"
@@ -536,8 +538,8 @@ export default function VistaCalificacionesPage() {
                               calif >= 70
                                 ? "aprobado"
                                 : calif > 0
-                                ? "reprobado"
-                                : "sin-calif"
+                                  ? "reprobado"
+                                  : "sin-calif"
                             }`}
                           >
                             {calif || "N/A"}
@@ -553,7 +555,7 @@ export default function VistaCalificacionesPage() {
                             onChange={(e) =>
                               handleObservacionChange(
                                 est.aluctr,
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             placeholder="Observaciones..."
@@ -577,7 +579,7 @@ export default function VistaCalificacionesPage() {
           <p>
             Evaluados:{" "}
             {materiaSeleccionada.inscripact?.filter(
-              (ins) => ins.calificacion !== null && ins.calificacion !== ""
+              (ins) => ins.calificacion !== null && ins.calificacion !== "",
             ).length || 0}
           </p>
         </div>

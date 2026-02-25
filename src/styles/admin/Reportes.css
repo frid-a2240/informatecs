@@ -1,54 +1,4 @@
-/* ── Botones ────────────────────────── */
-.reportes-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background-color: var(--reportes-blue-primary);
-  color: var(--reportes-white);
-  font-weight: 600;
-  border-radius: var(--reportes-radius-sm);
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.reportes-btn-primary:hover:not(:disabled) {
-  background-color: var(--reportes-blue-hover);
-}
-
-.reportes-btn-primary:disabled {
-  background-color: #cbd5e0;
-  cursor: not-allowed;
-}
-
-/* ── Estadísticas ────────────────────────── */
-.reportes-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-}
-
-.reportes-stat-card {
-  background-color: var(--reportes-pa-card);
-  padding: 1rem;
-  border-radius: var(--reportes-radius-sm);
-  text-align: center;
-  box-shadow: var(--reportes-shadow-lg);
-}
-
-.reportes-stat-label {
-  font-size: 0.85rem;
-  color: var(--reportes-ite-text);
-  margin-bottom: 0.3rem;
-}
-
-.reportes-stat-number {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--reportes-blue-primary);
-}
-/* ── Variables de Colores y Tipografía ────────────────────────── */
+/* ── Variables ────────────────────────── */
 :root {
   --reportes-blue-primary: #1b396a;
   --reportes-yellow-accent: #fe9e10;
@@ -58,7 +8,6 @@
   --reportes-ite-text: #4a5568;
   --reportes-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --reportes-radius-sm: 8px;
-
   --reportes-pa-bg: #f2f5fb;
   --reportes-pa-card: #ffffff;
   --reportes-pa-brd: rgba(27, 57, 106, 0.1);
@@ -67,11 +16,20 @@
   font-family: "Montserrat", sans-serif;
 }
 
+/* ── Reset ────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ── Contenedor principal ────────────────────────── */
 .reportes-dashboard-container {
   background-color: var(--reportes-pa-bg);
   min-height: 100vh;
-  padding: 2rem;
+  padding: clamp(12px, 3vw, 1.5rem);
+  /* CRÍTICO: evita scroll horizontal por sombras desplazadas */
+  overflow-x: hidden;
 }
 
 .reportes-dashboard-wrapper {
@@ -79,60 +37,69 @@
   margin: 0 auto;
 }
 
-/* ── Card normal — header, filtros, tabla, etc. ────────────────────────── */
+/* ── Card normal ────────────────────────── */
 .reportes-card {
   background-color: var(--reportes-pa-card);
   border-radius: var(--reportes-radius-sm);
   box-shadow: var(--reportes-shadow-lg);
-  padding: 1.5rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
   margin-bottom: 1.5rem;
+  overflow: hidden;
+  min-width: 0; /* evita overflow en flex/grid */
 }
 
 /* ── Header ────────────────────────── */
 .reportes-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column; /* apilado en móvil */
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .reportes-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 .reportes-header-left {
   display: flex;
   align-items: center;
   gap: 1rem;
+  min-width: 0;
 }
 
 .reportes-title {
-  font-size: 1.75rem;
+  font-size: clamp(1.2rem, 4vw, 1.75rem);
   font-weight: 700;
   color: var(--reportes-blue-primary);
   margin: 0;
+  word-break: break-word;
 }
 
 .reportes-subtitle {
   color: var(--reportes-ite-text);
-  font-size: 0.95rem;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
   margin: 0;
 }
 
-/* ── Grid de estadísticas ────────────────────────── */
+/* ── Stats grid ────────────────────────── */
 .reportes-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding-bottom: 10px;
-  padding-right: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: clamp(12px, 3vw, 20px);
+  /* CRÍTICO: espacio para que la box-shadow desplazada no cause scroll */
+  padding: 4px 12px 14px 4px;
   margin-bottom: 1.5rem;
 }
 
-/* ────────────────────────────────────────────────────────
-   STAT CARD — efecto de sombra colorida desplazada
-   Úsalo SOLO en los cards de números/estadísticas
-   ──────────────────────────────────────────────────────── */
+/* ── Stat card con sombra colorida ────────────────────────── */
 .reportes-stat-card {
   position: relative;
   background-color: var(--reportes-white);
   border-radius: 16px;
-  padding: 24px 20px 56px 20px;
+  padding: clamp(16px, 3vw, 24px) clamp(14px, 3vw, 20px) 56px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -140,13 +107,14 @@
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
+  min-width: 0;
 }
 
 .reportes-stat-card:hover {
   transform: translate(-4px, -5px);
+  box-shadow: 12px 14px 0px 0px var(--reportes-blue-primary);
 }
 
-/* ── Variantes de color ── */
 .reportes-stat-card.card-blue {
   box-shadow: 8px 10px 0px 0px var(--reportes-blue-primary);
 }
@@ -168,9 +136,8 @@
   box-shadow: 12px 14px 0px 0px var(--reportes-blue-hover);
 }
 
-/* ── Textos dentro del stat card ── */
 .reportes-stat-card .reportes-stat-label {
-  font-size: 0.78rem;
+  font-size: clamp(0.68rem, 2vw, 0.78rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -178,13 +145,21 @@
 }
 
 .reportes-stat-card .reportes-stat-value {
-  font-size: 2.4rem;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
   font-weight: 800;
   color: var(--reportes-blue-primary);
   line-height: 1;
 }
 
-/* ── Burbuja de ícono (esquina inferior derecha) ── */
+/* Valores legacy (por si se usa .reportes-stat-number) */
+.reportes-stat-card .reportes-stat-number {
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  font-weight: 800;
+  color: var(--reportes-blue-primary);
+  line-height: 1;
+}
+
+/* Burbuja de ícono */
 .reportes-stat-badge {
   position: absolute;
   bottom: 16px;
@@ -202,44 +177,65 @@
 .reportes-stat-card.card-blue .reportes-stat-badge {
   background-color: var(--reportes-blue-primary);
 }
-
 .reportes-stat-card.card-yellow .reportes-stat-badge {
   background-color: var(--reportes-yellow-accent);
 }
-
 .reportes-stat-card.card-blue-light .reportes-stat-badge {
   background-color: var(--reportes-blue-hover);
 }
-
 .reportes-stat-card:hover .reportes-stat-badge {
   transform: scale(1.12);
 }
 
-/* ── Buscador y Filtros ────────────────────────── */
+/* ── Filtros ────────────────────────── */
 .reportes-filters {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  align-items: center;
+  display: flex;
+  flex-direction: column; /* apilado en móvil */
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .reportes-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* buscador más ancho que el select */
+    gap: 1rem;
+    align-items: center;
+  }
 }
 
 .reportes-input-group {
   position: relative;
+  min-width: 0; /* CRÍTICO: evita overflow */
+  width: 100%;
 }
 
 .reportes-input-group input,
 .reportes-input-group select {
   width: 100%;
+  max-width: 100%;
   padding: 0.6rem 1rem 0.6rem 2.5rem;
   border: 1px solid var(--reportes-pa-brd);
   border-radius: var(--reportes-radius-sm);
-  font-size: 0.95rem;
+  /* min 16px evita zoom automático en iOS Safari */
+  font-size: max(16px, 0.875rem);
+  font-family: "Montserrat", sans-serif;
   color: var(--reportes-text-dark);
+  background-color: var(--reportes-white);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  outline: none;
 }
 
 .reportes-input-group select {
   appearance: none;
   cursor: pointer;
+}
+
+.reportes-input-group input:focus,
+.reportes-input-group select:focus {
+  border-color: var(--reportes-blue-primary);
+  box-shadow: 0 0 0 3px rgba(142, 175, 239, 0.2);
 }
 
 .reportes-icon {
@@ -248,15 +244,18 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--reportes-blue-primary);
+  pointer-events: none;
 }
 
 /* ── Tabla ────────────────────────── */
 .reportes-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .reportes-table {
   width: 100%;
+  min-width: 560px; /* fuerza scroll antes de colapsar columnas */
   border-collapse: collapse;
 }
 
@@ -273,10 +272,73 @@
   background-color: var(--reportes-blue-primary);
   font-weight: 600;
   color: white;
+  white-space: nowrap;
 }
 
 .reportes-table tr:hover {
   background-color: #f1f5f9;
+}
+
+/* ── MÓVIL: tabla → cards apiladas ── */
+@media (max-width: 560px) {
+  .reportes-table-container {
+    overflow-x: visible;
+  }
+
+  .reportes-table {
+    min-width: unset;
+  }
+
+  .reportes-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .reportes-table,
+  .reportes-table tbody,
+  .reportes-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .reportes-table tr {
+    padding: 12px 0;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .reportes-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .reportes-table td {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 0;
+    border: none;
+    font-size: 0.875rem;
+  }
+
+  /* Etiqueta auto desde data-label */
+  .reportes-table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: var(--reportes-blue-primary);
+    min-width: 110px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+
+  /* Botón ancho completo en móvil */
+  .reportes-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ── Badges ────────────────────────── */
@@ -289,6 +351,35 @@
   font-weight: 600;
   color: var(--reportes-white);
   background-color: var(--reportes-blue-primary);
+  white-space: nowrap;
+}
+
+/* ── Botón primary ────────────────────────── */
+.reportes-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--reportes-blue-primary);
+  color: var(--reportes-white);
+  font-weight: 600;
+  font-family: "Montserrat", sans-serif;
+  border-radius: var(--reportes-radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  min-height: 40px; /* área táctil mínima */
+  white-space: nowrap;
+}
+
+.reportes-btn-primary:hover:not(:disabled) {
+  background-color: var(--reportes-blue-hover);
+}
+
+.reportes-btn-primary:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
 }
 
 /* ── Loading ────────────────────────── */
@@ -299,17 +390,13 @@
 }
 
 .reportes-spin {
-  animation: spin 1s linear infinite;
+  animation: reportes-spin 1s linear infinite;
   color: var(--reportes-blue-primary);
   margin-bottom: 0.5rem;
 }
 
-/* ── Animación Spin ────────────────────────── */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+@keyframes reportes-spin {
+  to {
     transform: rotate(360deg);
   }
 }

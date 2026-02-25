@@ -18,14 +18,8 @@
   --radius-lg: 12px;
 }
 
-/* Estilos base */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 /* Loading y Error */
+/* Loading y Error - Fondo Blanco Corregido */
 .maestro-loading-screen,
 .maestro-error-screen {
   display: flex;
@@ -33,14 +27,16 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: var(--bg-light);
+  /* Esto elimina el fondo azul de la captura */
+  background-color: var(--white);
+  width: 100%;
 }
-
 .loader-circle {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--blue-primary);
-  border-top-color: transparent;
+  /* Cambio: Usamos gris medio y el naranja de acento en lugar de azul */
+  border: 3px solid var(--gray-medium);
+  border-top-color: var(--yellow-accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -49,12 +45,14 @@
 .maestro-error-screen button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background: var(--blue-primary);
+  /* Cambio: Botón en gris oscuro o naranja para evitar el azul */
+  background: var(--text-dark);
   color: var(--white);
   border: none;
   border-radius: var(--radius-sm);
   font-weight: 500;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 /* Contenedor principal */
@@ -82,11 +80,7 @@
   right: 0;
   width: 200px;
   height: 200px;
-  background: linear-gradient(
-    135deg,
-    transparent 30%,
-    rgba(254, 158, 16, 0.1) 70%
-  );
+  background: var(--blue-primary);
   border-radius: 0 0 0 100%;
 }
 

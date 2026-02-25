@@ -3,33 +3,20 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 import {
   FiHome,
   FiBook,
   FiClock,
   FiFileText,
-  FiUser,
   FiLogOut,
   FiMenu,
+  FiX,
 } from "react-icons/fi";
+import "@/styles/layouts/navbarmaestro.css";
 
-export default function NavbarMaestro() {
-  const [open, setOpen] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+export default function NavbarMaestro({ open, setOpen }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    setOpen(!isMobile);
-  }, [isMobile]);
 
   const handleLogout = () => {
     if (window.confirm("¿Seguro que deseas cerrar sesión?")) {
@@ -39,16 +26,7 @@ export default function NavbarMaestro() {
   };
 
   const menuItems = [
-    { 
-      href: "/designs/menumaestros", 
-      icon: <FiHome />, 
-      label: "Inicio" 
-    },
-    {
-      href: "/designs/menumaestros/perfil",
-      icon: <FiUser />,
-      label: "Mi Perfil",
-    },
+    { href: "/designs/menumaestros", icon: <FiHome />, label: "Inicio" },
     {
       href: "/designs/menumaestros/vistaMismaterias",
       icon: <FiBook />,
@@ -67,56 +45,59 @@ export default function NavbarMaestro() {
   ];
 
   return (
-    <aside className={`sliderbaradm ${open ? "open" : "closed"}`}>
-      {/* Header */}
-      <div className="sliderbaradm-header">
-        {open && (
+    <>
+      {/* Botón Hamburguesa para Móvil */}
+      <button
+        className="mobile-toggle-btn"
+        onClick={() => setOpen && setOpen(!open)}
+      >
+        {open ? <FiX /> : <FiMenu />}
+      </button>
+
+      <aside className={`navbarmaestro ${open ? "open" : "closed"}`}>
+        {/* Header con Logo */}
+        <div className="navbarmaestro-header">
           <div className="logo-container">
-            <Image src="/imagenes/ite.svg" alt="Logo" width={40} height={40} />
+            <Image src="/imagenes/ite.svg" alt="Logo" width={35} height={35} />
             <div className="logo-text-container">
               <span className="logo-text">Eventos ITE</span>
-              <span className="teacher-badge">MAESTRO</span>
+              <span className="admin-badge">MAESTRO</span>
             </div>
           </div>
-        )}
-        <button className="toggle-btn" onClick={() => setOpen(!open)}>
-          <FiMenu />
-        </button>
-      </div>
+          {/* Botón para colapsar en Desktop */}
+          <button
+            className="toggle-btn"
+            onClick={() => setOpen && setOpen(!open)}
+          >
+            <FiMenu />
+          </button>
+        </div>
 
-      {/* Menu */}
-      <ul className="menu">
-        {menuItems.map((item) => (
-          <SidebarItem
-            key={item.href}
-            href={item.href}
-            icon={item.icon}
-            label={item.label}
-            open={open}
-            active={pathname === item.href}
-          />
-        ))}
+        {/* Lista de Menú con prefijo maestros- */}
+        <ul className="maestros-menu-list">
+          {menuItems.map((item) => (
+            <li
+              key={item.href}
+              className={`maestros-menu-item ${pathname === item.href ? "active" : ""}`}
+            >
+              <Link href={item.href} className="maestros-menu-link">
+                <span className="maestros-icon">{item.icon}</span>
+                <span className="maestros-title">{item.label}</span>
+              </Link>
+            </li>
+          ))}
 
-        <li className="menu-item logout" onClick={handleLogout}>
-          <div className="menu-link">
-            <span className="icon">
-              <FiLogOut />
-            </span>
-            {open && <span className="title">Cerrar Sesión</span>}
-          </div>
-        </li>
-      </ul>
-    </aside>
-  );
-}
-
-function SidebarItem({ href, icon, label, open, active }) {
-  return (
-    <li className={`menu-item ${active ? "active" : ""}`}>
-      <Link href={href} className="menu-link">
-        <span className="icon">{icon}</span>
-        {open && <span className="title">{label}</span>}
-      </Link>
-    </li>
+          {/* Item de Cerrar Sesión con clases corregidas */}
+          <li className="maestros-menu-item logout-item" onClick={handleLogout}>
+            <div className="maestros-menu-link">
+              <span className="maestros-icon">
+                <FiLogOut />
+              </span>
+              <span className="maestros-title">Cerrar Sesión</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </>
   );
 }

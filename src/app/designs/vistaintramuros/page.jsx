@@ -3,9 +3,9 @@ import React, { useState, useMemo } from "react";
 import { Calendar, List, User, Trophy } from "lucide-react"; // Importamos Trophy
 
 // 1. Estilos (Rutas relativas a la carpeta 'styles')
-import "./styles/intramuros.css";
-import "./styles/intramurocalendario.css";
-import "./styles/form.css";
+import "./estilos/intramuros.css";
+import "./estilos/intramurocalendario.css";
+import "./estilos/form.css";
 
 // 2. Layout Global (Usando el alias @ correctamente)
 

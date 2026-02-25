@@ -255,7 +255,7 @@
 .welcome-title-enhanced {
   font-size: clamp(1.8rem, 5vw, 2.5rem);
 
-  color: var(--ite-blue-dark);
+  color: var(--blue-primary);
   font-weight: 800;
   line-height: 1.2;
   margin: 0;
@@ -459,8 +459,9 @@
   }
 
   .albatros-main-image {
-    width: 250px;
-    height: 250px;
+    margin-top: 80px;
+    width: 150px;
+    height: 150px;
   }
 
   .main-albatros-container {

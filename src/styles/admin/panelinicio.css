@@ -46,9 +46,8 @@
 
 /* ── Page wrapper ───────────────────────────────────────────── */
 .paneladmin {
-  padding: 2.5rem; /* Padding uniforme en todos los lados */
-  /* El margen izquierdo se debe manejar según si el sidebar es mini o expandido */
-  margin-left: var(--current-sidebar-width, 80px);
+  padding: 2.5rem;
+
   display: flex;
   justify-content: center;
   transition: margin-left 0.3s ease;
@@ -67,7 +66,6 @@
   align-items: center;
   justify-content: center;
   background: var(--pa-bg);
-  font-family: "Montserrat", sans-serif;
 }
 .paneladmin__spinner-wrap {
   display: flex;
@@ -152,24 +150,28 @@
 /* ── Grid helpers ───────────────────────────────────────────── */
 .paneladmin__grid-4 {
   display: grid;
-  /* El auto-fit permite que las tarjetas mantengan un tamaño sano */
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* Ajusta el minmax para que no se amontonen en pantallas medianas */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
-  width: 100%;
-  /* Eliminamos el margin-left que tenías con error de sintaxis */
-  margin-left: 0;
+  margin-bottom: 2rem;
 }
+
+/* Si usas la fila de 2 tarjetas (Estudiantes 1er Semestre / 2do) */
 .paneladmin__grid-2 {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 .paneladmin__grid-charts {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  /* Espacio horizontal entre las dos gráficas */
+  gap: 2rem;
+  /* Espacio superior para separarlas de las tarjetas de arriba */
+  margin-top: 2rem;
+  width: 100%;
 }
-
 /* ── Stat card ──────────────────────────────────────────────── */
 .paneladmin__stat {
   position: relative;
@@ -200,7 +202,7 @@
   border-radius: var(--pa-r-lg) var(--pa-r-lg) 0 0;
 }
 .paneladmin__stat--primary::before {
-  background: linear-gradient(90deg, var(--blue-primary), var(--pa-blue-mid));
+  background: var(--blue-primary);
 }
 .paneladmin__stat--yellow::before {
   background: linear-gradient(90deg, var(--yellow-accent), #ffca6b);

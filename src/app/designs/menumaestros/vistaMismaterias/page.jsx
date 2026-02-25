@@ -39,24 +39,19 @@ export default function MisMateriasMaestroPage() {
   const cargarMaterias = async (percve) => {
     try {
       setLoading(true);
-      console.log("🔍 Cargando materias para percve:", percve);
-
       const response = await fetch(`/api/maestros-materias?percve=${percve}`);
-
-      console.log("📊 Status de respuesta:", response.status);
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("❌ Error de la API:", errorData);
+        console.error("Error de la API:", errorData);
         setMaterias([]);
         return;
       }
 
       const data = await response.json();
-      console.log("📚 Materias del maestro:", data);
       setMaterias(data || []);
     } catch (error) {
-      console.error("❌ Error al cargar materias:", error);
+      console.error("Error al cargar materias:", error);
       setMaterias([]);
     } finally {
       setLoading(false);
@@ -81,7 +76,7 @@ export default function MisMateriasMaestroPage() {
         Carrera: est.inscripciones?.carrera?.carnco || "N/A",
         Sexo: est.alusex === 1 ? "M" : est.alusex === 2 ? "F" : "N/A",
         "Fecha Inscripción": new Date(
-          inscripcion.fechaInscripcion
+          inscripcion.fechaInscripcion,
         ).toLocaleDateString(),
       };
     });
@@ -118,16 +113,17 @@ export default function MisMateriasMaestroPage() {
 
   if (loading) {
     return (
-      <div className="materias-loading-screen">
-        <div className="loader-circle"></div>
-        <p className="loader-text">Cargando tus materias...</p>
+      <div className="maestros">
+        <div className="materias-loading-screen">
+          <div className="loader-circle"></div>
+          <p className="loader-text">Cargando tus materias...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <>
-      <NavbarMaestro />
+    <div className="maestros">
       <div className="materias-main-wrapper">
         {/* Header */}
         <div className="materias-header">
@@ -142,16 +138,16 @@ export default function MisMateriasMaestroPage() {
               </p>
             </div>
             <div className="header-stats">
-              <div className="stat-badge stat-purple">
+              <div className="stat-badge">
                 <FiBook />
                 <span>{materias.length} Materias</span>
               </div>
-              <div className="stat-badge stat-blue">
+              <div className="stat-badge">
                 <FiUsers />
                 <span>
                   {materias.reduce(
                     (acc, m) => acc + (m.inscripact?.length || 0),
-                    0
+                    0,
                   )}{" "}
                   Estudiantes
                 </span>
@@ -176,7 +172,7 @@ export default function MisMateriasMaestroPage() {
                 const isExpanded = materiaExpandida === materia.id;
                 const totalEstudiantes = materia.inscripact?.length || 0;
                 const estudiantesFiltrados = filtrarEstudiantes(
-                  materia.inscripact || []
+                  materia.inscripact || [],
                 );
 
                 return (
@@ -205,7 +201,6 @@ export default function MisMateriasMaestroPage() {
                           </span>
                         </div>
 
-                        {/* Horario */}
                         {materia.horario && (
                           <div className="materia-horario">
                             <FiCalendar size={14} />
@@ -245,7 +240,6 @@ export default function MisMateriasMaestroPage() {
                           </div>
                         ) : (
                           <>
-                            {/* Barra de búsqueda y exportar */}
                             <div className="estudiantes-toolbar">
                               <div className="search-box">
                                 <FiSearch className="search-icon" />
@@ -267,7 +261,6 @@ export default function MisMateriasMaestroPage() {
                               </button>
                             </div>
 
-                            {/* Tabla de estudiantes */}
                             <div className="estudiantes-table-wrapper">
                               <table className="estudiantes-table">
                                 <thead>
@@ -305,8 +298,7 @@ export default function MisMateriasMaestroPage() {
                                             {nombreCompleto || "Sin nombre"}
                                           </td>
                                           <td>
-                                            {est.inscripciones?.calnpe ||
-                                              "N/A"}
+                                            {est.inscripciones?.calnpe || "N/A"}
                                             °
                                           </td>
                                           <td className="carrera-cell">
@@ -324,13 +316,13 @@ export default function MisMateriasMaestroPage() {
                                               {est.alusex === 1
                                                 ? "M"
                                                 : est.alusex === 2
-                                                ? "F"
-                                                : "N/A"}
+                                                  ? "F"
+                                                  : "N/A"}
                                             </span>
                                           </td>
                                           <td className="fecha-cell">
                                             {new Date(
-                                              inscripcion.fechaInscripcion
+                                              inscripcion.fechaInscripcion,
                                             ).toLocaleDateString("es-MX", {
                                               day: "2-digit",
                                               month: "short",
@@ -362,6 +354,6 @@ export default function MisMateriasMaestroPage() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

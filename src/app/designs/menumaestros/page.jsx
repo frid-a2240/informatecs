@@ -62,7 +62,6 @@ export default function MenuMaestrosPage() {
 
   return (
     <>
-      <NavbarMaestro />
       <div className="maestro-interface">
         {/* Banner Superior */}
         <div className="top-banner">

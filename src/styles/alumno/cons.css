@@ -1,35 +1,44 @@
+/* ── Variables ── */
 :root {
   --blue-primary: #1b396a;
   --blue-dark: #142a50;
   --yellow-accent: #fe9e10;
   --yellow-hover: #e58d0f;
-
   --text-dark: #1f2937;
   --text-muted: #4a5568;
-
   --gray-50: #f9fafb;
   --gray-100: #f3f4f6;
   --gray-300: #d1d5db;
-
   --success-bg: #d1fae5;
   --success-border: #10b981;
   --success-text: #047857;
-
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 18px;
-
   --shadow-sm: 0 3px 5px rgba(27, 57, 106, 0.1);
   --shadow-md: 0 6px 10px rgba(27, 57, 106, 0.15);
   --shadow-hover: 0 10px 15px rgba(27, 57, 106, 0.2);
-
   font-family: "Montserrat", sans-serif;
   scroll-behavior: smooth;
-  background-color: var(--gray-50);
-  color: var(--text-dark);
 }
 
-/* Loading */
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--gray-50);
+  color: var(--text-dark);
+  margin: 0;
+  padding: 0;
+  /* CRÍTICO: evita scroll horizontal */
+  overflow-x: hidden;
+}
+
+/* ── Loading ── */
 .loading-screen {
   min-height: 100vh;
   background: var(--gray-50);
@@ -53,9 +62,9 @@
   }
 }
 
-/* Banner Superior */
+/* ── Banner superior ── */
 .user-banner {
-  padding: 2.5rem 1.5rem 2rem;
+  padding: clamp(1.2rem, 4vw, 2.5rem) 1rem 1.5rem;
   text-align: center;
   color: var(--blue-primary);
   font-weight: 700;
@@ -63,22 +72,39 @@
 
 .title-stats-group {
   display: flex;
+  flex-direction: column; /* vertical en móvil */
   justify-content: center;
   align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .title-stats-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
 }
 
 .title-stats-group h1 {
-  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 4vw, 2rem);
   margin: 0;
+  word-break: break-word;
+}
+
+/* Stats en fila en móvil */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .stats-card {
   background: white;
   border-radius: var(--radius-md);
-  padding: 0.7rem 1.2rem;
-  min-width: 100px;
+  padding: 0.6rem 1rem;
+  min-width: 90px;
   box-shadow: var(--shadow-sm);
   color: var(--blue-primary);
   font-weight: 700;
@@ -87,48 +113,70 @@
 }
 
 .stats-number {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
 }
-
 .stats-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   opacity: 0.85;
 }
 
 .user-control {
-  margin-top: 0.7rem;
-  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
   opacity: 0.9;
 }
 
-/* Contenedor Principal */
+/* ── Contenedor principal ── */
 .main-container {
-  max-width: 1000px;
-  margin: -2rem auto 2rem;
-  padding: 0 5rem;
+  width: 100%;
+  /* CRÍTICO: nunca sobrepasar el viewport */
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+  /* Nunca usar margin negativo — empuja contenido fuera del viewport */
 }
 
-/* Filtros */
+/* ── Filtros ── */
 .search-filters-card {
   background: white;
-  padding: 1.2rem 1.5rem;
+  padding: clamp(1rem, 3vw, 1.2rem) clamp(1rem, 3vw, 1.5rem);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.75rem;
+  /* CRÍTICO: no sobrepasar su contenedor */
+  width: 100%;
+  overflow: hidden;
 }
 
 .filters-grid {
-  flex: 1 1 60%;
   display: flex;
-  gap: 0.8rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 600px) {
+  .filters-grid {
+    flex-direction: row;
+  }
+  /* Buscador más ancho que el select */
+  .filters-grid .input-wrapper:first-child {
+    flex: 2;
+  }
+  .filters-grid .input-wrapper:last-child {
+    flex: 1;
+  }
 }
 
 .input-wrapper {
   position: relative;
-  flex-grow: 1;
+  width: 100%;
+  min-width: 0; /* evita overflow */
 }
 
 .input-icon {
@@ -143,22 +191,26 @@
 .search-input,
 .filter-select {
   width: 100%;
+  max-width: 100%;
   padding: 0.7rem 0.8rem 0.7rem 2.5rem;
   border: 2px solid var(--gray-300);
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-family: "Montserrat", sans-serif;
+  /* min 16px evita zoom en iOS Safari */
+  font-size: max(16px, 0.85rem);
   transition: border-color 0.3s ease;
+  background: white;
+  color: var(--text-dark);
 }
 
 .search-input:focus,
 .filter-select:focus {
   outline: none;
   border-color: var(--yellow-accent);
-  box-shadow: 0 0 6px var(--yellow-accent);
+  box-shadow: 0 0 6px rgba(254, 158, 16, 0.4);
 }
 
 .results-counter {
-  flex-basis: 100%;
   font-size: 0.75rem;
   color: var(--text-muted);
   font-weight: 600;
@@ -168,20 +220,23 @@
   color: var(--yellow-accent);
 }
 
-/* Cards Constancias */
+/* ── Lista de constancias ── */
 .constancias-list {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
+/* ── Card constancia ── */
 .constancia-card {
   background: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 2px solid transparent;
   transition: all 0.25s ease;
-  overflow: hidden;
+  /* CRÍTICO: overflow hidden corta las sombras hover, usar visible */
+  overflow: visible;
+  width: 100%;
 }
 
 .constancia-card:hover {
@@ -191,50 +246,88 @@
 }
 
 .constancia-content {
-  padding: 1.2rem 1.5rem;
+  padding: clamp(1rem, 3vw, 1.2rem) clamp(1rem, 3vw, 1.5rem);
 }
 
 .constancia-layout {
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* siempre en fila */
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
 }
 
-@media (min-width: 1024px) {
+.constancia-info {
+  flex: 1;
+  min-width: 0; /* CRÍTICO: texto se comprime sin desbordarse */
+}
+
+/* Solo en móvil muy pequeño: apilar */
+@media (max-width: 480px) {
   .constancia-layout {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .action-buttons {
+    align-self: flex-end;
   }
 }
 
+/* Título fluido — era demasiado grande en móvil */
 .constancia-title {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1rem, 3.5vw, 1.6rem);
   font-weight: 800;
   color: var(--blue-primary);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
 }
+
+/* Actividad — también reducida para móvil */
 .constancia-acti {
-  font-size: 30px;
+  font-size: clamp(0.95rem, 3vw, 1.3rem);
   font-weight: 800;
   color: var(--blue-primary);
+  word-break: break-word;
 }
+
 .constancia-details {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
 }
 
+.constancia-details > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--blue-primary);
+  background-color: var(--gray-100);
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+}
+
+.constancia-details svg {
+  color: var(--yellow-accent);
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Badges ── */
 .badge-valid {
   background: var(--success-bg);
   color: var(--success-text);
   border: 2px solid var(--success-border);
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-sm);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   user-select: none;
+  white-space: nowrap;
 }
 
 .badge-folio {
@@ -242,40 +335,47 @@
   padding: 0.3rem 0.7rem;
   border-radius: var(--radius-sm);
   font-family: monospace;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   user-select: none;
+  word-break: break-all; /* folios largos no rompen el layout */
 }
 
-/* Botones */
+/* ── Botones — siempre en la esquina derecha ── */
 .action-buttons {
   display: flex;
-  gap: 0.8rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: flex-end; /* pegados a la derecha siempre */
+  flex-shrink: 0;
 }
 
-@media (min-width: 1024px) {
-  .action-buttons {
-    flex-direction: column;
-    align-items: flex-end;
-  }
+.btn-primary-cons,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: center;
+  min-height: 40px;
+  min-width: 140px;
+  transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .btn-primary-cons {
   background: var(--yellow-accent);
   color: var(--blue-dark);
   border: none;
-  padding: 0.7rem 1.4rem;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color 0.25s ease,
-    transform 0.25s ease;
-  min-width: 140px;
   box-shadow: 0 2px 6px rgba(254, 158, 16, 0.4);
 }
 
-.btn-primary:hover:not(:disabled) {
+.btn-primary-cons:hover:not(:disabled) {
   background: var(--yellow-hover);
   transform: translateY(-2px);
 }
@@ -283,19 +383,8 @@
 .btn-secondary {
   background: white;
   border: 2px solid var(--gray-300);
-  padding: 0.7rem 1.4rem;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  text-decoration: none;
   color: var(--text-muted);
-  transition:
-    border-color 0.25s ease,
-    color 0.25s ease;
-  min-width: 140px;
-  text-align: center;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  text-decoration: none;
 }
 
 .btn-secondary:hover {
@@ -303,11 +392,11 @@
   color: var(--blue-primary);
 }
 
-/* Estado vacío */
+/* ── Estado vacío ── */
 .empty-state {
   background: white;
   border-radius: var(--radius-lg);
-  padding: 3rem 1.5rem;
+  padding: clamp(2rem, 6vw, 3rem) 1.5rem;
   text-align: center;
   box-shadow: var(--shadow-sm);
   color: var(--text-muted);
@@ -325,7 +414,6 @@
   justify-content: center;
 }
 
-/* Texto vacío */
 .empty-title {
   font-weight: 700;
   margin-bottom: 0.5rem;
@@ -337,27 +425,101 @@
   font-size: 0.85rem;
   color: var(--text-muted);
 }
-.constancia-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem; /* espacio entre badges */
-  margin-top: 0.8rem;
-}
+/* --- RESPONSIVO MÓVIL (Smartphone) --- */
+@media (max-width: 640px) {
+  .horario-page {
+    padding: 0.5rem; /* Menos espacio desperdiciado */
+  }
 
-.constancia-details > div {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.8rem; /* más pequeño y compacto */
-  font-weight: 600;
-  color: var(--blue-primary);
-  background-color: var(--bg-activity-light); /* color vibrante pero uniforme */
-  padding: 0.3rem 0.6rem;
-  border-radius: var(--radius-sm);
-}
+  /* El Header se vuelve compacto */
+  .horario-header-content {
+    padding: 1rem;
+    gap: 10px;
+  }
 
-.constancia-details svg {
-  color: var(--yellow-accent);
-  width: 14px;
-  height: 14px;
+  .horario-welcome-title {
+    font-size: 1.25rem; /* Título más pequeño */
+  }
+
+  .horario-header-left svg {
+    width: 35px; /* Icono reducido */
+  }
+
+  /* Botones apilados o con iconos solamente */
+  .horario-header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto; /* Dos botones grandes y uno de descarga */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .horario-btn-primary,
+  .horario-btn-secondary {
+    padding: 10px 5px;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .horario-hide-mobile {
+    display: none; /* Ocultamos textos largos */
+  }
+
+  /* --- CONTENEDOR DEL CALENDARIO --- */
+  .horario-calendario-container {
+    margin: 0;
+    border-radius: 0; /* Bordes rectos para aprovechar ancho */
+    overflow-x: auto; /* Scroll obligatorio */
+    -webkit-overflow-scrolling: touch;
+    border: none;
+  }
+
+  /* Forzamos un ancho para que el usuario deslice */
+  .calendario-grid-inner {
+    min-width: 600px;
+  }
+
+  /* Blood Validator */
+  .blood-validator-wrapper {
+    margin: 0 0 1rem !important;
+  }
+
+  /* 1. Bajamos el título */
+  .user-banner {
+    padding-top: 70px; /* Más espacio arriba */
+    padding-bottom: 1rem;
+  }
+
+  /* 2. Bajamos el título específicamente y le damos aire */
+  .title-stats-group h1 {
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem; /* Un poco más pequeño para que no rompa en 2 líneas */
+  }
+
+  /* 3. Ajustamos las Stats para que se vean como una cuadrícula limpia */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas exactas */
+    gap: 10px;
+    width: 100%;
+    max-width: 320px; /* Evita que se estiren demasiado */
+    margin: 0 auto; /* Centra la cuadrícula */
+  }
+
+  .stats-card {
+    min-width: 0; /* Permite que el grid controle el ancho */
+    padding: 0.8rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--gray-100);
+  }
+
+  .stats-number {
+    font-size: 1.3rem; /* Números más legibles */
+  }
+
+  .stats-label {
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
 }
