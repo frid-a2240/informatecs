@@ -48,3 +48,36 @@ export async function GET(request) {
     return Response.json({ error: error.message }, { status: 500 });
   }
 }
+// Eliminar una oferta individual: DELETE /api/ofertas-semestre/batch?id=5
+// Eliminar todas:                  DELETE /api/ofertas-semestre/batch  (sin query param)
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (id) {
+      // Eliminar individual
+      const ofertaId = parseInt(id);
+      if (isNaN(ofertaId)) {
+        return Response.json({ error: 'ID inválido' }, { status: 400 });
+      }
+
+      await prisma.ofertaSemestre.delete({
+        where: { id: ofertaId },
+      });
+
+      return Response.json({ message: 'Oferta eliminada correctamente' });
+    } else {
+      // Reiniciar: eliminar todas
+      const resultado = await prisma.ofertaSemestre.deleteMany({});
+
+      return Response.json({
+        message: 'Todas las ofertas eliminadas',
+        count: resultado.count,
+      });
+    }
+  } catch (error) {
+    console.error('Error al eliminar:', error);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}

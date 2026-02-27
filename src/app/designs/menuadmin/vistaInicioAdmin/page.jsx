@@ -11,6 +11,7 @@ import {
   User,
   Plus,
   X,
+  RefreshCw,
 } from "lucide-react";
 import "@/styles/admin/adminpanel.css";
 
@@ -34,8 +35,10 @@ const AdminPanel = () => {
   const [modalVerMaestro, setModalVerMaestro] = useState(null);
   const [todasActividades, setTodasActividades] = useState([]);
   const [actividadesOfertadas, setActividadesOfertadas] = useState([]);
+  const [actividadesPublicadas, setActividadesPublicadas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [publicando, setPublicando] = useState(false);
+  const [eliminando, setEliminando] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const toggleAlbatros = () => {
     document.body.classList.toggle("ocultar-albatros");
@@ -68,6 +71,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     cargarActividades();
+    cargarPublicadas();
   }, []);
 
   const cargarActividades = async () => {
@@ -82,6 +86,17 @@ const AdminPanel = () => {
       alert("Error de conexión o al cargar actividades");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const cargarPublicadas = async () => {
+    try {
+      const response = await fetch("/api/ofertas-semestre/batch");
+      if (!response.ok) throw new Error("Error al cargar publicadas");
+      const data = await response.json();
+      setActividadesPublicadas(data);
+    } catch (error) {
+      console.error("Error al cargar publicadas:", error);
     }
   };
 
@@ -118,7 +133,7 @@ const AdminPanel = () => {
     try {
       setBuscandoMaestro(true);
       const response = await fetch(
-        `/api/maestros-buscar?q=${encodeURIComponent(query)}`,
+        `/api/maestros-buscar?q=${encodeURIComponent(query)}`
       );
       const maestros = await response.json();
       setMaestrosEncontrados(maestros);
@@ -210,8 +225,8 @@ const AdminPanel = () => {
 
       setTodasActividades((prev) =>
         prev.map((act) =>
-          act.id === modalAgregar.id ? actividadActualizada : act,
-        ),
+          act.id === modalAgregar.id ? actividadActualizada : act
+        )
       );
 
       if (!actividadesOfertadas.find((act) => act.id === modalAgregar.id)) {
@@ -231,7 +246,7 @@ const AdminPanel = () => {
 
   const quitarDeOferta = (actividadId) => {
     setActividadesOfertadas(
-      actividadesOfertadas.filter((act) => act.id !== actividadId),
+      actividadesOfertadas.filter((act) => act.id !== actividadId)
     );
   };
 
@@ -258,6 +273,7 @@ const AdminPanel = () => {
       if (!response.ok) throw new Error("Error al publicar actividades");
       alert("¡Actividades publicadas!");
       setActividadesOfertadas([]);
+      await cargarPublicadas();
     } catch (error) {
       console.error(error);
       alert("Error de conexión o al publicar actividades");
@@ -266,10 +282,59 @@ const AdminPanel = () => {
     }
   };
 
+  //  eliminar una oferta publicada 
+  const eliminarPublicada = async (oferta) => {
+    const nombre =
+      oferta.actividad?.aconco || oferta.actividad?.aticve || "esta actividad";
+    if (!confirm(`¿Desea continuar?\n\nSe eliminará "${nombre}" de las actividades publicadas.`))
+      return;
+
+    try {
+      setEliminando(true);
+      const response = await fetch(
+        `/api/ofertas-semestre/batch?id=${oferta.id}`,
+        { method: "DELETE" }
+      );
+      if (!response.ok) throw new Error("Error al eliminar");
+      await cargarPublicadas();
+    } catch (error) {
+      console.error(error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setEliminando(false);
+    }
+  };
+
+  // reiniciar: eliminar todas las publicadas
+  const reiniciarPublicadas = async () => {
+    if (actividadesPublicadas.length === 0) return;
+    if (
+      !confirm(
+        `¿Desea continuar?\n\nSe eliminarán TODAS las actividades publicadas (${actividadesPublicadas.length}). Esta acción no se puede deshacer.`
+      )
+    )
+      return;
+
+    try {
+      setEliminando(true);
+      const response = await fetch("/api/ofertas-semestre/batch", {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Error al reiniciar");
+      setActividadesPublicadas([]);
+      alert("Todas las actividades publicadas fueron eliminadas.");
+    } catch (error) {
+      console.error(error);
+      alert(`Error: ${error.message}`);
+    } finally {
+      setEliminando(false);
+    }
+  };
+
   const actividadesFiltradas = todasActividades.filter((act) =>
     (act.aconco ?? act.aticve ?? "")
       .toLowerCase()
-      .includes(busqueda.toLowerCase()),
+      .includes(busqueda.toLowerCase())
   );
 
   if (loading) {
@@ -503,17 +568,13 @@ const AdminPanel = () => {
 
       {/* ══ HEADER ══ */}
       <div className="card header-card">
-        {/* Lado izquierdo: título con pista de albatros ENCIMA */}
         <div className="header-text titulo-wrap">
-          {/* Albatros 1 — encima del título, bota el balón, ida y vuelta, desaparece */}
           <img
             src="/imagenes/basss.gif"
             alt=""
             className="alb alb-arriba"
             aria-hidden="true"
           />
-
-          {/* Albatros 2 — abajo del título, corre, ida y vuelta, desaparece */}
           <img
             src="/imagenes/albatrobanda.gif"
             alt=""
@@ -526,7 +587,6 @@ const AdminPanel = () => {
             className="alb alb-tercero"
             aria-hidden="true"
           />
-
           <h2>Gestionar Actividades</h2>
           <p>
             Configura y selecciona las actividades que deseas ofertar este
@@ -534,7 +594,6 @@ const AdminPanel = () => {
           </p>
         </div>
 
-        {/* Lado derecho: collage de imágenes */}
         <div className="act-collage" aria-hidden="true">
           <div className="act-col-small">
             <div className="act-sm sm-1"></div>
@@ -553,6 +612,7 @@ const AdminPanel = () => {
         </div>
       </div>
 
+      {/* ══ CATÁLOGO + OFERTA ══ */}
       <div className="grid-2">
         {/* CATÁLOGO */}
         <div className="card catalogo">
@@ -573,7 +633,7 @@ const AdminPanel = () => {
             ) : (
               actividadesFiltradas.map((actividad) => {
                 const agregada = actividadesOfertadas.find(
-                  (act) => act.id === actividad.id,
+                  (act) => act.id === actividad.id
                 );
                 return (
                   <div key={actividad.id} className="actividad-item">
@@ -622,7 +682,7 @@ const AdminPanel = () => {
           </div>
         </div>
 
-        {/* OFERTA */}
+        {/* OFERTA PENDIENTE */}
         <div className="card oferta">
           <div className="flex-between">
             <h3>Oferta ({actividadesOfertadas.length})</h3>
@@ -676,6 +736,73 @@ const AdminPanel = () => {
             ))
           )}
         </div>
+      </div>
+
+      {/*ACTIVIDADES PUBLICADAS (CRUD)*/}
+      <div className="card publicadas">
+        <div className="flex-between">
+          <h3>
+            <Sparkles size={20} /> Actividades Publicadas ({actividadesPublicadas.length})
+          </h3>
+          <button
+            className={
+              actividadesPublicadas.length > 0 && !eliminando
+                ? "btn-reiniciar enabled"
+                : "btn-reiniciar disabled"
+            }
+            onClick={reiniciarPublicadas}
+            disabled={actividadesPublicadas.length === 0 || eliminando}
+            title="Eliminar todas las actividades publicadas"
+          >
+            <RefreshCw size={18} />
+            {eliminando ? "Eliminando..." : "Reiniciar todo"}
+          </button>
+        </div>
+
+        {actividadesPublicadas.length === 0 ? (
+          <div className="sin-actividades">
+            <Calendar size={48} />
+            <p>No hay actividades publicadas aún</p>
+          </div>
+        ) : (
+          <div className="lista-publicadas">
+            {actividadesPublicadas.map((oferta) => (
+              <div key={oferta.id} className="actividad-publicada">
+                <div className="publicada-info">
+                  <h4>{oferta.actividad?.aconco || oferta.actividad?.aticve}</h4>
+                  <div className="meta">
+                    <span>Semestre: {oferta.semestre}</span>
+                    <span className={oferta.activa ? "badge-activa" : "badge-inactiva"}>
+                      {oferta.activa ? "Activa" : "Inactiva"}
+                    </span>
+                    {oferta.fechaPublicacion && (
+                      <span>
+                        {new Date(oferta.fechaPublicacion).toLocaleDateString("es-MX", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    )}
+                    {oferta.maestro && (
+                      <span>
+                        <User size={13} /> {oferta.maestro.pernom} {oferta.maestro.perapp}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  className="btn-eliminar"
+                  onClick={() => eliminarPublicada(oferta)}
+                  disabled={eliminando}
+                  title="Eliminar esta actividad publicada"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

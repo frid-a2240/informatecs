@@ -1473,3 +1473,165 @@ svg {
     width: 100%;
   }
 }
+/* ══════════════════════════════════════════
+   SECCIÓN ACTIVIDADES PUBLICADAS
+   Agregar al final de adminpanel.css
+══════════════════════════════════════════ */
+
+/* Contenedor principal */
+.publicadas {
+  margin-top: 1.5rem;
+}
+
+.publicadas .flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.publicadas h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Lista de publicadas */
+.lista-publicadas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Cada fila de actividad publicada */
+.actividad-publicada {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  transition: background-color 0.2s;
+  gap: 1rem;
+}
+
+.actividad-publicada:hover {
+  background-color: #f1f5f9;
+}
+
+/* Info dentro de cada fila */
+.publicada-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.publicada-info h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.publicada-info .meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.publicada-info .meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #64748b;
+  background-color: #e2e8f0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+/* Badges activa / inactiva */
+.badge-activa {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+  font-weight: 600;
+}
+
+.badge-inactiva {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  font-weight: 600;
+}
+
+/* ── Botón Reiniciar todo ── */
+.btn-reiniciar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.btn-reiniciar.enabled {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.btn-reiniciar.enabled:hover {
+  background-color: #fde68a;
+}
+
+.btn-reiniciar.disabled {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Estado vacío reutilizado */
+.publicadas .sin-actividades {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  color: #94a3b8;
+  gap: 0.75rem;
+}
+
+.publicadas .sin-actividades p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .actividad-publicada {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actividad-publicada .btn-eliminar {
+    align-self: flex-end;
+  }
+
+  .publicadas .flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
